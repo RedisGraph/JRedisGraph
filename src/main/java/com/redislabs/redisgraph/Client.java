@@ -1,10 +1,10 @@
 package com.redislabs.redisgraph;
 
-import com.sun.org.apache.xerces.internal.xs.datatypes.ObjectList;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,26 +83,61 @@ public class Client {
         return edgeId;
     }
 
-    private Map<String, String> getGraphEntity(String id) {
+    public HashMap<String, String> getNode(String graphId, String id) {
         Jedis conn = _conn();
-        Map<String, String> properties = conn.hgetAll(id);
+
+        List<String> args = new ArrayList<String>(2);
+        args.add(graphId);
+        args.add(id);
+
+        String[] stringArgs = args.toArray(new String[args.size()]);
+
+        List<String> properties = conn.getClient()
+                .sendCommand(Commands.Command.GETNODE, stringArgs)
+                .getMultiBulkReply();
+
+        HashMap<String, String> attributes = new HashMap<String, String>(properties.size()/2);
+
+        for(int i = 0; i < properties.size(); i+=2) {
+            String key = properties.get(i) ;
+            String value = properties.get(i+1);
+            attributes.put(key, value);
+        }
+
         conn.close();
-        return properties;
+        return attributes;
     }
 
-    public Map<String, String> getNode(String id) {
-        return getGraphEntity(id);
+    public HashMap<String, String> getEdge(String graphId, String id) {
+        Jedis conn = _conn();
+
+        List<String> args = new ArrayList<String>(2);
+        args.add(graphId);
+        args.add(id);
+
+        String[] stringArgs = args.toArray(new String[args.size()]);
+
+        List<String> properties = conn.getClient()
+                .sendCommand(Commands.Command.GETEDGE, stringArgs)
+                .getMultiBulkReply();
+
+        HashMap<String, String> attributes = new HashMap<String, String>(properties.size()/2);
+
+        for(int i = 0; i < properties.size(); i+=2) {
+            String key = properties.get(i) ;
+            String value = properties.get(i+1);
+            attributes.put(key, value);
+        }
+
+        conn.close();
+        return attributes;
     }
 
-    public Map<String, String> getEdge(String id) {
-        return getGraphEntity(id);
-    }
-
-    public ResultSet query(String graphID, String query) {
+    public ResultSet query(String graphId, String query) {
         Jedis conn = _conn();
 
         List<Object> resp = conn.getClient()
-                .sendCommand(Commands.Command.QUERY, graphID, query)
+                .sendCommand(Commands.Command.QUERY, graphId, query)
                 .getObjectMultiBulkReply();
 
         return new ResultSet(resp);
