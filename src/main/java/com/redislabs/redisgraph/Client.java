@@ -6,7 +6,6 @@ import redis.clients.jedis.JedisPool;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Client {
     private JedisPool pool;
@@ -133,6 +132,24 @@ public class Client {
         return attributes;
     }
 
+    public List<String> getNeighbours(String graphId, String nodeId, String edgeType, int direction) {
+        Jedis conn = _conn();
+        List<String> args = new ArrayList<String>(4);
+        args.add(graphId);
+        args.add(nodeId);
+        args.add(edgeType);
+        args.add(String.valueOf(direction));
+
+        String[] stringArgs = args.toArray(new String[args.size()]);
+
+        List<String> neighbours = conn.getClient()
+                .sendCommand(Commands.Command.GETNEIGHBOURS, stringArgs)
+                .getMultiBulkReply();
+
+        return neighbours;
+    }
+
+
     public ResultSet query(String graphId, String query) {
         Jedis conn = _conn();
 
@@ -141,5 +158,10 @@ public class Client {
                 .getObjectMultiBulkReply();
 
         return new ResultSet(resp);
+    }
+
+    public boolean setProperty(String elementId, String key, Object value) {
+        Jedis conn = _conn();
+        return conn.hset(elementId, key, value.toString()) == 1;
     }
 }

@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.Map;
 
 public class RedisNode {
-    String id;
-    String label;
-    Map<String, String> attributes;
+    private String id;
+    private String label;
+    private Map<String, String> attributes;
 
-    List<RedisEdge> incomingEdges;
-    List<RedisEdge> outgoingEdges;
+    private List<RedisEdge> incomingEdges;
+    private List<RedisEdge> outgoingEdges;
 
     public RedisNode(String id, String label, Map<String, String> attributes) {
         this.id = id;
@@ -20,7 +20,23 @@ public class RedisNode {
         this.outgoingEdges = new ArrayList<RedisEdge>();
     }
 
-    public String getId(){
-        return this.id;
+    public String getId() {
+        return id;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public Map<String, String> getAttributes() {
+        return attributes;
+    }
+
+    public List<RedisEdge> getIncomingEdges() {
+        return incomingEdges;
+    }
+
+    public List<RedisEdge> getOutgoingEdges() {
+        return outgoingEdges;
     }
 }

@@ -1,6 +1,8 @@
 package com.redislabs.redisgraph;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RedisGraphAPI {
@@ -49,7 +51,7 @@ public class RedisGraphAPI {
         return new RedisNode(id, label, attributes);
     }
 
-    public  RedisEdge getEdge(String id) {
+    public RedisEdge getEdge(String id) {
         HashMap<String, String> attributes = client.getEdge(this.graphId, id);
         String edgeId = attributes.get("id");
         String relation = attributes.get("type");
@@ -67,8 +69,19 @@ public class RedisGraphAPI {
         return new RedisEdge(edgeId, srcNode, destNode, relation, attributes);
     }
 
+    public List<RedisNode> getNeighbours(String nodeId, String edgeType, int direction) {
+        List<String> nodeIds = client.getNeighbours(this.graphId, nodeId, edgeType, direction);
+        ArrayList<RedisNode> nodes = new ArrayList<RedisNode>();
+
+        for(String id: nodeIds) {
+            nodes.add(getNode(id));
+        }
+
+        return nodes;
+    }
+
     public RedisEdge connectNodes(RedisNode src, String relation, RedisNode dest, Object... attributes) {
-        String edgeId = client.connectNodes(this.graphId, src.id, relation, dest.id, attributes);
+        String edgeId = client.connectNodes(this.graphId, src.getId(), relation, dest.getId(), attributes);
         HashMap<String, String> attr = new HashMap<String, String>();
 
         for(int i = 0; i < attributes.length; i+=2) {
@@ -82,5 +95,9 @@ public class RedisGraphAPI {
 
     public ResultSet query(String query) {
         return client.query(this.graphId, query);
+    }
+
+    public boolean setProperty(String elementId, String key, Object value) {
+        return client.setProperty(elementId, key, value);
     }
 }

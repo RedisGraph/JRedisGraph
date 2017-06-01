@@ -9,6 +9,7 @@ public class Commands {
         ADDEDGE("graph.ADDEDGE"),
         GETEDGE("graph.GETEDGE"),
         GETNODE("graph.GETNODE"),
+        GETNEIGHBOURS("graph.GETNEIGHBOURS"),
         REMOVEEDGE("graph.REMOVEEDGE"),
         DELETEGRAPH("graph.DELETE"),
         QUERY("graph.QUERY");

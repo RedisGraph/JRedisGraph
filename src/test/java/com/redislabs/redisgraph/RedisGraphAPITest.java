@@ -1,6 +1,8 @@
 package com.redislabs.redisgraph;
 import org.junit.Assert;
 
+import java.util.List;
+
 public class RedisGraphAPITest {
     @org.testng.annotations.Test
     public void testCreateNode() throws Exception {
@@ -10,10 +12,10 @@ public class RedisGraphAPITest {
         RedisNode node = api.createNode("name", "roi", "age", 32);
 
         // Validate node
-        Assert.assertNotNull(node.id);
-        Assert.assertSame(node.attributes.get("name"), "roi");
-        Assert.assertSame(Integer.parseInt(node.attributes.get("age")), 32);
-        Assert.assertSame(node.attributes.size(),2);
+        Assert.assertNotNull(node.getId());
+        Assert.assertSame(node.getAttributes().get("name"), "roi");
+        Assert.assertSame(Integer.parseInt(node.getAttributes().get("age")), 32);
+        Assert.assertSame(node.getAttributes().size(),2);
     }
 
     @org.testng.annotations.Test
@@ -24,11 +26,11 @@ public class RedisGraphAPITest {
         RedisNode node = api.createLabeledNode("human","name", "roi", "age", 32);
 
         // Validate node
-        Assert.assertNotNull(node.id);
-        Assert.assertSame(node.label, "human");
-        Assert.assertSame(node.attributes.get("name"), "roi");
-        Assert.assertSame(Integer.parseInt(node.attributes.get("age")), 32);
-        Assert.assertSame(node.attributes.size(),2);
+        Assert.assertNotNull(node.getId());
+        Assert.assertSame(node.getLabel(), "human");
+        Assert.assertSame(node.getAttributes().get("name"), "roi");
+        Assert.assertSame(Integer.parseInt(node.getAttributes().get("age")), 32);
+        Assert.assertSame(node.getAttributes().size(),2);
     }
 
     @org.testng.annotations.Test
@@ -81,15 +83,15 @@ public class RedisGraphAPITest {
         RedisNode node = api.createLabeledNode("human","name", "shany", "age", 23);
 
         // Get node
-        RedisNode retrievedNode = api.getNode(node.id);
+        RedisNode retrievedNode = api.getNode(node.getId());
 
         // Expecting a single result
         Assert.assertNotNull(retrievedNode);
-        Assert.assertEquals(node.id, retrievedNode.id);
-        Assert.assertEquals(node.label, retrievedNode.label);
-        Assert.assertEquals(retrievedNode.attributes.size(), 2);
-        Assert.assertEquals(retrievedNode.attributes.get("name"), "shany");
-        Assert.assertEquals(Integer.parseInt(retrievedNode.attributes.get("age")), 23);
+        Assert.assertEquals(node.getId(), retrievedNode.getId());
+        Assert.assertEquals(node.getLabel(), retrievedNode.getLabel());
+        Assert.assertEquals(retrievedNode.getAttributes().size(), 2);
+        Assert.assertEquals(retrievedNode.getAttributes().get("name"), "shany");
+        Assert.assertEquals(Integer.parseInt(retrievedNode.getAttributes().get("age")), 23);
     }
 
     @org.testng.annotations.Test
@@ -114,8 +116,61 @@ public class RedisGraphAPITest {
         Assert.assertEquals(retrievedEdge.getAttributes().get("strength"), "3");
         Assert.assertEquals(retrievedEdge.getAttributes().get("from"), "high-school");
 
-        Assert.assertEquals(retrievedEdge.getSrc().id, src.id);
-        Assert.assertEquals(retrievedEdge.getDest().id, dest.id);
+        Assert.assertEquals(retrievedEdge.getSrc().getId(), src.getId());
+        Assert.assertEquals(retrievedEdge.getDest().getId(), dest.getId());
+    }
+
+    @org.testng.annotations.Test
+    public void testSetProperty() throws Exception {
+        RedisGraphAPI api = new RedisGraphAPI("social");
+
+        // Create a node
+        RedisNode node = api.createNode("name", "shimshon", "age", 60);
+        api.setProperty(node.getId(), "age", 61);
+
+        node = api.getNode(node.getId());
+
+        // Validate node
+        Assert.assertSame(Integer.parseInt(node.getAttributes().get("age")), 61);
+    }
+
+    @org.testng.annotations.Test
+    public void testGetNeighbours() throws Exception {
+        RedisGraphAPI api = new RedisGraphAPI("social");
+
+        // Create both source and destination nodes
+        RedisNode roi = api.createNode("name", "roi", "age", 32);
+        RedisNode amit = api.createNode("name", "amit", "age", 30);
+        RedisNode shany = api.createNode("name", "shany", "age", 23);
+
+        // Connect source and destination nodes.
+        api.connectNodes(roi, "knows", amit);
+        api.connectNodes(roi, "knows", shany);
+        api.connectNodes(amit, "knows", roi);
+        api.connectNodes(shany, "knows", roi);
+
+        int DIR_OUT = 0;
+        int DIR_IN = 1;
+        int DIR_BOTH = 2;
+
+        List<RedisNode> neighbours;
+        neighbours = api.getNeighbours(roi.getId(), "knows", DIR_OUT);
+        Assert.assertEquals(neighbours.size(), 2);
+
+        neighbours = api.getNeighbours(roi.getId(), "knows", DIR_IN);
+        Assert.assertEquals(neighbours.size(), 2);
+
+        neighbours = api.getNeighbours(roi.getId(), "knows", DIR_BOTH);
+        Assert.assertEquals(neighbours.size(), 4);
+
+        neighbours = api.getNeighbours(amit.getId(), "knows", DIR_OUT);
+        Assert.assertEquals(neighbours.size(), 1);
+
+        neighbours = api.getNeighbours(amit.getId(), "knows", DIR_IN);
+        Assert.assertEquals(neighbours.size(), 1);
+
+        neighbours = api.getNeighbours(amit.getId(), "knows", DIR_BOTH);
+        Assert.assertEquals(neighbours.size(), 2);
 
     }
 }
