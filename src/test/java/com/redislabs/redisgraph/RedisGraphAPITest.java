@@ -135,6 +135,45 @@ public class RedisGraphAPITest {
     }
 
     @org.testng.annotations.Test
+    public void testGetNodeEdges() throws Exception {
+        RedisGraphAPI api = new RedisGraphAPI("social");
+
+        // Create both source and destination nodes
+        RedisNode roi = api.createNode("name", "roi", "age", 32);
+        RedisNode amit = api.createNode("name", "amit", "age", 30);
+        RedisNode shany = api.createNode("name", "shany", "age", 23);
+
+        // Connect source and destination nodes.
+        api.connectNodes(roi, "knows", amit);
+        api.connectNodes(roi, "knows", shany);
+        api.connectNodes(amit, "knows", roi);
+        api.connectNodes(shany, "knows", roi);
+
+        int DIR_OUT = 0;
+        int DIR_IN = 1;
+        int DIR_BOTH = 2;
+
+        List<RedisEdge> edges;
+        edges = api.getNodeEdges(roi.getId(), "knows", DIR_OUT);
+        Assert.assertEquals(edges.size(), 2);
+
+        edges = api.getNodeEdges(roi.getId(), "knows", DIR_IN);
+        Assert.assertEquals(edges.size(), 2);
+
+        edges = api.getNodeEdges(roi.getId(), "knows", DIR_BOTH);
+        Assert.assertEquals(edges.size(), 4);
+
+        edges = api.getNodeEdges(amit.getId(), "knows", DIR_OUT);
+        Assert.assertEquals(edges.size(), 1);
+
+        edges = api.getNodeEdges(amit.getId(), "knows", DIR_IN);
+        Assert.assertEquals(edges.size(), 1);
+
+        edges = api.getNodeEdges(amit.getId(), "knows", DIR_BOTH);
+        Assert.assertEquals(edges.size(), 2);
+    }
+
+    @org.testng.annotations.Test
     public void testGetNeighbours() throws Exception {
         RedisGraphAPI api = new RedisGraphAPI("social");
 
@@ -171,6 +210,5 @@ public class RedisGraphAPITest {
 
         neighbours = api.getNeighbours(amit.getId(), "knows", DIR_BOTH);
         Assert.assertEquals(neighbours.size(), 2);
-
     }
 }

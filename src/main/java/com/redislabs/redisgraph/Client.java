@@ -132,6 +132,23 @@ public class Client {
         return attributes;
     }
 
+    public List<String> getNodeEdges(String graphId, String nodeId, String edgeType, int direction) {
+        Jedis conn = _conn();
+        List<String> args = new ArrayList<String>(4);
+        args.add(graphId);
+        args.add(nodeId);
+        args.add(edgeType);
+        args.add(String.valueOf(direction));
+
+        String[] stringArgs = args.toArray(new String[args.size()]);
+
+        List<String> edges = conn.getClient()
+                .sendCommand(Commands.Command.GETNODEEDGES, stringArgs)
+                .getMultiBulkReply();
+
+        return edges;
+    }
+
     public List<String> getNeighbours(String graphId, String nodeId, String edgeType, int direction) {
         Jedis conn = _conn();
         List<String> args = new ArrayList<String>(4);

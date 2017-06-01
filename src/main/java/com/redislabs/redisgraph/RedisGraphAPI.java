@@ -69,6 +69,17 @@ public class RedisGraphAPI {
         return new RedisEdge(edgeId, srcNode, destNode, relation, attributes);
     }
 
+    public List<RedisEdge> getNodeEdges(String nodeId, String edgeType, int direction) {
+        List<String> edgeIds = client.getNodeEdges(this.graphId, nodeId, edgeType, direction);
+        ArrayList<RedisEdge> edges = new ArrayList<RedisEdge>();
+
+        for(String id: edgeIds) {
+            edges.add(getEdge(id));
+        }
+
+        return edges;
+    }
+
     public List<RedisNode> getNeighbours(String nodeId, String edgeType, int direction) {
         List<String> nodeIds = client.getNeighbours(this.graphId, nodeId, edgeType, direction);
         ArrayList<RedisNode> nodes = new ArrayList<RedisNode>();
