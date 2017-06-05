@@ -211,4 +211,22 @@ public class RedisGraphAPITest {
         neighbours = api.getNeighbours(amit.getId(), "knows", DIR_BOTH);
         Assert.assertEquals(neighbours.size(), 2);
     }
+
+    @org.testng.annotations.Test
+    public void testGraphDelete() throws Exception {
+        RedisGraphAPI api = new RedisGraphAPI("social");
+        RedisNode roi = api.createNode("name", "roi", "age", 32);
+        RedisNode amit = api.createNode("name", "amit", "age", 30);
+
+        // Connect source and destination nodes.
+        RedisEdge edge = api.connectNodes(roi, "knows", amit);
+
+        api.deleteGraph();
+
+        roi = api.getNode(roi.getId());
+        Assert.assertNull(roi);
+
+        edge = api.getEdge(edge.getId());
+        Assert.assertNull(edge);
+    }
 }

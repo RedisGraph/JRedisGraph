@@ -59,7 +59,6 @@ public class Client {
         return nodeId;
     }
 
-
     public String connectNodes(String graph, String srcNodeID, String relation, String destNodeID, Object... attributes) {
         Jedis conn = _conn();
 
@@ -70,7 +69,7 @@ public class Client {
         args.add(destNodeID);
 
         for(Object attr: attributes) {
-            args.add(attr);
+            args.add(attr.toString());
         }
 
         String[] stringArgs = args.toArray(new String[args.size()]);
@@ -90,10 +89,14 @@ public class Client {
         args.add(id);
 
         String[] stringArgs = args.toArray(new String[args.size()]);
-
-        List<String> properties = conn.getClient()
+        List<String> properties;
+        try {
+            properties = conn.getClient()
                 .sendCommand(Commands.Command.GETNODE, stringArgs)
                 .getMultiBulkReply();
+        } catch(ClassCastException e) {
+            return null;
+        }
 
         HashMap<String, String> attributes = new HashMap<String, String>(properties.size()/2);
 
@@ -115,10 +118,15 @@ public class Client {
         args.add(id);
 
         String[] stringArgs = args.toArray(new String[args.size()]);
+        List<String> properties;
 
-        List<String> properties = conn.getClient()
+        try {
+            properties = conn.getClient()
                 .sendCommand(Commands.Command.GETEDGE, stringArgs)
                 .getMultiBulkReply();
+        } catch (ClassCastException e) {
+            return null;
+        }
 
         HashMap<String, String> attributes = new HashMap<String, String>(properties.size()/2);
 
@@ -166,7 +174,6 @@ public class Client {
         return neighbours;
     }
 
-
     public ResultSet query(String graphId, String query) {
         Jedis conn = _conn();
 
@@ -180,5 +187,12 @@ public class Client {
     public boolean setProperty(String elementId, String key, Object value) {
         Jedis conn = _conn();
         return conn.hset(elementId, key, value.toString()) == 1;
+    }
+
+    public void deleteGraph(String graph) {
+        Jedis conn = _conn();
+        conn.getClient()
+                .sendCommand(Commands.Command.DELETEGRAPH, graph)
+                .getStatusCodeReply();
     }
 }

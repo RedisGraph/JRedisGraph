@@ -45,6 +45,11 @@ public class RedisGraphAPI {
 
     public RedisNode getNode(String id) {
         HashMap<String, String> attributes = client.getNode(this.graphId, id);
+
+        if(attributes == null) {
+            return null;
+        }
+
         String label = attributes.get("label");
         attributes.remove("label");
 
@@ -53,6 +58,11 @@ public class RedisGraphAPI {
 
     public RedisEdge getEdge(String id) {
         HashMap<String, String> attributes = client.getEdge(this.graphId, id);
+
+        if(attributes == null) {
+            return  null;
+        }
+
         String edgeId = attributes.get("id");
         String relation = attributes.get("type");
         String srcNodeId = attributes.get("src");
@@ -110,5 +120,9 @@ public class RedisGraphAPI {
 
     public boolean setProperty(String elementId, String key, Object value) {
         return client.setProperty(elementId, key, value);
+    }
+
+    public void deleteGraph() {
+        client.deleteGraph(this.graphId);
     }
 }
