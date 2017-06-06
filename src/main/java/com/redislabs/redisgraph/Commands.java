@@ -7,12 +7,16 @@ public class Commands {
     public enum Command implements ProtocolCommand {
         CREATENODE("graph.CREATENODE"),
         ADDEDGE("graph.ADDEDGE"),
-        GETEDGE("graph.GETEDGE"),
-        GETNODE("graph.GETNODE"),
+
+        GETEDGES("graph.GETEDGES"),
+        GETNODES("graph.GETNODES"),
+
         GETNODEEDGES("graph.GETNODEEDGES"),
         GETNEIGHBOURS("graph.GETNEIGHBOURS"),
+
         REMOVEEDGE("graph.REMOVEEDGE"),
         DELETEGRAPH("graph.DELETE"),
+
         QUERY("graph.QUERY");
 
         private final byte[] raw;

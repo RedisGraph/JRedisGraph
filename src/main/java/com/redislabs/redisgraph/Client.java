@@ -77,67 +77,96 @@ public class Client {
         String edgeId = conn.getClient()
                 .sendCommand(Commands.Command.ADDEDGE, stringArgs)
                 .getBulkReply();
+
         conn.close();
         return edgeId;
     }
 
-    public HashMap<String, String> getNode(String graphId, String id) {
+    public List<HashMap<String, String>> getNodes(String graphId, Object... ids) {
         Jedis conn = _conn();
 
         List<String> args = new ArrayList<String>(2);
         args.add(graphId);
-        args.add(id);
+        for(Object id: ids) {
+            args.add(id.toString());
+        }
 
         String[] stringArgs = args.toArray(new String[args.size()]);
-        List<String> properties;
+        List<String> replay;
         try {
-            properties = conn.getClient()
-                .sendCommand(Commands.Command.GETNODE, stringArgs)
-                .getMultiBulkReply();
+            replay = conn.getClient()
+                    .sendCommand(Commands.Command.GETNODES, stringArgs)
+                    .getMultiBulkReply();
         } catch(ClassCastException e) {
             return null;
         }
 
-        HashMap<String, String> attributes = new HashMap<String, String>(properties.size()/2);
+        List<HashMap<String, String>> nodes = new ArrayList<HashMap<String, String>>();
 
-        for(int i = 0; i < properties.size(); i+=2) {
-            String key = properties.get(i) ;
-            String value = properties.get(i+1);
-            attributes.put(key, value);
+        int numberOfNodes = Integer.parseInt(replay.get(replay.size()-1));
+        int offset = 0;
+
+        for(int i = 0; i < numberOfNodes; i++) {
+            int numberOfProperties = Integer.parseInt(replay.get(offset));
+            offset++;
+
+            HashMap<String, String> nodeAttributes = new HashMap<String, String>(numberOfProperties/2);
+            nodes.add(nodeAttributes);
+            for(int j = 0; j < numberOfProperties; j+=2) {
+                String key = replay.get(offset + j);
+                String value = replay.get(offset + j + 1);
+                nodeAttributes.put(key, value);
+            }
+
+            offset += numberOfProperties;
         }
 
         conn.close();
-        return attributes;
+        return nodes;
     }
 
-    public HashMap<String, String> getEdge(String graphId, String id) {
+    public List<HashMap<String, String>> getEdges(String graphId, Object... ids) {
         Jedis conn = _conn();
 
         List<String> args = new ArrayList<String>(2);
         args.add(graphId);
-        args.add(id);
+        for(Object id : ids) {
+            args.add(id.toString());
+        }
 
         String[] stringArgs = args.toArray(new String[args.size()]);
-        List<String> properties;
+        List<String> replay;
 
         try {
-            properties = conn.getClient()
-                .sendCommand(Commands.Command.GETEDGE, stringArgs)
-                .getMultiBulkReply();
+            replay = conn.getClient()
+                    .sendCommand(Commands.Command.GETEDGES, stringArgs)
+                    .getMultiBulkReply();
         } catch (ClassCastException e) {
             return null;
         }
 
-        HashMap<String, String> attributes = new HashMap<String, String>(properties.size()/2);
+        List<HashMap<String, String>> edges = new ArrayList<HashMap<String, String>>();
 
-        for(int i = 0; i < properties.size(); i+=2) {
-            String key = properties.get(i) ;
-            String value = properties.get(i+1);
-            attributes.put(key, value);
+        int numberOfEdges = Integer.parseInt(replay.get(replay.size()-1));
+        int offset = 0;
+
+        for(int i = 0; i < numberOfEdges; i++) {
+            int numberOfProperties = Integer.parseInt(replay.get(offset));
+            offset++;
+
+            HashMap<String, String> edgeAttributes = new HashMap<String, String>(numberOfProperties/2);
+            edges.add(edgeAttributes);
+            for(int j = 0; j < numberOfProperties; j+=2) {
+                String key = replay.get(offset + j);
+                String value = replay.get(offset + j + 1);
+                edgeAttributes.put(key, value);
+            }
+
+            offset += numberOfProperties;
         }
 
         conn.close();
-        return attributes;
+        return edges;
     }
 
     public List<String> getNodeEdges(String graphId, String nodeId, String edgeType, int direction) {
@@ -154,6 +183,7 @@ public class Client {
                 .sendCommand(Commands.Command.GETNODEEDGES, stringArgs)
                 .getMultiBulkReply();
 
+        conn.close();
         return edges;
     }
 
@@ -171,6 +201,7 @@ public class Client {
                 .sendCommand(Commands.Command.GETNEIGHBOURS, stringArgs)
                 .getMultiBulkReply();
 
+        conn.close();
         return neighbours;
     }
 
@@ -181,6 +212,7 @@ public class Client {
                 .sendCommand(Commands.Command.QUERY, graphId, query)
                 .getObjectMultiBulkReply();
 
+        conn.close();
         return new ResultSet(resp);
     }
 
@@ -194,5 +226,6 @@ public class Client {
         conn.getClient()
                 .sendCommand(Commands.Command.DELETEGRAPH, graph)
                 .getStatusCodeReply();
+        conn.close();
     }
 }

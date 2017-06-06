@@ -44,39 +44,71 @@ public class RedisGraphAPI {
     }
 
     public RedisNode getNode(String id) {
-        HashMap<String, String> attributes = client.getNode(this.graphId, id);
+        List<RedisNode> node = getNodes(id);
+        if(node != null && node.size() == 1) {
+            return node.get(0);
+        }
+        return null;
+    }
 
-        if(attributes == null) {
+    public List<RedisNode> getNodes(Object... ids) {
+        List<RedisNode> res = new ArrayList<RedisNode>();
+        List<HashMap<String, String>> nodes = client.getNodes(this.graphId, ids);
+
+        if(nodes == null) {
             return null;
         }
 
-        String label = attributes.get("label");
-        attributes.remove("label");
+        // Scan through raw results
+        for(HashMap<String, String> nodeAttributs: nodes) {
 
-        return new RedisNode(id, label, attributes);
+            String id = nodeAttributs.get("id");
+            nodeAttributs.remove("id");
+
+            String label = nodeAttributs.get("label");
+            nodeAttributs.remove("label");
+
+            res.add(new RedisNode(id, label, nodeAttributs));
+        }
+
+        return res;
     }
 
     public RedisEdge getEdge(String id) {
-        HashMap<String, String> attributes = client.getEdge(this.graphId, id);
+        List<RedisEdge> edge = getEdges(id);
+        if(edge != null && edge.size() == 1) {
+            return edge.get(0);
+        }
+        return null;
+    }
 
-        if(attributes == null) {
+    public List<RedisEdge> getEdges(String... ids) {
+        List<RedisEdge> res = new ArrayList<RedisEdge>();
+        List<HashMap<String, String>> edges = client.getEdges(this.graphId, ids);
+
+        if(edges == null) {
             return  null;
         }
 
-        String edgeId = attributes.get("id");
-        String relation = attributes.get("type");
-        String srcNodeId = attributes.get("src");
-        String destNodeId = attributes.get("dest");
+        for(HashMap<String, String> edgeAttributs: edges) {
+            String edgeId = edgeAttributs.get("id");
+            String relation = edgeAttributs.get("label");
+            String srcNodeId = edgeAttributs.get("src");
+            String destNodeId = edgeAttributs.get("dest");
 
-        attributes.remove("id");
-        attributes.remove("type");
-        attributes.remove("src");
-        attributes.remove("dest");
+            edgeAttributs.remove("id");
+            edgeAttributs.remove("type");
+            edgeAttributs.remove("src");
+            edgeAttributs.remove("dest");
+            edgeAttributs.remove("label");
 
-        RedisNode srcNode = getNode(srcNodeId);
-        RedisNode destNode = getNode(destNodeId);
+            List<RedisNode> nodes = getNodes(srcNodeId, destNodeId);
+            RedisNode srcNode = nodes.get(0);
+            RedisNode destNode = nodes.get(1);
 
-        return new RedisEdge(edgeId, srcNode, destNode, relation, attributes);
+            res.add(new RedisEdge(edgeId, srcNode, destNode, relation, edgeAttributs));
+        }
+        return res;
     }
 
     public List<RedisEdge> getNodeEdges(String nodeId, String edgeType, int direction) {
@@ -92,13 +124,7 @@ public class RedisGraphAPI {
 
     public List<RedisNode> getNeighbours(String nodeId, String edgeType, int direction) {
         List<String> nodeIds = client.getNeighbours(this.graphId, nodeId, edgeType, direction);
-        ArrayList<RedisNode> nodes = new ArrayList<RedisNode>();
-
-        for(String id: nodeIds) {
-            nodes.add(getNode(id));
-        }
-
-        return nodes;
+        return this.getNodes(nodeIds.toArray());
     }
 
     public RedisEdge connectNodes(RedisNode src, String relation, RedisNode dest, Object... attributes) {
