@@ -25,11 +25,11 @@ public class RedisGraphAPITest {
     	ResultSet result = api.query("CREATE ({name:\"roi\",age:32})");
     	Assert.assertFalse(result.hasNext());
     	
-    	Assert.assertEquals("1", result.getStatistics().getStringValue(Label.NODES_CREATED));
+    	Assert.assertEquals(1, result.getStatistics().nodesCreated());
     	Assert.assertNull(result.getStatistics().getStringValue(Label.NODES_DELETED));
     	Assert.assertNull(result.getStatistics().getStringValue(Label.RELATIONSHIPS_CREATED));
     	Assert.assertNull(result.getStatistics().getStringValue(Label.RELATIONSHIPS_DELETED));
-    	Assert.assertEquals("2", result.getStatistics().getStringValue(Label.PROPERTIES_SET));
+    	Assert.assertEquals(2, result.getStatistics().propertiesSet());
     	Assert.assertNotNull(result.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME));
     }
 
@@ -56,8 +56,8 @@ public class RedisGraphAPITest {
     	Assert.assertFalse(matchResult.hasNext());
     	Assert.assertNull(matchResult.getStatistics().getStringValue(Label.NODES_CREATED));
     	Assert.assertNull(matchResult.getStatistics().getStringValue(Label.PROPERTIES_SET));
-    	Assert.assertEquals("1", matchResult.getStatistics().getStringValue(Label.RELATIONSHIPS_CREATED));
-    	Assert.assertNull("0", matchResult.getStatistics().getStringValue(Label.RELATIONSHIPS_DELETED));
+    	Assert.assertEquals(1, matchResult.getStatistics().relationshipsCreated());
+    	Assert.assertEquals(0, matchResult.getStatistics().relationshipsDeleted());
     	Assert.assertNotNull(matchResult.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME)); 
     }
 
@@ -75,10 +75,10 @@ public class RedisGraphAPITest {
         ResultSet resultSet = api.query("MATCH (a:qhuman)-[knows]->(:qhuman) RETURN a");
         
     	Assert.assertTrue(resultSet.hasNext());
-    	Assert.assertNull(resultSet.getStatistics().getStringValue(Label.NODES_CREATED));
-    	Assert.assertNull(resultSet.getStatistics().getStringValue(Label.PROPERTIES_SET));
-    	Assert.assertNull(resultSet.getStatistics().getStringValue(Label.RELATIONSHIPS_CREATED));
-    	Assert.assertNull(resultSet.getStatistics().getStringValue(Label.RELATIONSHIPS_DELETED));
+    	Assert.assertEquals(0, resultSet.getStatistics().nodesCreated());
+    	Assert.assertEquals(0, resultSet.getStatistics().propertiesSet());
+    	Assert.assertEquals(0, resultSet.getStatistics().relationshipsCreated());
+    	Assert.assertEquals(0, resultSet.getStatistics().relationshipsDeleted());
     	Assert.assertNotNull(resultSet.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME)); 
 
     	Record record = resultSet.next();

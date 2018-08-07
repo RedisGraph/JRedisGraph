@@ -47,4 +47,16 @@ public interface Statistics {
 	 * @return a String representation of the specific statistic or null
 	 */
 	String getStringValue(Statistics.Label label);
+	
+	int nodesCreated();
+	
+	int nodesDeleted();
+	
+	int labelsAdded();
+	
+	int relationshipsDeleted();
+	
+	int relationshipsCreated();
+	
+	int propertiesSet();
 }

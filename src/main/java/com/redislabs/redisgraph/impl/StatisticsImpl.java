@@ -33,4 +33,39 @@ public class StatisticsImpl implements Statistics  {
 		}
 		return statistics;
 	}
+	
+	public int getIntValue(Statistics.Label label) {
+		String value = getStringValue(label);
+		return value==null ? 0 : Integer.parseInt(value);
+	}
+
+	@Override
+	public int nodesCreated() {
+		return getIntValue(Label.NODES_CREATED);
+	}
+
+	@Override
+	public int nodesDeleted() {
+		return getIntValue(Label.NODES_DELETED);
+	}
+
+	@Override
+	public int labelsAdded() {
+		return getIntValue(Label.LABELS_ADDED);
+	}
+
+	@Override
+	public int relationshipsDeleted() {
+		return getIntValue(Label.RELATIONSHIPS_DELETED);
+	}
+
+	@Override
+	public int relationshipsCreated() {
+		return getIntValue(Label.RELATIONSHIPS_CREATED);
+	}
+
+	@Override
+	public int propertiesSet() {
+		return getIntValue(Label.PROPERTIES_SET);
+	}
 }
