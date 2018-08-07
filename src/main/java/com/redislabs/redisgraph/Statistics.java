@@ -1,6 +1,11 @@
 package com.redislabs.redisgraph;
 
+
 public interface Statistics {
+	
+	/**
+	 * Different Statistics labels 
+	 */
 	enum Label{
 		LABELS_ADDED("Labels added"),
 		NODES_CREATED("Nodes created"),
@@ -21,6 +26,12 @@ public interface Statistics {
 	        return this.text;
 	    }
 
+		/**
+		 * Get a Label by label text
+		 * 
+		 * @param value label text
+		 * @return the matching Label
+		 */
 	    public static Label getEnum(String value) {
 	        for(Label v : values()) {
 	            if(v.toString().equalsIgnoreCase(value)) return v;
@@ -29,5 +40,11 @@ public interface Statistics {
 	    }
 	}
 	
+	/**
+	 * Retrieves the relevant statistic  
+	 * 
+	 * @param label the requested statistic label 
+	 * @return a String representation of the specific statistic or null
+	 */
 	String getStringValue(Statistics.Label label);
 }
