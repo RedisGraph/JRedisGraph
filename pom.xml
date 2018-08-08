@@ -1,28 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.redislabs</groupId>
-    <artifactId>JRedisGraph</artifactId>
-    <version>1.0.0</version>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-pool2</artifactId>
-            <version>2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.redislabs</groupId>
-            <artifactId>jredisearch-jedis</artifactId>
-            <version>3.0.0-20180508</version>
-        </dependency>
-    </dependencies>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.redislabs</groupId>
+	<artifactId>JRedisGraph</artifactId>
+	<version>1.0.0</version>
+	<name>JRedisGraph</name>
+	<description>Official client for Redis-Graph</description>
+	<url>http://redisearch.io</url>
+	<scm>
+		<url>https://github.com/RedisLabs/JRedisGraph</url>
+		<connection>scm:git:git://github.com/RedisLabs/JRedisGraph.git</connection>
+		<developerConnection>scm:git:git@github.com:RedisLabs/JRedisGraph.git</developerConnection>
+	</scm>
+	<licenses>
+		<license>
+			<name>BSD 3 Clause</name>
+			<url>https://opensource.org/licenses/BSD-3-Clause</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.12</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-pool2</artifactId>
+			<version>2.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.redislabs</groupId>
+			<artifactId>jredisearch-jedis</artifactId>
+			<version>3.0.0-20180508</version>
+		</dependency>
+	</dependencies>
+	<properties>
+		<maven.compiler.source>8</maven.compiler.source>
+		<maven.compiler.target>8</maven.compiler.target>
+		<maven.test.source>8</maven.test.source>
+		<maven.test.target>8</maven.test.target>
+	</properties>
+	<organization>
+		<name>RedisLabs</name>
+		<url>www.redislabs.com</url>
+	</organization>
+	<ciManagement>
+		<system>CircleCI</system>
+		<url>https://circleci.com/gh/RedisLabs/JRedisGraph</url>
+	</ciManagement>
+	<issueManagement>
+		<url>https://github.com/RedisLabs/JRediSearch/issues</url>
+		<system>Github</system>
+	</issueManagement>
 </project>
