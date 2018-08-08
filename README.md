@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/RedisLabs/JRedisGraphh/tree/master.svg?style=svg)](https://circleci.com/gh/RedisLabs/JRedisGraph/tree/master)
+
 # JRedisGraph
 RedisGraph Java client
 
