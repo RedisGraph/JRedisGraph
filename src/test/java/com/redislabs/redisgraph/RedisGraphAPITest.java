@@ -1,10 +1,14 @@
 package com.redislabs.redisgraph;
 
+import java.lang.reflect.Method;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.redislabs.redisgraph.Statistics.Label;
+
+import redis.clients.jedis.Jedis;
 
 public class RedisGraphAPITest {
     RedisGraphAPI api;
@@ -14,15 +18,18 @@ public class RedisGraphAPITest {
     }
 
     @Before
-    public void flushDB() {
-    	api.deleteGraph();
+    public void flushDB() throws Exception{
+    	// api.deleteGraph(); - TODO add this back once we implement this API
+  	
+		Method method = RedisGraphAPI.class.getDeclaredMethod("_conn");
+		method.setAccessible(true);
+		((Jedis)method.invoke(api)).flushDB();
     }
-
     
     @Test
     public void testCreateNode() throws Exception {
         // Create a node    	
-    	ResultSet result = api.query("CREATE ({name:\"roi\",age:32})");
+    	ResultSet result = api.query("CREATE ({name:'roi',age:32})");
     	Assert.assertFalse(result.hasNext());
     	
     	Assert.assertEquals(1, result.getStatistics().nodesCreated());
@@ -36,7 +43,7 @@ public class RedisGraphAPITest {
     @Test
     public void testCreateLabeledNode() throws Exception {    	
         // Create a node with a label
-    	ResultSet result = api.query("CREATE (:human{name:\"danny\",age:12})");
+    	ResultSet result = api.query("CREATE (:human{name:'danny',age:12})");
     	Assert.assertFalse(result.hasNext());
     	
     	Assert.assertEquals("1", result.getStatistics().getStringValue(Label.NODES_CREATED));

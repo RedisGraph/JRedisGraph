@@ -48,13 +48,6 @@ public class RedisGraphAPI {
          }
     }
 
-    /**
-     * Delete the Graph (Current implementation flush the all DB) 
-     */
-    public void deleteGraph() {
-    	_conn().flushDB();
-    }
-
     private BinaryClient sendCommand(Jedis conn, ProtocolCommand provider, String ...args) {
         BinaryClient client = conn.getClient();
         client.sendCommand(provider, args);
