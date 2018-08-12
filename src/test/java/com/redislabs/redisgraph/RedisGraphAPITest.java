@@ -18,7 +18,7 @@ public class RedisGraphAPITest {
     }
 
     @Before
-    public void flushDB() throws Exception{
+    public void deleteGraph() throws Exception{
     	api.deleteGraph();
     }
     
