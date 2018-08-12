@@ -49,15 +49,15 @@ public class RedisGraphAPI {
     }
     
     /**
-     * Delete the all graph
+     * Deletes the entire graph
      * 
-     * @return 
+     * @return delete running time statistics 
      */
-	public String deleteGraph() {
-		try (Jedis conn = _conn()) {
+    public String deleteGraph() {
+		  try (Jedis conn = _conn()) {
 		    return sendCommand(conn, Command.DELETE, graphId).getBulkReply();
-		}
-	}
+		  }
+	  }
    
 
     private BinaryClient sendCommand(Jedis conn, ProtocolCommand provider, String ...args) {
