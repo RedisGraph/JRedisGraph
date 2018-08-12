@@ -19,11 +19,7 @@ public class RedisGraphAPITest {
 
     @Before
     public void flushDB() throws Exception{
-    	// api.deleteGraph(); - TODO add this back once we implement this API
-  	
-		Method method = RedisGraphAPI.class.getDeclaredMethod("_conn");
-		method.setAccessible(true);
-		((Jedis)method.invoke(api)).flushDB();
+    	api.deleteGraph();
     }
     
     @Test

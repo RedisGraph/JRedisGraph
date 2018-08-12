@@ -1,6 +1,5 @@
 package com.redislabs.redisgraph.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +25,7 @@ public class StatisticsImpl implements Statistics  {
 	private Map<Statistics.Label, String> getStatistics(){
 		if(statistics.size() == 0) {		
 			for(byte[]  touple : this.raw) {
-				String row = SafeEncoder.encode(touple);
-				String[] rowTouple = row.split(":");
+				String[] rowTouple = SafeEncoder.encode(touple).split(":");
 				this.statistics.put( Statistics.Label.getEnum(rowTouple[0]), rowTouple[1].trim());
 			}
 		}

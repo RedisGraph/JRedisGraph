@@ -47,6 +47,18 @@ public class RedisGraphAPI {
              return new ResultSetImpl(sendCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply());
          }
     }
+    
+    /**
+     * Delete the all graph
+     * 
+     * @return 
+     */
+	public String deleteGraph() {
+		try (Jedis conn = _conn()) {
+		    return sendCommand(conn, Command.DELETE, graphId).getBulkReply();
+		}
+	}
+   
 
     private BinaryClient sendCommand(Jedis conn, ProtocolCommand provider, String ...args) {
         BinaryClient client = conn.getClient();
