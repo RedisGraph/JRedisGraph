@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/RedisLabs/JRedisGraph/tree/master.svg?style=svg)](https://circleci.com/gh/RedisLabs/JRedisGraph/tree/master)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.redislabs/jredisgraph/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.redislabs/jredisgraph)
 
 # JRedisGraph
 RedisGraph Java client
