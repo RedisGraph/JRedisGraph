@@ -6,7 +6,7 @@
 	
 	<groupId>com.redislabs</groupId>
 	<artifactId>JRedisGraph</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	
 	<name>JRedisGraph</name>
 	<description>Official client for Redis-Graph</description>
