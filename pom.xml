@@ -5,7 +5,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<groupId>com.redislabs</groupId>
-	<artifactId>JRedisGraph</artifactId>
+	<artifactId>jredisgraph</artifactId>
 	<version>1.0.1-SNAPSHOT</version>
 	
 	<name>JRedisGraph</name>

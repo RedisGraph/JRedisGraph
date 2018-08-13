@@ -10,7 +10,7 @@ RedisGraph Java client
   <dependencies>
     <dependency>
       <groupId>com.redislabs</groupId>
-      <artifactId>JRedisGraph</artifactId>
+      <artifactId>jredisgraph</artifactId>
       <version>1.0.0</version>
     </dependency>
   </dependencies>
@@ -28,12 +28,13 @@ RedisGraph Java client
 ```
 
 and
+
 ```xml
   <dependencies>
     <dependency>
       <groupId>com.redislabs</groupId>
-      <artifactId>JRedisGraph</artifactId>
-      <version>1.0.0-SNAPSHOT</version>
+      <artifactId>jredisgraph</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
 ```
