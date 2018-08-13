@@ -4,6 +4,40 @@
 RedisGraph Java client
 
 
+### Official Releases
+
+```xml
+  <dependencies>
+    <dependency>
+      <groupId>com.redislabs</groupId>
+      <artifactId>JRedisGraph</artifactId>
+      <version>1.0.0</version>
+    </dependency>
+  </dependencies>
+```
+
+### Snapshots
+
+```xml
+  <repositories>
+    <repository>
+      <id>snapshots-repo</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
+  </repositories>
+```
+
+and
+```xml
+  <dependencies>
+    <dependency>
+      <groupId>com.redislabs</groupId>
+      <artifactId>JRedisGraph</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+```
+
 # Example: Using the Java Client
 
 ```java
