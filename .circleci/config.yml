@@ -43,6 +43,8 @@ jobs:
       - run: |
           docker run -d -p 6379:6379 -it --rm --name redisgraph redislabs/redisgraph
           mvn integration-test
+          
+      - run: mvn -s .circleci.settings.xml -DskipTests deploy
 
 workflows:
   version: 2
