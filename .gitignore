@@ -28,3 +28,4 @@ hs_err_pid*
 #eclispe
 .classpath
 .project
+/.settings/
