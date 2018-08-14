@@ -66,4 +66,9 @@ public class StatisticsImpl implements Statistics  {
 	public int propertiesSet() {
 		return getIntValue(Label.PROPERTIES_SET);
 	}
+	
+	@Override
+	public String toString() {
+		return getStatistics().toString();
+	}
 }

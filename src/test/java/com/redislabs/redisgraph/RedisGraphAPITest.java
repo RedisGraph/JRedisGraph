@@ -1,14 +1,10 @@
 package com.redislabs.redisgraph;
 
-import java.lang.reflect.Method;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import com.redislabs.redisgraph.Statistics.Label;
-
-import redis.clients.jedis.Jedis;
 
 public class RedisGraphAPITest {
     RedisGraphAPI api;
