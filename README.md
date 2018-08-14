@@ -1,4 +1,5 @@
 [![CircleCI](https://circleci.com/gh/RedisLabs/JRedisGraph/tree/master.svg?style=svg)](https://circleci.com/gh/RedisLabs/JRedisGraph/tree/master)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.redislabs/jredisgraph/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.redislabs/jredisgraph)
 
 # JRedisGraph
 RedisGraph Java client
@@ -11,7 +12,7 @@ RedisGraph Java client
     <dependency>
       <groupId>com.redislabs</groupId>
       <artifactId>jredisgraph</artifactId>
-      <version>1.0.0</version>
+      <version>1.0.2</version>
     </dependency>
   </dependencies>
 ```
@@ -34,7 +35,7 @@ and
     <dependency>
       <groupId>com.redislabs</groupId>
       <artifactId>jredisgraph</artifactId>
-      <version>1.0.1-SNAPSHOT</version>
+      <version>1.0.3-SNAPSHOT</version>
     </dependency>
   </dependencies>
 ```
