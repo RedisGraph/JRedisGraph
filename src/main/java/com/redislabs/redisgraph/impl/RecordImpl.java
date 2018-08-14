@@ -43,5 +43,10 @@ public class RecordImpl implements Record {
 	public int size() {
 		return this.header.size();
 	}
+	
+	@Override
+	public String toString() {
+		return this.values.toString();
+	}
 
 }
