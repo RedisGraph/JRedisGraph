@@ -63,4 +63,9 @@ public class ResultSetImpl implements ResultSet{
 	public Statistics getStatistics() {
 		return statistics;
 	}
+	
+	@Override
+	public String toString() {
+		return this.header + "\n" + this.results + "\n" + this.statistics;
+	}
 }
