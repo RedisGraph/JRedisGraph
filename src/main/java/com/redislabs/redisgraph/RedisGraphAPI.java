@@ -6,13 +6,14 @@ import redis.clients.jedis.BinaryClient;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.commands.ProtocolCommand;
+import redis.clients.jedis.util.Pool;
 
 /**
  * RedisGraph client
  */
 public class RedisGraphAPI {
 
-    final private JedisPool client;
+    final private Pool<Jedis> client;
     final private String graphId;
 
     /**
@@ -32,8 +33,18 @@ public class RedisGraphAPI {
      * @param port Redis port
      */
     public RedisGraphAPI(String graphId, String host, int port) {
+        this(graphId, new JedisPool(host, port));
+    }
+    
+    /**
+     * Creates a client to a specific graph using provided Jedis pool
+     * 
+     * @param graphId the graph id
+     * @param jedis bring your own Jedis pool
+     */
+    public RedisGraphAPI(String graphId, Pool<Jedis> jedis) {
         this.graphId = graphId;
-        this.client = new JedisPool(host, port);
+        this.client = jedis;
     }
 
     /**
