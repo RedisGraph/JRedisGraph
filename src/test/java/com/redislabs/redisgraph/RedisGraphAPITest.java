@@ -50,7 +50,7 @@ public class RedisGraphAPITest {
     	ResultSet createResult2 = api.query("CREATE (:person{name:'amit',age:30})");
     	
     	// Connect source and destination nodes.
-    	ResultSet matchResult = api.query("MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[knows]->(a)");
+    	ResultSet matchResult = api.query("MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(a)");
     	
     	Assert.assertFalse(matchResult.hasNext());
     	Assert.assertNull(matchResult.getStatistics().getStringValue(Label.NODES_CREATED));
@@ -68,7 +68,7 @@ public class RedisGraphAPITest {
     	ResultSet create2Result = api.query("CREATE (:qhuman{name:'amit',age:30})");
     	
     	// Connect source and destination nodes.
-    	ResultSet connectResult= api.query("MATCH (a:qhuman), (b:qhuman) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[knows]->(b)");
+    	ResultSet connectResult= api.query("MATCH (a:qhuman), (b:qhuman) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(b)");
 
         // Query
         ResultSet resultSet = api.query("MATCH (a:qhuman)-[knows]->(:qhuman) RETURN a");
