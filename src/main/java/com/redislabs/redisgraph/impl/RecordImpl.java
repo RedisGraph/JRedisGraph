@@ -6,8 +6,8 @@ import com.redislabs.redisgraph.Record;
 
 public class RecordImpl implements Record {
 	
-    final private List<String> header;
-    final private List<String> values;
+	private final List<String> header;
+	private final List<String> values;
 
     RecordImpl(List<String> header, List<String> values){
     	this.header=header;

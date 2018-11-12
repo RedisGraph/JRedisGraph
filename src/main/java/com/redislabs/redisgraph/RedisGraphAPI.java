@@ -13,8 +13,8 @@ import redis.clients.jedis.util.Pool;
  */
 public class RedisGraphAPI {
 
-    final private Pool<Jedis> client;
-    final private String graphId;
+	private final Pool<Jedis> client;
+    private final String graphId;
 
     /**
      * Creates a client to a specific graph running on the local machine
@@ -54,7 +54,7 @@ public class RedisGraphAPI {
      * @return a result set 
      */
     public ResultSet query(String query) {
-    	 try (Jedis conn = _conn()) {
+    	 try (Jedis conn = getConnection()) {
              return new ResultSetImpl(sendCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply());
          }
     }
@@ -65,19 +65,19 @@ public class RedisGraphAPI {
      * @return delete running time statistics 
      */
     public String deleteGraph() {
-		  try (Jedis conn = _conn()) {
+		  try (Jedis conn = getConnection()) {
 		    return sendCommand(conn, Command.DELETE, graphId).getBulkReply();
 		  }
 	  }
    
 
     private BinaryClient sendCommand(Jedis conn, ProtocolCommand provider, String ...args) {
-        BinaryClient client = conn.getClient();
-        client.sendCommand(provider, args);
-        return client;
+        BinaryClient binaryClient = conn.getClient();
+        binaryClient.sendCommand(provider, args);
+        return binaryClient;
     }
     
-    private Jedis _conn() {
+    private Jedis getConnection() {
         return this.client.getResource();
     }
 }

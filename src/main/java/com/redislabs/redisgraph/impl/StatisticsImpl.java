@@ -1,6 +1,6 @@
 package com.redislabs.redisgraph.impl;
 
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,12 +9,12 @@ import com.redislabs.redisgraph.Statistics;
 import redis.clients.jedis.util.SafeEncoder;
 
 public class StatisticsImpl implements Statistics  {
-	final private List<byte[]> raw;
-	final private Map<Statistics.Label, String> statistics;
+	private final List<byte[]> raw;
+	private final Map<Statistics.Label, String> statistics;
 	
 	StatisticsImpl(List<byte[]> raw){
 		this.raw = raw;
-		this.statistics = new HashMap<Statistics.Label, String>(raw.size()); // lazy loaded
+		this.statistics = new EnumMap<>(Statistics.Label.class); // lazy loaded
 	}
 	
 	@Override

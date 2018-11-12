@@ -13,44 +13,46 @@ public interface Record {
 	 * The value at the given field index (represented as String)
 	 * 
 	 * @param index
-	 * @return
+	 * @return string representation of the value
 	 */
 	String getString(int index);
 	
 	/**
 	 * The value at the given field (represented as String)
 	 * 
-	 * @param key
-	 * @return
+	 * @param key header key 
+	 * 
+	 * @return string representation of the value
 	 */
 	String getString(String key);
 	
 	/**
 	 * The keys of the record
 	 * 
-	 * @return
+	 * @return list of the record key
 	 */
 	List<String> keys();
 	
 	/**
 	 * The values of the record
 	 * 
-	 * @return
+	 * @return list of the record values
 	 */
 	List<String> values();
 	
 	/**
-	 * Check if the keys contain the given key
+	 * Check if the record header contains the given key
 	 * 
-	 * @param key
-	 * @return
+	 * @param key header key 
+	 * 
+	 * @return <code>true</code> if the the key exists 
 	 */
 	boolean	containsKey(String key);
 	
 	/**
 	 * The number of fields in this record
 	 * 
-	 * @return
+	 * @return the number of fields
 	 */
 	int size();
 }
