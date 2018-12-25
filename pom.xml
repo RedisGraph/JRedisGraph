@@ -60,9 +60,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.redislabs</groupId>
-			<artifactId>jredisearch-jedis</artifactId>
-			<version>3.0.0-20180508</version>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>3.0.1</version>
 		</dependency>
 	</dependencies>
 	<properties>
