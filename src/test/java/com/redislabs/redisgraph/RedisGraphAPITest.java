@@ -11,6 +11,9 @@ public class RedisGraphAPITest {
 
     public RedisGraphAPITest() {
         api = new RedisGraphAPI("social");
+        
+        /* Dummy call to generate graph so the first deleteGraph() won't fail */
+        api.query("CREATE ({name:'roi',age:32})");
     }
 
     @Before
@@ -46,8 +49,8 @@ public class RedisGraphAPITest {
     @Test
     public void testConnectNodes() throws Exception {
         // Create both source and destination nodes
-    	ResultSet createResult1 = api.query("CREATE (:person{name:'roi',age:32})");
-    	ResultSet createResult2 = api.query("CREATE (:person{name:'amit',age:30})");
+        Assert.assertNotNull(api.query("CREATE (:person{name:'roi',age:32})"));
+        Assert.assertNotNull(api.query("CREATE (:person{name:'amit',age:30})"));
     	
     	// Connect source and destination nodes.
     	ResultSet matchResult = api.query("MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(a)");
@@ -59,16 +62,32 @@ public class RedisGraphAPITest {
     	Assert.assertEquals(0, matchResult.getStatistics().relationshipsDeleted());
     	Assert.assertNotNull(matchResult.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME)); 
     }
+    
+    @Test
+    public void testIndex() throws Exception {
+        // Create both source and destination nodes
+      Assert.assertNotNull(api.query("CREATE (:person{name:'roi',age:32})"));
+
+      ResultSet createIndexResult = api.query("CREATE INDEX ON :person(age)");
+      Assert.assertFalse(createIndexResult.hasNext());
+      Assert.assertEquals(1, createIndexResult.getStatistics().indicesAdded());
+      
+      ResultSet failCreateIndexResult = api.query("CREATE INDEX ON :person(age1)");
+      Assert.assertFalse(failCreateIndexResult.hasNext());
+      Assert.assertNull(failCreateIndexResult.getStatistics().getStringValue(Label.INDICES_ADDED));
+      Assert.assertEquals(0, failCreateIndexResult.getStatistics().indicesAdded());
+    }
+
 
     @Test
     public void testQuery() throws Exception {
     	
         // Create both source and destination nodes    	
-    	ResultSet create1Result = api.query("CREATE (:qhuman{name:'roi',age:32})");
-    	ResultSet create2Result = api.query("CREATE (:qhuman{name:'amit',age:30})");
+        Assert.assertNotNull(api.query("CREATE (:qhuman{name:'roi',age:32})"));
+        Assert.assertNotNull(api.query("CREATE (:qhuman{name:'amit',age:30})"));
     	
     	// Connect source and destination nodes.
-    	ResultSet connectResult= api.query("MATCH (a:qhuman), (b:qhuman) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(b)");
+        Assert.assertNotNull(api.query("MATCH (a:qhuman), (b:qhuman) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(b)"));
 
         // Query
         ResultSet resultSet = api.query("MATCH (a:qhuman)-[knows]->(:qhuman) RETURN a");

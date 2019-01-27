@@ -8,6 +8,7 @@ public interface Statistics {
 	 */
 	enum Label{
 		LABELS_ADDED("Labels added"),
+		INDICES_ADDED("Indices added"),
 		NODES_CREATED("Nodes created"),
 		NODES_DELETED("Nodes deleted"),
 		RELATIONSHIPS_DELETED("Relationships deleted"),
@@ -36,7 +37,7 @@ public interface Statistics {
 	        for(Label v : values()) {
 	            if(v.toString().equalsIgnoreCase(value)) return v;
 	        }
-	        throw new IllegalArgumentException();
+	        return null;
 	    }
 	}
 	
@@ -47,10 +48,12 @@ public interface Statistics {
 	 * @return a String representation of the specific statistic or null
 	 */
 	String getStringValue(Statistics.Label label);
-	
+
 	int nodesCreated();
 	
 	int nodesDeleted();
+	
+	int indicesAdded();
 	
 	int labelsAdded();
 	
