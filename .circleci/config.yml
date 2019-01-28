@@ -6,7 +6,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/classic:latest
+      - image: circleci/openjdk:8-jdk
 
       - image: redislabs/redisgraph:edge
         port: 6379:6379
