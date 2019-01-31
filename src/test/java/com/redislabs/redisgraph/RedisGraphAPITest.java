@@ -105,6 +105,8 @@ public class RedisGraphAPITest {
         
     	Assert.assertTrue(resultSet.hasNext());
     	Assert.assertEquals(0, resultSet.getStatistics().nodesCreated());
+    	Assert.assertEquals(0, resultSet.getStatistics().nodesDeleted());
+    	Assert.assertEquals(0, resultSet.getStatistics().labelsAdded());
     	Assert.assertEquals(0, resultSet.getStatistics().propertiesSet());
     	Assert.assertEquals(0, resultSet.getStatistics().relationshipsCreated());
     	Assert.assertEquals(0, resultSet.getStatistics().relationshipsDeleted());
