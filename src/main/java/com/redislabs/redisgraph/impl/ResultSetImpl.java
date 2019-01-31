@@ -46,6 +46,7 @@ public class ResultSetImpl implements ResultSet{
     }
   }
 
+  @Override
   public List<String> getHeader(){
     return header;
   }

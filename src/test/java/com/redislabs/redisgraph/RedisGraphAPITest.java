@@ -1,5 +1,8 @@
 package com.redislabs.redisgraph;
 
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,15 +20,20 @@ public class RedisGraphAPITest {
     }
 
     @Before
-    public void deleteGraph() throws Exception{
+    public void deleteGraph(){
     	api.deleteGraph();
     }
     
     @Test
-    public void testCreateNode() throws Exception {
+    public void testCreateNode(){
         // Create a node    	
     	ResultSet result = api.query("CREATE ({name:'roi',age:32})");
     	Assert.assertFalse(result.hasNext());
+    	
+    	try {
+    	  result.next();
+    	  Assert.fail();
+    	}catch(NoSuchElementException e) {}
     	
     	Assert.assertEquals(1, result.getStatistics().nodesCreated());
     	Assert.assertNull(result.getStatistics().getStringValue(Label.NODES_DELETED));
@@ -36,7 +44,7 @@ public class RedisGraphAPITest {
     }
 
     @Test
-    public void testCreateLabeledNode() throws Exception {    	
+    public void testCreateLabeledNode(){    	
         // Create a node with a label
     	ResultSet result = api.query("CREATE (:human{name:'danny',age:12})");
     	Assert.assertFalse(result.hasNext());
@@ -47,7 +55,7 @@ public class RedisGraphAPITest {
     }
 
     @Test
-    public void testConnectNodes() throws Exception {
+    public void testConnectNodes(){
         // Create both source and destination nodes
         Assert.assertNotNull(api.query("CREATE (:person{name:'roi',age:32})"));
         Assert.assertNotNull(api.query("CREATE (:person{name:'amit',age:30})"));
@@ -64,7 +72,7 @@ public class RedisGraphAPITest {
     }
     
     @Test
-    public void testIndex() throws Exception {
+    public void testIndex(){
         // Create both source and destination nodes
       Assert.assertNotNull(api.query("CREATE (:person{name:'roi',age:32})"));
 
@@ -80,7 +88,7 @@ public class RedisGraphAPITest {
 
 
     @Test
-    public void testQuery() throws Exception {
+    public void testQuery(){
     	
         // Create both source and destination nodes    	
         Assert.assertNotNull(api.query("CREATE (:qhuman{name:'roi',age:32})"));
@@ -92,6 +100,9 @@ public class RedisGraphAPITest {
         // Query
         ResultSet resultSet = api.query("MATCH (a:qhuman)-[knows]->(:qhuman) RETURN a");
         
+        Assert.assertEquals(Arrays.asList("a.age", "a.name"), resultSet.getHeader());
+        Assert.assertEquals("[a.age, a.name]\n[[32.000000, roi]]\n" + resultSet.getStatistics(), resultSet.toString());        
+        
     	Assert.assertTrue(resultSet.hasNext());
     	Assert.assertEquals(0, resultSet.getStatistics().nodesCreated());
     	Assert.assertEquals(0, resultSet.getStatistics().propertiesSet());
@@ -100,8 +111,16 @@ public class RedisGraphAPITest {
     	Assert.assertNotNull(resultSet.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME)); 
 
     	Record record = resultSet.next();
+    	Assert.assertEquals( Arrays.asList("a.age", "a.name"), record.keys());
+    	Assert.assertEquals( Arrays.asList("32.000000", "roi"), record.values());
+    	Assert.assertTrue(record.containsKey("a.name"));
+        Assert.assertEquals( 2, record.size());
+        Assert.assertEquals( "[32.000000, roi]", record.toString());
+        
     	Assert.assertEquals( "roi", record.getString(1));
     	Assert.assertEquals( "32.000000", record.getString(0));
-    	
+        Assert.assertEquals( "roi", record.getString("a.name"));
+        Assert.assertEquals( "32.000000", record.getString("a.age"));     
+
     }
 }
