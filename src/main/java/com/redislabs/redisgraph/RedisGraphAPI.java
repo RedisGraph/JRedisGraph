@@ -13,7 +13,7 @@ import redis.clients.jedis.util.Pool;
  */
 public class RedisGraphAPI {
 
-	private final Pool<Jedis> client;
+    private final Pool<Jedis> client;
     private final String graphId;
 
     /**
