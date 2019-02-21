@@ -101,7 +101,7 @@ public class RedisGraphAPITest {
         ResultSet resultSet = api.query("MATCH (a:qhuman)-[knows]->(:qhuman) RETURN a");
         
         Assert.assertEquals(Arrays.asList("a.age", "a.name"), resultSet.getHeader());
-        Assert.assertEquals("[a.age, a.name]\n[[32.000000, roi]]\n" + resultSet.getStatistics(), resultSet.toString());        
+        Assert.assertEquals("[a.age, a.name]\n[[32, roi]]\n" + resultSet.getStatistics(), resultSet.toString());        
         
     	Assert.assertTrue(resultSet.hasNext());
     	Assert.assertEquals(0, resultSet.getStatistics().nodesCreated());
@@ -114,15 +114,16 @@ public class RedisGraphAPITest {
 
     	Record record = resultSet.next();
     	Assert.assertEquals( Arrays.asList("a.age", "a.name"), record.keys());
-    	Assert.assertEquals( Arrays.asList("32.000000", "roi"), record.values());
+    	Assert.assertEquals( Arrays.asList(32L, "roi"), record.values());
     	Assert.assertTrue(record.containsKey("a.name"));
         Assert.assertEquals( 2, record.size());
-        Assert.assertEquals( "[32.000000, roi]", record.toString());
+        Assert.assertEquals( "[32, roi]", record.toString());
         
     	Assert.assertEquals( "roi", record.getString(1));
-    	Assert.assertEquals( "32.000000", record.getString(0));
+    	Assert.assertEquals( "32", record.getString(0));
+    	Assert.assertEquals( 32L, ((Long)record.getValue(0)).longValue());
+    	Assert.assertEquals( 32L, ((Long)record.getValue("a.age")).longValue());
         Assert.assertEquals( "roi", record.getString("a.name"));
-        Assert.assertEquals( "32.000000", record.getString("a.age"));     
-
+        Assert.assertEquals( "32", record.getString("a.age"));     
     }
 }

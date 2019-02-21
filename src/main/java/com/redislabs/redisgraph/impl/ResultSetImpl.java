@@ -23,7 +23,7 @@ public class ResultSetImpl implements ResultSet{
     
     this.statistics = new StatisticsImpl((List<byte[]>)resp.get(1));
     
-    ArrayList<ArrayList<byte[]>> result = (ArrayList<ArrayList<byte[]>>) resp.get(0);
+    ArrayList<ArrayList<?>> result = (ArrayList<ArrayList<?>>) resp.get(0);
     
     // Empty result set
     if(result == null || result.isEmpty()) {
@@ -31,7 +31,7 @@ public class ResultSetImpl implements ResultSet{
       totalResults = 0;
       results = new ArrayList<>(0);
     } else {
-      ArrayList<byte[]> headers = result.get(0);
+      ArrayList<byte[]> headers = (ArrayList<byte[]>)result.get(0);
       header = headers.stream().map( String::new).collect(Collectors.toList());
 
       // First row is a header row
@@ -39,8 +39,13 @@ public class ResultSetImpl implements ResultSet{
       results = new ArrayList<>(totalResults);
       // Skips last row (runtime info)
       for (int i = 1; i <= totalResults; i++) {
-        ArrayList<byte[]> row = result.get(i);
-        Record record = new RecordImpl(header, row.stream().map( SafeEncoder::encode).collect(Collectors.toList()));
+        ArrayList<?> row = result.get(i);
+        Record record = new RecordImpl(header, row.stream().map( obj -> {
+          if(obj instanceof byte[]) {
+            return SafeEncoder.encode((byte[])obj);  
+          } 
+          return obj;
+        }).collect(Collectors.toList()));
         results.add(record);
       }
     }
