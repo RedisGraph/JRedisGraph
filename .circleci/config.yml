@@ -45,3 +45,12 @@ jobs:
       - run: bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}  
           
       - run: mvn -s .circleci.settings.xml -DskipTests deploy
+
+workflows:
+  version: 2
+  build_and_package:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/      
