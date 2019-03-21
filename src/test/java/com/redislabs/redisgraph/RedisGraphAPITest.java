@@ -91,14 +91,14 @@ public class RedisGraphAPITest {
     public void testQuery(){
     	
         // Create both source and destination nodes    	
-        Assert.assertNotNull(api.query("CREATE (:qhuman{name:'roi',age:32})"));
+        Assert.assertNotNull(api.query("CREATE (:qhuman{name:%s,age:%d})","roi", 32));
         Assert.assertNotNull(api.query("CREATE (:qhuman{name:'amit',age:30})"));
     	
     	// Connect source and destination nodes.
         Assert.assertNotNull(api.query("MATCH (a:qhuman), (b:qhuman) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(b)"));
 
         // Query
-        ResultSet resultSet = api.query("MATCH (a:qhuman)-[knows]->(:qhuman) RETURN a");
+        ResultSet resultSet = api.query("MATCH (a:qhuman)-[:knows]->(:qhuman) RETURN a");
         
         Assert.assertEquals(Arrays.asList("a.age", "a.name"), resultSet.getHeader());
         Assert.assertEquals("[a.age, a.name]\n[[32, roi]]\n" + resultSet.getStatistics(), resultSet.toString());        
@@ -125,5 +125,12 @@ public class RedisGraphAPITest {
     	Assert.assertEquals( 32L, ((Long)record.getValue("a.age")).longValue());
         Assert.assertEquals( "roi", record.getString("a.name"));
         Assert.assertEquals( "32", record.getString("a.age"));     
+    }
+    
+    @Test
+    public void testEscapedQuery(){
+        Assert.assertNotNull(api.query("CREATE (:escaped{s1:%s,s2:%s})","S\"\'", "S\\'\\\""));
+        Assert.assertNotNull(api.query("MATCH (n) where n.s1=%s and n.s2=%s RETURN n", "S\"\'", "S\\'\\\""));
+        Assert.assertNotNull(api.query("MATCH (n) where n.s1='S\"\\'' RETURN n"));
     }
 }

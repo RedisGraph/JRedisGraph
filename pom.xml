@@ -64,6 +64,11 @@
 			<artifactId>jedis</artifactId>
 			<version>3.0.1</version>
 		</dependency>
+		<dependency>
+		    <groupId>org.apache.commons</groupId>
+		    <artifactId>commons-text</artifactId>
+		    <version>1.6</version>
+		</dependency>
 	</dependencies>
 	<properties>
 		<maven.compiler.source>8</maven.compiler.source>
