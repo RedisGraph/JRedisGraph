@@ -55,7 +55,7 @@ public class RedisGraphExample {
 		RedisGraphAPI api = new RedisGraphAPI("social");
 
 		api.query("CREATE (:person{name:'roi',age:32})");
-		api.query("CREATE (:person{name:'amit',age:30})");
+		api.query("CREATE (:person{name:%s,age:%d})", "amit", 30);
 
 		api.query("MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit') CREATE (a)-[knows]->(a)");
 
