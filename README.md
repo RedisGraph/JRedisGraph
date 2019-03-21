@@ -57,9 +57,9 @@ public class RedisGraphExample {
 		api.query("CREATE (:person{name:'roi',age:32})");
 		api.query("CREATE (:person{name:%s,age:%d})", "amit", 30);
 
-		api.query("MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit') CREATE (a)-[knows]->(a)");
+		api.query("MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit') CREATE (a)-[:knows]->(b)");
 
-		ResultSet resultSet = api.query("MATCH (a:person)-[knows]->(:person) RETURN a");
+		ResultSet resultSet = api.query("MATCH (a:person)-[:knows]->(b:person) RETURN a, b");
 
 		while(resultSet.hasNext()){
 			Record record = resultSet.next();
