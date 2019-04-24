@@ -63,33 +63,24 @@ public class RedisGraphAPI {
     }
 
     /**
-     * Execute a Cypher query
+     * Execute a Cypher query with arguments
      * 
      * @param query Cypher query
-     * @return a result set 
-     */
-    public ResultSet query(String query) {
-    	 try (Jedis conn = getConnection()) {
-             return new ResultSetImpl(sendCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply());
-         }
-    }
-    
-    /**
-     * Execute a Cypher query
-     * 
-     * @param query Cypher query
+     * @param args
      * @return a result set 
      */
     public ResultSet query(String query, Object ...args) {
-      for(int i=0; i<args.length; ++i) {
-        if(args[i] instanceof String) {
-          args[i] = "\'" + ESCAPE_CHYPER.translate((String)args[i]) + "\'";
+      if(args.length > 0) {
+        for(int i=0; i<args.length; ++i) {
+          if(args[i] instanceof String) {
+            args[i] = "\'" + ESCAPE_CHYPER.translate((String)args[i]) + "\'";
+          }
         }
+        query = String.format(query, args);
       }
-
-      query = String.format(query, args);
+      
       try (Jedis conn = getConnection()) {
-        return new ResultSetImpl(sendCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply());
+          return new ResultSetImpl(sendCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply());
       }
     }
 
@@ -100,11 +91,10 @@ public class RedisGraphAPI {
      * @return delete running time statistics 
      */
     public String deleteGraph() {
-		  try (Jedis conn = getConnection()) {
-		    return sendCommand(conn, Command.DELETE, graphId).getBulkReply();
-		  }
-	  }
-   
+        try (Jedis conn = getConnection()) {
+          return sendCommand(conn, Command.DELETE, graphId).getBulkReply();
+		}
+    }
 
     private BinaryClient sendCommand(Jedis conn, ProtocolCommand provider, String ...args) {
         BinaryClient binaryClient = conn.getClient();
