@@ -1,8 +1,8 @@
 package com.redislabs.redisgraph;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+
 
 import com.redislabs.redisgraph.impl.ResultSetImpl;
 import org.apache.commons.text.translate.AggregateTranslator;
@@ -22,6 +22,13 @@ public class RedisGraphAPI {
 
 	private final Pool<Jedis> client;
     private final String graphId;
+    private List<String> labels = new ArrayList<>();
+    private List<String> relationshipTypes = new ArrayList<>();
+    private List<String> propertyNames = new ArrayList<>();
+
+    private static RedisGraphAPI redisGraphAPI;
+
+
     
     private static final CharSequenceTranslator ESCAPE_CHYPER;
     static {
@@ -60,6 +67,8 @@ public class RedisGraphAPI {
     public RedisGraphAPI(String graphId, Pool<Jedis> jedis) {
         this.graphId = graphId;
         this.client = jedis;
+        redisGraphAPI = this;
+
     }
 
     /**
@@ -70,6 +79,7 @@ public class RedisGraphAPI {
      * @return a result set 
      */
     public ResultSet query(String query, Object ...args) {
+        StringBuilder sb = new StringBuilder();
       if(args.length > 0) {
         for(int i=0; i<args.length; ++i) {
           if(args[i] instanceof String) {
@@ -80,7 +90,7 @@ public class RedisGraphAPI {
       }
       
       try (Jedis conn = getConnection()) {
-          return new ResultSetImpl(sendCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply());
+          return new ResultSetImpl(sendCompactCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply());
       }
     }
 
@@ -96,13 +106,178 @@ public class RedisGraphAPI {
 		}
     }
 
+
+    /**
+     * Sends command
+     * @param conn
+     * @param provider
+     * @param args
+     * @return
+     */
     private BinaryClient sendCommand(Jedis conn, ProtocolCommand provider, String ...args) {
         BinaryClient binaryClient = conn.getClient();
         binaryClient.sendCommand(provider, args);
         return binaryClient;
     }
+
+
+    /**
+     * Sends the command with --COMPACT flag
+     * @param conn
+     * @param provider
+     * @param args
+     * @return
+     */
+    private BinaryClient sendCompactCommand(Jedis conn, ProtocolCommand provider, String ...args) {
+        BinaryClient binaryClient = conn.getClient();
+        List<String> largs = new ArrayList<>(Arrays.asList(args));
+        largs.add("--COMPACT");
+        String[] t = new String[largs.size()];
+        binaryClient.sendCommand(provider, largs.toArray(t));
+        return binaryClient;
+    }
     
     private Jedis getConnection() {
         return this.client.getResource();
+    }
+
+
+    /**
+     * Invokes stored procedures without arguments
+     * @param procedure procedure name to invoke
+     * @return
+     */
+    public ResultSet callProcedure(String procedure  ){
+        return callProcedure(procedure, new ArrayList<>(), new HashMap<>());
+
+
+    }
+
+
+    /**
+     * Invokes stored procedure with arguments
+     * @param procedure
+     * @param args
+     * @return
+     */
+    public ResultSet callProcedure(String procedure, List<String> args  ){
+        return callProcedure(procedure, args, new HashMap<>());
+
+
+    }
+
+
+    /**
+     *
+     * @param index - index of label
+     * @return requested label
+     */
+    public  String getLabel(int index){
+        if (index >= labels.size()){
+            labels = getLabels();
+        }
+        return labels.get(index);
+    }
+
+    /**
+     *
+     * @return list of all the node labels in the graph
+     */
+    private  List<String> getLabels() {
+        ResultSet resultSet = callProcedure("db.labels");
+        ArrayList<String> labels = new ArrayList<>();
+        while (resultSet.hasNext()){
+            Record record = resultSet.next();
+            labels.add(record.getString(0));
+
+        }
+        return labels;
+    }
+
+
+    /**
+     *
+     * @param index index of the relationship type
+     * @return requested relationship type
+     */
+    public String getRelationshipType(int index){
+        if (index >= relationshipTypes.size()){
+            relationshipTypes = getRelationshipTypes();
+        }
+        return relationshipTypes.get(index);
+    }
+
+
+    /**
+     *
+     * @return a list of the edge relationship types in the graph
+     */
+    private List<String> getRelationshipTypes() {
+        ResultSet resultSet = callProcedure("db.relationshipTypes");
+        ArrayList<String> relationshipTypes = new ArrayList<>();
+        while (resultSet.hasNext()){
+            Record record = resultSet.next();
+            relationshipTypes.add(record.getString(0));
+
+        }
+        return relationshipTypes;
+    }
+
+
+    /**
+     *
+     * @param index index of property name
+     * @return requested property
+     */
+    public String getPropertyName(int index){
+        if (index >= propertyNames.size()){
+            propertyNames = getPropertyNames();
+        }
+        return propertyNames.get(index);
+    }
+
+
+    /**
+     *
+     * @return a list of all the property names in the graph
+     */
+    private List<String> getPropertyNames() {
+        ResultSet resultSet = callProcedure("db.propertyKeys");
+        ArrayList<String> propertyNames = new ArrayList<>();
+        while (resultSet.hasNext()){
+            Record record = resultSet.next();
+            propertyNames.add(record.getString(0));
+
+        }
+        return propertyNames;
+    }
+
+    /**
+     * Invoke a stored procedure
+     * @param procedure
+     * @param args
+     * @param kwargs
+     * @return
+     */
+    public ResultSet callProcedure(String procedure, List<String> args  , Map<String, List<String>> kwargs ){
+
+        args = args.stream().map( s -> Utils.quoteString(s)).collect(Collectors.toList());
+        StringBuilder q =  new StringBuilder();
+        q.append(String.format("CALL %s(%s)", procedure, String.join(",", args)));
+        List<String> y = kwargs.getOrDefault("y", null);
+        if(y != null){
+            q.append(String.join(",", y));
+        }
+        return query(q.toString());
+
+
+    }
+
+    /**
+     * static function to access an initialized graph api
+     * @return an initialized instance of RedisGraphAPI
+     */
+    public static RedisGraphAPI getInstance(){
+        return redisGraphAPI;
     }
 }
