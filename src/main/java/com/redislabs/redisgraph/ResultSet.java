@@ -6,12 +6,21 @@ import java.util.List;
 /**
  * Hold a query result
  */
-public interface ResultSet extends Iterator<Record>{
-	/**
-	 * Return the query statistics
-	 * @return statistics object
-	 */
-	Statistics getStatistics();
+public interface ResultSet extends Iterator<Record> {
 
-	List<String> getHeader();
+    public enum ResultSetScalarTypes {
+        PROPERTY_UNKNOWN,
+        PROPERTY_NULL,
+        PROPERTY_STRING,
+        PROPERTY_INTEGER,
+        PROPERTY_BOOLEAN,
+        PROPERTY_DOUBLE,
+    }
+
+    public int size();
+
+    Statistics getStatistics();
+
+    Header getHeader();
+
 }
