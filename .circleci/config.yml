@@ -1,15 +1,9 @@
-# Java Maven CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-java/ for more details
-#
 version: 2
 jobs:
   build:
     docker:
       - image: circleci/openjdk:8u171-jdk
-
       - image: redislabs/redisgraph:edge
-        port: 6379:6379
 
     working_directory: ~/repo
 
@@ -35,15 +29,10 @@ jobs:
             - ~/.m2
           key: v1-dependencies-{{ checksum "pom.xml" }}
         
-      # run tests!
      # - run: mvn pmd:check
-      
       - run: mvn integration-test 
-
       - run: mvn cobertura:cobertura
-      
       - run: bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}  
-          
       - run: mvn -s .circleci.settings.xml -DskipTests deploy
 
 workflows:
