@@ -60,7 +60,7 @@ public class HeaderImpl implements Header {
         for (List<Object> tuple : this.raw) {
 
             //get type
-            ResultSetColumnTypes type = ResultSetColumnTypes.values()[(int) (long) tuple.get(0)];
+            ResultSetColumnTypes type = ResultSetColumnTypes.values()[((Long) tuple.get(0)).intValue()];
             //get text
             String text = SafeEncoder.encode((byte[]) tuple.get(1));
             if (type != null) {

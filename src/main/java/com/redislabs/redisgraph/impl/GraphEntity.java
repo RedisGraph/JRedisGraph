@@ -16,8 +16,8 @@ public abstract class GraphEntity {
 
     //members
 
-    int id;
-    Map<String, Property> propertyMap = new HashMap<>();
+    protected int id;
+    protected final Map<String, Property> propertyMap = new HashMap<>();
 
 
     //setters & getters
@@ -58,7 +58,7 @@ public abstract class GraphEntity {
     public void addProperty (Property property){
 
 
-        propertyMap.put(property.name, property);
+        propertyMap.put(property.getName(), property);
     }
 
     /**

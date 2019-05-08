@@ -9,9 +9,9 @@ import java.util.Objects;
 public class Edge extends GraphEntity {
 
     //memebers
-    String relationshipType;
-    int source;
-    int destination;
+    private  String relationshipType;
+    private int source;
+    private int destination;
 
 
     //getters & setters

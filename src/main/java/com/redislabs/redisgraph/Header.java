@@ -2,6 +2,9 @@ package com.redislabs.redisgraph;
 
 import java.util.List;
 
+/**
+ * Query response header interface. Represents the response schame (column names and types)
+ */
 public interface Header {
 
 

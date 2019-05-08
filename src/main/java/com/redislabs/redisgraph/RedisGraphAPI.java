@@ -1,6 +1,7 @@
 package com.redislabs.redisgraph;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 
@@ -22,11 +23,13 @@ public class RedisGraphAPI {
 
 	private final Pool<Jedis> client;
     private final String graphId;
-    private List<String> labels = new ArrayList<>();
-    private List<String> relationshipTypes = new ArrayList<>();
-    private List<String> propertyNames = new ArrayList<>();
+    private final List<String>  labels = new ArrayList<>();
+    private final List<String> relationshipTypes = new ArrayList<>();
+    private final List<String> propertyNames = new ArrayList<>();
 
-    private static RedisGraphAPI redisGraphAPI;
+    private static final Map<String, RedisGraphAPI> apiMap = new ConcurrentHashMap<>();
+
+
 
 
     
@@ -67,7 +70,8 @@ public class RedisGraphAPI {
     public RedisGraphAPI(String graphId, Pool<Jedis> jedis) {
         this.graphId = graphId;
         this.client = jedis;
-        redisGraphAPI = this;
+        apiMap.put(graphId, this);
+
 
     }
 
@@ -79,7 +83,6 @@ public class RedisGraphAPI {
      * @return a result set 
      */
     public ResultSet query(String query, Object ...args) {
-        StringBuilder sb = new StringBuilder();
       if(args.length > 0) {
         for(int i=0; i<args.length; ++i) {
           if(args[i] instanceof String) {
@@ -90,7 +93,7 @@ public class RedisGraphAPI {
       }
       
       try (Jedis conn = getConnection()) {
-          return new ResultSetImpl(sendCompactCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply());
+          return new ResultSetImpl(sendCompactCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply(), graphId);
       }
     }
 
@@ -130,10 +133,10 @@ public class RedisGraphAPI {
      */
     private BinaryClient sendCompactCommand(Jedis conn, ProtocolCommand provider, String ...args) {
         BinaryClient binaryClient = conn.getClient();
-        List<String> largs = new ArrayList<>(Arrays.asList(args));
-        largs.add("--COMPACT");
-        String[] t = new String[largs.size()];
-        binaryClient.sendCommand(provider, largs.toArray(t));
+        String[] t = new String[args.length +1];
+        System.arraycopy(args, 0 , t, 0, args.length);
+        t[args.length]="--COMPACT";
+        binaryClient.sendCommand(provider, t);
         return binaryClient;
     }
     
@@ -174,24 +177,19 @@ public class RedisGraphAPI {
      */
     public  String getLabel(int index){
         if (index >= labels.size()){
-            labels = getLabels();
+            getLabels();
         }
         return labels.get(index);
     }
 
     /**
      *
-     * @return list of all the node labels in the graph
+     * gets a list of all the node labels in the graph
      */
-    private  List<String> getLabels() {
-        ResultSet resultSet = callProcedure("db.labels");
-        ArrayList<String> labels = new ArrayList<>();
-        while (resultSet.hasNext()){
-            Record record = resultSet.next();
-            labels.add(record.getString(0));
+    private  void getLabels() {
+        getProcedureInfo(labels, "db.labels");
 
-        }
-        return labels;
+
     }
 
 
@@ -202,7 +200,7 @@ public class RedisGraphAPI {
      */
     public String getRelationshipType(int index){
         if (index >= relationshipTypes.size()){
-            relationshipTypes = getRelationshipTypes();
+            getRelationshipTypes();
         }
         return relationshipTypes.get(index);
     }
@@ -210,17 +208,11 @@ public class RedisGraphAPI {
 
     /**
      *
-     * @return a list of the edge relationship types in the graph
+     * gets a list of the edge relationship types in the graph
      */
-    private List<String> getRelationshipTypes() {
-        ResultSet resultSet = callProcedure("db.relationshipTypes");
-        ArrayList<String> relationshipTypes = new ArrayList<>();
-        while (resultSet.hasNext()){
-            Record record = resultSet.next();
-            relationshipTypes.add(record.getString(0));
+    private void getRelationshipTypes() {
+        getProcedureInfo(relationshipTypes, "db.relationshipTypes" );
 
-        }
-        return relationshipTypes;
     }
 
 
@@ -231,7 +223,7 @@ public class RedisGraphAPI {
      */
     public String getPropertyName(int index){
         if (index >= propertyNames.size()){
-            propertyNames = getPropertyNames();
+            getPropertyNames();
         }
         return propertyNames.get(index);
     }
@@ -239,18 +231,30 @@ public class RedisGraphAPI {
 
     /**
      *
-     * @return a list of all the property names in the graph
+     * gets a list of all the property names in the graph
      */
-    private List<String> getPropertyNames() {
-        ResultSet resultSet = callProcedure("db.propertyKeys");
-        ArrayList<String> propertyNames = new ArrayList<>();
+    private void getPropertyNames() {
+        getProcedureInfo(propertyNames, "db.propertyKeys");
+
+
+    }
+
+    /**
+     * Calls procedure in the graph and returns its data
+     * @param list a list for storing the data
+     * @param procedure to call in order to get the data
+     */
+    private void getProcedureInfo(List<String> list, String procedure){
+        ResultSet resultSet = callProcedure(procedure);
+        list.clear();
         while (resultSet.hasNext()){
             Record record = resultSet.next();
-            propertyNames.add(record.getString(0));
+            list.add(record.getString(0));
 
         }
-        return propertyNames;
+
     }
+
 
     /**
      * Invoke a stored procedure
@@ -277,7 +281,7 @@ public class RedisGraphAPI {
      * static function to access an initialized graph api
      * @return an initialized instance of RedisGraphAPI
      */
-    public static RedisGraphAPI getInstance(){
-        return redisGraphAPI;
+    public static RedisGraphAPI getInstance(String graphId){
+        return apiMap.get(graphId);
     }
 }

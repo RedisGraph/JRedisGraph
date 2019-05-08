@@ -10,9 +10,9 @@ import java.util.Objects;
 public class Property {
 
     //members
-    String name;
-    ResultSet.ResultSetScalarTypes type;
-    Object value;
+    private String name;
+    private ResultSet.ResultSetScalarTypes type;
+    private Object value;
 
 
     /**

@@ -11,7 +11,11 @@ public class Utils {
      * @return the input string surounded with quotation marks, if needed
      */
     public static String quoteString(String str){
-        StringBuilder sb = new StringBuilder();
+        if(str.startsWith("\"") && str.endsWith("\"")){
+            return str;
+        }
+
+        StringBuilder sb = new StringBuilder(str.length()+2);
         if(str.charAt(0)!='"'){
             sb.append('"');
         }

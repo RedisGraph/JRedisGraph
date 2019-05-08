@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Node extends GraphEntity {
 
     //members
-    List<String> labels = new ArrayList<>();
+    final private List<String> labels = new ArrayList<>();
 
     /**
      * @param label - a label to be add

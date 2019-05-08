@@ -11,20 +11,22 @@ import redis.clients.jedis.util.SafeEncoder;
 
 public class ResultSetImpl implements ResultSet {
 
-    Header header = new HeaderImpl(new ArrayList<>());
-    Statistics statistics = new StatisticsImpl(new ArrayList<>());
+    private  Header header = new HeaderImpl(new ArrayList<>());
+    private  Statistics statistics = new StatisticsImpl(new ArrayList<>());
 
     private final List<Record> results = new ArrayList<>();
 
     private int position = 0;
+    private final String graphId;
 
     /**
      *
      * @param rawResponse the raw representation of response is at most 3 lists of objects.
      *                    The last list is the statistics list.
+     * @param  graphId, the graph ID
      */
-    public ResultSetImpl(List<Object> rawResponse){
-
+    public ResultSetImpl(List<Object> rawResponse, String graphId){
+        this.graphId = graphId;
         if(rawResponse.size() != 3){
 
             parseStatistics(rawResponse.get(rawResponse.size()-1));
@@ -50,7 +52,7 @@ public class ResultSetImpl implements ResultSet {
             //go over each raw result
             for (List<Object> row : rawResultSet) {
 
-                List<Object> parsedRow = new ArrayList<>();
+                List<Object> parsedRow = new ArrayList<>(row.size());
                 //go over each object in the result
                 for (int i = 0; i < row.size(); i++) {
                     //get raw representation of the object
@@ -123,7 +125,7 @@ public class ResultSetImpl implements ResultSet {
         deserializeGraphEntityId(node, rawNodeData.get(0));
         List<Long> labelsIndices = (List<Long>) rawNodeData.get(1);
         for (long labelIndex : labelsIndices) {
-            String label = RedisGraphAPI.getInstance().getLabel((int) labelIndex);
+            String label = RedisGraphAPI.getInstance(graphId).getLabel((int) labelIndex);
             node.addLabel(label);
         }
         deserializeGraphEntityProperties(node, (List<List<Object>>) rawNodeData.get(2));
@@ -155,7 +157,7 @@ public class ResultSetImpl implements ResultSet {
         Edge edge = new Edge();
         deserializeGraphEntityId(edge, rawEdgeData.get(0));
 
-        String relationshipType = RedisGraphAPI.getInstance().getRelationshipType((int) (long) rawEdgeData.get(1));
+        String relationshipType = RedisGraphAPI.getInstance(graphId).getRelationshipType(((Long) rawEdgeData.get(1)).intValue());
         edge.setRelationshipType(relationshipType);
 
         edge.setSource((int) (long) rawEdgeData.get(2));
@@ -179,7 +181,7 @@ public class ResultSetImpl implements ResultSet {
 
         for (List<Object> rawProperty : rawProperties) {
             Property property = new Property();
-            property.setName(RedisGraphAPI.getInstance().getPropertyName((int) (long) rawProperty.get(0)));
+            property.setName(RedisGraphAPI.getInstance(graphId).getPropertyName( ((Long) rawProperty.get(0)).intValue()));
 
             //trimmed for getting to value using deserializeScalar
             List<Object> propertyScalar = rawProperty.subList(1, rawProperty.size());

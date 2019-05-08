@@ -59,7 +59,6 @@ public class RedisGraphAPITest {
         // Create a node with a label
         ResultSet resultSet = api.query("CREATE (:human{name:'danny',age:12})");
         Assert.assertFalse(resultSet.hasNext());
-//
         Assert.assertEquals("1", resultSet.getStatistics().getStringValue(Label.NODES_CREATED));
         Assert.assertEquals("2", resultSet.getStatistics().getStringValue(Label.PROPERTIES_SET));
         Assert.assertNotNull(resultSet.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME));
