@@ -17,16 +17,16 @@ public class ResultSetImpl implements ResultSet {
     private final List<Record> results = new ArrayList<>();
 
     private int position = 0;
-    private final String graphId;
+    private final RedisGraphAPI redisGraphAPI;
 
     /**
      *
      * @param rawResponse the raw representation of response is at most 3 lists of objects.
      *                    The last list is the statistics list.
-     * @param  graphId, the graph ID
+     * @param  redisGraphAPI, the graph api
      */
-    public ResultSetImpl(List<Object> rawResponse, String graphId){
-        this.graphId = graphId;
+    public ResultSetImpl(List<Object> rawResponse, RedisGraphAPI redisGraphAPI){
+        this.redisGraphAPI = redisGraphAPI;
         if(rawResponse.size() != 3){
 
             parseStatistics(rawResponse.get(rawResponse.size()-1));
@@ -78,7 +78,6 @@ public class ResultSetImpl implements ResultSet {
                 Record record = new RecordImpl(header.getSchemaNames(), parsedRow);
                 results.add(record);
 
-
             }
 
         }
@@ -125,7 +124,7 @@ public class ResultSetImpl implements ResultSet {
         deserializeGraphEntityId(node, rawNodeData.get(0));
         List<Long> labelsIndices = (List<Long>) rawNodeData.get(1);
         for (long labelIndex : labelsIndices) {
-            String label = RedisGraphAPI.getInstance(graphId).getLabel((int) labelIndex);
+            String label = redisGraphAPI.getLabel((int) labelIndex);
             node.addLabel(label);
         }
         deserializeGraphEntityProperties(node, (List<List<Object>>) rawNodeData.get(2));
@@ -157,7 +156,7 @@ public class ResultSetImpl implements ResultSet {
         Edge edge = new Edge();
         deserializeGraphEntityId(edge, rawEdgeData.get(0));
 
-        String relationshipType = RedisGraphAPI.getInstance(graphId).getRelationshipType(((Long) rawEdgeData.get(1)).intValue());
+        String relationshipType = redisGraphAPI.getRelationshipType(((Long) rawEdgeData.get(1)).intValue());
         edge.setRelationshipType(relationshipType);
 
         edge.setSource((int) (long) rawEdgeData.get(2));
@@ -181,7 +180,7 @@ public class ResultSetImpl implements ResultSet {
 
         for (List<Object> rawProperty : rawProperties) {
             Property property = new Property();
-            property.setName(RedisGraphAPI.getInstance(graphId).getPropertyName( ((Long) rawProperty.get(0)).intValue()));
+            property.setName(redisGraphAPI.getPropertyName( ((Long) rawProperty.get(0)).intValue()));
 
             //trimmed for getting to value using deserializeScalar
             List<Object> propertyScalar = rawProperty.subList(1, rawProperty.size());

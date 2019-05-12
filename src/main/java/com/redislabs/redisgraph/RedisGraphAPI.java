@@ -27,12 +27,6 @@ public class RedisGraphAPI {
     private final List<String> relationshipTypes = new ArrayList<>();
     private final List<String> propertyNames = new ArrayList<>();
 
-    private static final Map<String, RedisGraphAPI> apiMap = new ConcurrentHashMap<>();
-
-
-
-
-    
     private static final CharSequenceTranslator ESCAPE_CHYPER;
     static {
         final Map<CharSequence, CharSequence> escapeJavaMap = new HashMap<>();
@@ -70,9 +64,6 @@ public class RedisGraphAPI {
     public RedisGraphAPI(String graphId, Pool<Jedis> jedis) {
         this.graphId = graphId;
         this.client = jedis;
-        apiMap.put(graphId, this);
-
-
     }
 
     /**
@@ -93,7 +84,7 @@ public class RedisGraphAPI {
       }
       
       try (Jedis conn = getConnection()) {
-          return new ResultSetImpl(sendCompactCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply(), graphId);
+          return new ResultSetImpl(sendCompactCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply(), this);
       }
     }
 
@@ -104,6 +95,10 @@ public class RedisGraphAPI {
      * @return delete running time statistics 
      */
     public String deleteGraph() {
+        //clear local state
+        labels.clear();
+        propertyNames.clear();
+        relationshipTypes.clear();
         try (Jedis conn = getConnection()) {
           return sendCommand(conn, Command.DELETE, graphId).getBulkReply();
 		}
@@ -165,7 +160,6 @@ public class RedisGraphAPI {
      */
     public ResultSet callProcedure(String procedure, List<String> args  ){
         return callProcedure(procedure, args, new HashMap<>());
-
 
     }
 
@@ -250,9 +244,7 @@ public class RedisGraphAPI {
         while (resultSet.hasNext()){
             Record record = resultSet.next();
             list.add(record.getString(0));
-
         }
-
     }
 
 
@@ -273,15 +265,6 @@ public class RedisGraphAPI {
             q.append(String.join(",", y));
         }
         return query(q.toString());
-
-
     }
 
-    /**
-     * static function to access an initialized graph api
-     * @return an initialized instance of RedisGraphAPI
-     */
-    public static RedisGraphAPI getInstance(String graphId){
-        return apiMap.get(graphId);
-    }
 }
