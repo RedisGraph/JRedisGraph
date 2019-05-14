@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 import com.redislabs.redisgraph.impl.Edge;
 import com.redislabs.redisgraph.impl.Node;
 import com.redislabs.redisgraph.impl.Property;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,24 +18,26 @@ import com.redislabs.redisgraph.Statistics.Label;
 import static com.redislabs.redisgraph.Header.ResultSetColumnTypes.*;
 
 public class RedisGraphAPITest {
-    RedisGraphAPI api;
+    RedisGraph api;
 
     public RedisGraphAPITest() {
-        api = new RedisGraphAPI("social");
-
-        /* Dummy call to generate graph so the first deleteGraph() won't fail */
-        api.query("CREATE ({name:'roi',age:32})");
     }
 
     @Before
+    public void createApi(){
+        api = new RedisGraph();
+    }
+    @After
     public void deleteGraph() {
-        api.deleteGraph();
+
+        api.deleteGraph("social");
+        api.close();
     }
 
     @Test
     public void testCreateNode() {
         // Create a node    	
-        ResultSet resultSet = api.query("CREATE ({name:'roi',age:32})");
+        ResultSet resultSet = api.query("social", "CREATE ({name:'roi',age:32})");
 
 
         Assert.assertEquals(1, resultSet.getStatistics().nodesCreated());
@@ -57,7 +60,7 @@ public class RedisGraphAPITest {
     @Test
     public void testCreateLabeledNode() {
         // Create a node with a label
-        ResultSet resultSet = api.query("CREATE (:human{name:'danny',age:12})");
+        ResultSet resultSet = api.query("social", "CREATE (:human{name:'danny',age:12})");
         Assert.assertFalse(resultSet.hasNext());
         Assert.assertEquals("1", resultSet.getStatistics().getStringValue(Label.NODES_CREATED));
         Assert.assertEquals("2", resultSet.getStatistics().getStringValue(Label.PROPERTIES_SET));
@@ -67,11 +70,11 @@ public class RedisGraphAPITest {
     @Test
     public void testConnectNodes() {
         // Create both source and destination nodes
-        Assert.assertNotNull(api.query("CREATE (:person{name:'roi',age:32})"));
-        Assert.assertNotNull(api.query("CREATE (:person{name:'amit',age:30})"));
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'roi',age:32})"));
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
 
         // Connect source and destination nodes.
-        ResultSet resultSet = api.query("MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(a)");
+        ResultSet resultSet = api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(a)");
 
         Assert.assertFalse(resultSet.hasNext());
         Assert.assertNull(resultSet.getStatistics().getStringValue(Label.NODES_CREATED));
@@ -83,9 +86,9 @@ public class RedisGraphAPITest {
 
     @Test
     public void testDeleteNodes(){
-        Assert.assertNotNull(api.query("CREATE (:person{name:'roi',age:32})"));
-        Assert.assertNotNull(api.query("CREATE (:person{name:'amit',age:30})"));
-        ResultSet deleteResult = api.query("MATCH (a:person) WHERE (a.name = 'roi') DELETE a");
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'roi',age:32})"));
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
+        ResultSet deleteResult = api.query("social", "MATCH (a:person) WHERE (a.name = 'roi') DELETE a");
 
         Assert.assertFalse(deleteResult.hasNext());
         Assert.assertNull(deleteResult.getStatistics().getStringValue(Label.NODES_CREATED));
@@ -96,9 +99,9 @@ public class RedisGraphAPITest {
         Assert.assertEquals(1, deleteResult.getStatistics().nodesDeleted());
         Assert.assertNotNull(deleteResult.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME));
 
-        Assert.assertNotNull(api.query("CREATE (:person{name:'roi',age:32})"));
-        Assert.assertNotNull(api.query("MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(a)"));
-        deleteResult = api.query("MATCH (a:person) WHERE (a.name = 'roi') DELETE a");
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'roi',age:32})"));
+        Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(a)"));
+        deleteResult = api.query("social", "MATCH (a:person) WHERE (a.name = 'roi') DELETE a");
 
         Assert.assertFalse(deleteResult.hasNext());
         Assert.assertNull(deleteResult.getStatistics().getStringValue(Label.NODES_CREATED));
@@ -117,10 +120,10 @@ public class RedisGraphAPITest {
     @Test
     public void testDeleteRelationship(){
 
-        Assert.assertNotNull(api.query("CREATE (:person{name:'roi',age:32})"));
-        Assert.assertNotNull(api.query("CREATE (:person{name:'amit',age:30})"));
-        Assert.assertNotNull(api.query("MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(a)"));
-        ResultSet deleteResult = api.query("MATCH (a:person)-[e]->() WHERE (a.name = 'roi') DELETE e");
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'roi',age:32})"));
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
+        Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(a)"));
+        ResultSet deleteResult = api.query("social", "MATCH (a:person)-[e]->() WHERE (a.name = 'roi') DELETE e");
 
         Assert.assertFalse(deleteResult.hasNext());
         Assert.assertNull(deleteResult.getStatistics().getStringValue(Label.NODES_CREATED));
@@ -138,13 +141,13 @@ public class RedisGraphAPITest {
     @Test
     public void testIndex() {
         // Create both source and destination nodes
-        Assert.assertNotNull(api.query("CREATE (:person{name:'roi',age:32})"));
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'roi',age:32})"));
 
-        ResultSet createIndexResult = api.query("CREATE INDEX ON :person(age)");
+        ResultSet createIndexResult = api.query("social", "CREATE INDEX ON :person(age)");
         Assert.assertFalse(createIndexResult.hasNext());
         Assert.assertEquals(1, createIndexResult.getStatistics().indicesAdded());
 
-        ResultSet failCreateIndexResult = api.query("CREATE INDEX ON :person(age1)");
+        ResultSet failCreateIndexResult = api.query("social", "CREATE INDEX ON :person(age1)");
         Assert.assertFalse(failCreateIndexResult.hasNext());
         Assert.assertNull(failCreateIndexResult.getStatistics().getStringValue(Label.INDICES_ADDED));
         Assert.assertEquals(0, failCreateIndexResult.getStatistics().indicesAdded());
@@ -153,11 +156,11 @@ public class RedisGraphAPITest {
     @Test
     public void testHeader(){
 
-        Assert.assertNotNull(api.query("CREATE (:person{name:'roi',age:32})"));
-        Assert.assertNotNull(api.query("CREATE (:person{name:'amit',age:30})"));
-        Assert.assertNotNull(api.query("MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(a)"));
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'roi',age:32})"));
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
+        Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(a)"));
 
-        ResultSet queryResult = api.query("MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, a.age");
+        ResultSet queryResult = api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, a.age");
 
         Assert.assertNotNull(queryResult.getHeader());
         Header header = queryResult.getHeader();
@@ -225,12 +228,12 @@ public class RedisGraphAPITest {
 
 
 
-        Assert.assertNotNull(api.query("CREATE (:person{name:%s',age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
-        Assert.assertNotNull(api.query("CREATE (:person{name:'amit',age:30})"));
-        Assert.assertNotNull(api.query("MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  " +
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:%s',age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
+        Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  " +
                 "CREATE (a)-[:knows{place:'TLV', since:2000,doubleValue:3.14, boolValue:false, nullValue:null}]->(b)"));
 
-        ResultSet resultSet = api.query("MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, " +
+        ResultSet resultSet = api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, " +
                 "a.name, a.age, a.doubleValue, a.boolValue, a.nullValue, " +
                 "r.place, r.since, r.doubleValue, r.boolValue, r.nullValue");
         Assert.assertNotNull(resultSet);
@@ -287,8 +290,8 @@ public class RedisGraphAPITest {
 
     @Test
     public void testEscapedQuery() {
-        Assert.assertNotNull(api.query("CREATE (:escaped{s1:%s,s2:%s})", "S\"\'", "S\\'\\\""));
-        Assert.assertNotNull(api.query("MATCH (n) where n.s1=%s and n.s2=%s RETURN n", "S\"\'", "S\\'\\\""));
-        Assert.assertNotNull(api.query("MATCH (n) where n.s1='S\"\\'' RETURN n"));
+        Assert.assertNotNull(api.query("social", "CREATE (:escaped{s1:%s,s2:%s})", "S\"\'", "S\\'\\\""));
+        Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1=%s and n.s2=%s RETURN n", "S\"\'", "S\\'\\\""));
+        Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1='S\"\\'' RETURN n"));
     }
 }

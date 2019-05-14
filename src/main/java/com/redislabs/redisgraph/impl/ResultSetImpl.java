@@ -1,48 +1,47 @@
 package com.redislabs.redisgraph.impl;
 
+import com.redislabs.redisgraph.Header;
+import com.redislabs.redisgraph.Record;
+import com.redislabs.redisgraph.ResultSet;
+import com.redislabs.redisgraph.Statistics;
+import redis.clients.jedis.util.SafeEncoder;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-import com.redislabs.redisgraph.*;
-
-import redis.clients.jedis.util.SafeEncoder;
-
 public class ResultSetImpl implements ResultSet {
 
-    private  Header header = new HeaderImpl(new ArrayList<>());
-    private  Statistics statistics = new StatisticsImpl(new ArrayList<>());
+    private Header header = new HeaderImpl(new ArrayList<>());
+    private Statistics statistics = new StatisticsImpl(new ArrayList<>());
 
     private final List<Record> results = new ArrayList<>();
 
     private int position = 0;
-    private final RedisGraphAPI redisGraphAPI;
+    private final GraphCache graphCache;
 
     /**
-     *
      * @param rawResponse the raw representation of response is at most 3 lists of objects.
      *                    The last list is the statistics list.
-     * @param  redisGraphAPI, the graph api
+     * @param graphCache, the graph local cache
      */
-    public ResultSetImpl(List<Object> rawResponse, RedisGraphAPI redisGraphAPI){
-        this.redisGraphAPI = redisGraphAPI;
-        if(rawResponse.size() != 3){
+    public ResultSetImpl(List<Object> rawResponse, GraphCache graphCache) {
+        this.graphCache = graphCache;
+        if (rawResponse.size() != 3) {
 
-            parseStatistics(rawResponse.get(rawResponse.size()-1));
+            parseStatistics(rawResponse.get(rawResponse.size() - 1));
 
-        }
-        else{
+        } else {
 
-            parseHeader((List<List<Object>>)rawResponse.get(0));
-            parseResult((List<List<Object>>)rawResponse.get(1));
-            parseStatistics((List<Object>)rawResponse.get(2));
+            parseHeader((List<List<Object>>) rawResponse.get(0));
+            parseResult((List<List<Object>>) rawResponse.get(1));
+            parseStatistics((List<Object>) rawResponse.get(2));
         }
     }
 
 
     /**
-     *
      * @param rawResultSet - raw result set representation
      */
     private void parseResult(List<List<Object>> rawResultSet) {
@@ -77,27 +76,22 @@ public class ResultSetImpl implements ResultSet {
                 //create new record from deserialized objects
                 Record record = new RecordImpl(header.getSchemaNames(), parsedRow);
                 results.add(record);
-
             }
-
         }
-
     }
 
     /**
-     *
      * @param rawStatistics raw statistics representation
      */
-    private void parseStatistics(Object rawStatistics){
-        statistics = new StatisticsImpl((List<byte[]>)rawStatistics);
+    private void parseStatistics(Object rawStatistics) {
+        statistics = new StatisticsImpl((List<byte[]>) rawStatistics);
     }
 
 
     /**
-     *
      * @param rawHeader raw header representation
      */
-    private void parseHeader(List<List<Object>> rawHeader){
+    private void parseHeader(List<List<Object>> rawHeader) {
         header = new HeaderImpl(rawHeader);
     }
 
@@ -107,7 +101,7 @@ public class ResultSetImpl implements ResultSet {
     }
 
     @Override
-    public Header getHeader(){
+    public Header getHeader() {
         return header;
     }
 
@@ -124,7 +118,7 @@ public class ResultSetImpl implements ResultSet {
         deserializeGraphEntityId(node, rawNodeData.get(0));
         List<Long> labelsIndices = (List<Long>) rawNodeData.get(1);
         for (long labelIndex : labelsIndices) {
-            String label = redisGraphAPI.getLabel((int) labelIndex);
+            String label = graphCache.getLabel((int) labelIndex);
             node.addLabel(label);
         }
         deserializeGraphEntityProperties(node, (List<List<Object>>) rawNodeData.get(2));
@@ -156,7 +150,7 @@ public class ResultSetImpl implements ResultSet {
         Edge edge = new Edge();
         deserializeGraphEntityId(edge, rawEdgeData.get(0));
 
-        String relationshipType = redisGraphAPI.getRelationshipType(((Long) rawEdgeData.get(1)).intValue());
+        String relationshipType = graphCache.getRelationshipType(((Long) rawEdgeData.get(1)).intValue());
         edge.setRelationshipType(relationshipType);
 
         edge.setSource((int) (long) rawEdgeData.get(2));
@@ -180,7 +174,7 @@ public class ResultSetImpl implements ResultSet {
 
         for (List<Object> rawProperty : rawProperties) {
             Property property = new Property();
-            property.setName(redisGraphAPI.getPropertyName( ((Long) rawProperty.get(0)).intValue()));
+            property.setName(graphCache.getPropertyName(((Long) rawProperty.get(0)).intValue()));
 
             //trimmed for getting to value using deserializeScalar
             List<Object> propertyScalar = rawProperty.subList(1, rawProperty.size());
@@ -204,9 +198,9 @@ public class ResultSetImpl implements ResultSet {
             case PROPERTY_NULL:
                 return null;
             case PROPERTY_BOOLEAN:
-                return Boolean.parseBoolean(SafeEncoder.encode((byte[])obj));
+                return Boolean.parseBoolean(SafeEncoder.encode((byte[]) obj));
             case PROPERTY_DOUBLE:
-                return Double.parseDouble(SafeEncoder.encode((byte[])obj));
+                return Double.parseDouble(SafeEncoder.encode((byte[]) obj));
             case PROPERTY_INTEGER:
                 return (Integer) ((Long) obj).intValue();
             case PROPERTY_STRING:
@@ -224,7 +218,7 @@ public class ResultSetImpl implements ResultSet {
      * @return scalar type
      */
     private ResultSetScalarTypes getScalarTypeFromObject(Object rawScalarType) {
-        return ResultSetScalarTypes.values()[(int) (long) rawScalarType];
+        return ResultSetScalarTypes.values()[((Long) rawScalarType).intValue()];
     }
 
     @Override
