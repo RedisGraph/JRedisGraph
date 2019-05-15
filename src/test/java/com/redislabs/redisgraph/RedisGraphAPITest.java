@@ -4,6 +4,8 @@ package com.redislabs.redisgraph;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.redislabs.redisgraph.impl.Edge;
 import com.redislabs.redisgraph.impl.Node;
@@ -287,6 +289,67 @@ public class RedisGraphAPITest {
     }
 
 
+    @Test
+    public void testMultiThread(){
+
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'roi',age:32})"));
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
+        Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(b)"));
+
+
+        List<ResultSet> resultSets = IntStream.range(0,16).parallel().
+                mapToObj(i-> api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, a.age")).
+                collect(Collectors.toList());
+
+        Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, "roi");
+        Property ageProperty = new Property("age", ResultSet.ResultSetScalarTypes.PROPERTY_INTEGER, 32);
+
+        Node expectedNode = new Node();
+        expectedNode.setId(0);
+        expectedNode.addLabel("person");
+        expectedNode.addProperty(nameProperty);
+        expectedNode.addProperty(ageProperty);
+
+
+        Edge expectedEdge = new Edge();
+        expectedEdge.setId(0);
+        expectedEdge.setSource(0);
+        expectedEdge.setDestination(1);
+        expectedEdge.setRelationshipType("knows");
+
+
+        for (ResultSet resultSet : resultSets){
+            Assert.assertNotNull(resultSet.getHeader());
+            Header header = resultSet.getHeader();
+
+            List<String> schemaNames = header.getSchemaNames();
+            List<Header.ResultSetColumnTypes> schemaTypes = header.getSchemaTypes();
+
+            Assert.assertNotNull(schemaNames);
+            Assert.assertNotNull(schemaTypes);
+
+            Assert.assertEquals(3, schemaNames.size());
+            Assert.assertEquals(3, schemaTypes.size());
+
+            Assert.assertEquals("a", schemaNames.get(0));
+            Assert.assertEquals("r", schemaNames.get(1));
+            Assert.assertEquals("a.age", schemaNames.get(2));
+
+            Assert.assertEquals(COLUMN_NODE, schemaTypes.get(0));
+            Assert.assertEquals(COLUMN_RELATION, schemaTypes.get(1));
+            Assert.assertEquals(COLUMN_SCALAR, schemaTypes.get(2));
+
+            Assert.assertEquals(1, resultSet.size());
+            Assert.assertTrue(resultSet.hasNext());
+            Record record = resultSet.next();
+            Assert.assertFalse(resultSet.hasNext());
+
+
+            Assert.assertEquals(Arrays.asList("a", "r", "a.age"), record.keys());
+
+            Assert.assertEquals(Arrays.asList(expectedNode, expectedEdge, 32), record.values());
+        }
+    }
 
     @Test
     public void testEscapedQuery() {
