@@ -59,7 +59,7 @@ public class GraphCacheList {
     private void getProcedureInfo() {
         ResultSet resultSet = redisGraph.callProcedure(graphId, procedure);
         List<String> newData = new ArrayList<>();
-        int i = data.size();
+        int i = 0;
         while (resultSet.hasNext()) {
             Record record = resultSet.next();
             if(i >= data.size()){
