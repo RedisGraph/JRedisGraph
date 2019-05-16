@@ -18,7 +18,7 @@ public class GraphCacheList {
     private final String graphId;
     private final String procedure;
     private final RedisGraph redisGraph;
-    List<String>  data = new CopyOnWriteArrayList<>();
+    private final List<String>  data = new CopyOnWriteArrayList<>();
 
 
 
