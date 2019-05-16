@@ -157,12 +157,10 @@ public class RedisGraph implements Closeable {
      * @return
      */
     private BinaryClient sendCompactCommand(Jedis conn, ProtocolCommand provider, String ...args) {
-        BinaryClient binaryClient = conn.getClient();
         String[] t = new String[args.length +1];
         System.arraycopy(args, 0 , t, 0, args.length);
         t[args.length]="--COMPACT";
-        binaryClient.sendCommand(provider, t);
-        return binaryClient;
+        return sendCommand(conn, provider, t);
     }
 
     private Jedis getConnection() {
@@ -175,18 +173,18 @@ public class RedisGraph implements Closeable {
      * @param graphId a graph to perform the query on
      * @param procedure - procedure to execute
      * @param args - procedure arguments
-     * @param kwargs
+     * @param kwargs - procedure output arguments
      * @return
      */
     public ResultSet callProcedure(String graphId, String procedure, List<String> args  , Map<String, List<String>> kwargs ){
 
         args = args.stream().map( s -> Utils.quoteString(s)).collect(Collectors.toList());
-        StringBuilder q =  new StringBuilder();
-        q.append(String.format("CALL %s(%s)", procedure, String.join(",", args)));
-        List<String> y = kwargs.getOrDefault("y", null);
-        if(y != null){
-            q.append(String.join(",", y));
+        StringBuilder queryString =  new StringBuilder();
+        queryString.append(String.format("CALL %s(%s)", procedure, String.join(",", args)));
+        List<String> kwargsList = kwargs.getOrDefault("y", null);
+        if(kwargsList != null){
+            queryString.append(String.join(",", kwargsList));
         }
-        return query(graphId, q.toString());
+        return query(graphId, queryString.toString());
     }
 }

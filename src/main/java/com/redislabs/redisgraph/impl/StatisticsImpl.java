@@ -29,10 +29,6 @@ public class StatisticsImpl implements Statistics  {
 	}
 
 
-	public List<byte[]> getRaw() {
-		return raw;
-	}
-
 	/**
 	 *
 	 * @param label the requested statistic label as key
@@ -138,13 +134,13 @@ public class StatisticsImpl implements Statistics  {
 		if (this == o) return true;
 		if (!(o instanceof StatisticsImpl)) return false;
 		StatisticsImpl that = (StatisticsImpl) o;
-		return Objects.equals(getRaw(), that.getRaw()) &&
+		return Objects.equals(raw, raw) &&
 				Objects.equals(getStatistics(), that.getStatistics());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(getRaw(), getStatistics());
+		return Objects.hash(raw, getStatistics());
 	}
 
 	@Override

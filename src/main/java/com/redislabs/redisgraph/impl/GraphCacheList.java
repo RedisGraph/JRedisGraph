@@ -5,19 +5,22 @@ import com.redislabs.redisgraph.RedisGraph;
 import com.redislabs.redisgraph.ResultSet;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * Represents a local cache of list of strings. Holds data from a specific procedure, for a specific graph.
  */
-public class GraphCacheList extends ArrayList<String> {
+public class GraphCacheList {
 
-    private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    private final ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
-    private final ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
+    private Object mutex = new Object();
     private final String graphId;
     private final String procedure;
     private final RedisGraph redisGraph;
+    List<String>  data = new CopyOnWriteArrayList<>();
+
+
 
     /**
      *
@@ -38,17 +41,14 @@ public class GraphCacheList extends ArrayList<String> {
      * @return The string value of the specific procedure response, at the given index.
      */
     public String getCachedData(int index) {
-        if (index >= this.size()) {
-            writeLock.lock();
-            //check again
-            if (index >= this.size()) {
-                getProcedureInfo();
+        if (index >= data.size()) {
+            synchronized (mutex){
+                if (index >= data.size()) {
+                    getProcedureInfo();
+                }
             }
-            writeLock.unlock();
         }
-        readLock.lock();
-        String s = this.get(index);
-        readLock.unlock();
+        String s = data.get(index);
         return s;
 
     }
@@ -58,10 +58,15 @@ public class GraphCacheList extends ArrayList<String> {
      */
     private void getProcedureInfo() {
         ResultSet resultSet = redisGraph.callProcedure(graphId, procedure);
-        this.clear();
+        List<String> newData = new ArrayList<>();
+        int i = data.size();
         while (resultSet.hasNext()) {
             Record record = resultSet.next();
-            this.add(record.getString(0));
+            if(i >= data.size()){
+                newData.add(record.getString(0));
+            }
+            i++;
         }
+        data.addAll(newData);
     }
 }

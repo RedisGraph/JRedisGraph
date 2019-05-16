@@ -8,9 +8,9 @@ import com.redislabs.redisgraph.RedisGraph;
  */
 public class GraphCache {
 
-    GraphCacheList labels;
-    GraphCacheList propertyNames;
-    GraphCacheList relationshipTypes;
+    private final GraphCacheList labels;
+    private final GraphCacheList propertyNames;
+    private final GraphCacheList relationshipTypes;
 
     /**
      *
