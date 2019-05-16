@@ -13,10 +13,9 @@ import java.util.Objects;
 
 public class ResultSetImpl implements ResultSet {
 
-    private Header header = new HeaderImpl(new ArrayList<>());
-    private Statistics statistics = new StatisticsImpl(new ArrayList<>());
-
-    private final List<Record> results = new ArrayList<>();
+    private final Header header;
+    private final Statistics statistics;
+    private final List<Record> results ;
 
     private int position = 0;
     private final GraphCache graphCache;
@@ -30,23 +29,28 @@ public class ResultSetImpl implements ResultSet {
         this.graphCache = graphCache;
         if (rawResponse.size() != 3) {
 
-            parseStatistics(rawResponse.get(rawResponse.size() - 1));
+            header = parseHeader(new ArrayList<>());
+            results = new ArrayList<>();
+            statistics = parseStatistics(rawResponse.get(rawResponse.size() - 1));
 
         } else {
 
-            parseHeader((List<List<Object>>) rawResponse.get(0));
-            parseResult((List<List<Object>>) rawResponse.get(1));
-            parseStatistics((List<Object>) rawResponse.get(2));
+            header = parseHeader((List<List<Object>>) rawResponse.get(0));
+            results = parseResult((List<List<Object>>) rawResponse.get(1));
+            statistics = parseStatistics((List<Object>) rawResponse.get(2));
         }
     }
 
 
     /**
+     *
      * @param rawResultSet - raw result set representation
+     * @return parsed result set
      */
-    private void parseResult(List<List<Object>> rawResultSet) {
+    private List<Record> parseResult(List<List<Object>> rawResultSet) {
+        List<Record> results = new ArrayList<>();
         if (rawResultSet == null || rawResultSet.isEmpty()) {
-            return;
+            return results;
         } else {
             //go over each raw result
             for (List<Object> row : rawResultSet) {
@@ -78,21 +82,26 @@ public class ResultSetImpl implements ResultSet {
                 results.add(record);
             }
         }
+        return results;
     }
 
     /**
+     *
      * @param rawStatistics raw statistics representation
+     * @return parsed statistics
      */
-    private void parseStatistics(Object rawStatistics) {
-        statistics = new StatisticsImpl((List<byte[]>) rawStatistics);
+    private StatisticsImpl parseStatistics(Object rawStatistics) {
+        return new StatisticsImpl((List<byte[]>) rawStatistics);
     }
 
 
     /**
-     * @param rawHeader raw header representation
+     *
+     * @param rawHeader - raw header representation
+     * @return parsed header
      */
-    private void parseHeader(List<List<Object>> rawHeader) {
-        header = new HeaderImpl(rawHeader);
+    private HeaderImpl parseHeader(List<List<Object>> rawHeader) {
+        return new HeaderImpl(rawHeader);
     }
 
     @Override
