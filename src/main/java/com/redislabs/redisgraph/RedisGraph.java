@@ -92,7 +92,6 @@ public class RedisGraph implements Closeable {
 
         try (Jedis conn = getConnection()) {
             List<Object> rawResponsw = sendCompactCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply();
-            conn.close();
             return new ResultSetImpl(rawResponsw, graphCaches.get(graphId));
         }
         catch (Exception e){
