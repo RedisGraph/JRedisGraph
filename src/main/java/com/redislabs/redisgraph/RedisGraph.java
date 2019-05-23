@@ -95,6 +95,10 @@ public class RedisGraph implements Closeable {
             conn.close();
             return new ResultSetImpl(rawResponsw, graphCaches.get(graphId));
         }
+        catch (Exception e){
+//            e.printStackTrace();
+            return new ResultSetImpl(new ArrayList<Object>(), graphCaches.get(graphId));
+        }
     }
 
     /**

@@ -36,6 +36,8 @@ public class RedisGraphAPITest {
         api.close();
     }
 
+
+
     @Test
     public void testCreateNode() {
         // Create a node    	
@@ -110,7 +112,7 @@ public class RedisGraphAPITest {
         Assert.assertNull(deleteResult.getStatistics().getStringValue(Label.PROPERTIES_SET));
         Assert.assertNull(deleteResult.getStatistics().getStringValue(Label.NODES_CREATED));
         Assert.assertNull(deleteResult.getStatistics().getStringValue(Label.RELATIONSHIPS_CREATED));
-        Assert.assertNull(deleteResult.getStatistics().getStringValue(Label.RELATIONSHIPS_DELETED));
+        Assert.assertEquals(1, deleteResult.getStatistics().relationshipsDeleted());
         Assert.assertEquals(1, deleteResult.getStatistics().nodesDeleted());
 
         Assert.assertNotNull(deleteResult.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME));
@@ -290,14 +292,24 @@ public class RedisGraphAPITest {
 
 
     @Test
+    public void tinyTestMultiThread(){
+        ResultSet resultSet = api.query("social", "CREATE ({name:'roi',age:32})");
+        api.query("social", "MATCH (a:person) RETURN a");
+        for (int i =0; i < 10000; i++){
+            List<ResultSet> resultSets = IntStream.range(0,10).parallel().
+                    mapToObj(j-> api.query("social", "MATCH (a:person) RETURN a")).
+                    collect(Collectors.toList());
+
+        }
+
+    }
+
+    @Test
     public void testMultiThread(){
 
-        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'roi',age:32})"));
-        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
-        Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(b)"));
+        Assert.assertNotNull(api.query("social", "CREATE (:person {name:'roi', age:32})-[:knows]->(:person {name:'amit',age:30}) "));
 
-
-        List<ResultSet> resultSets = IntStream.range(0,16).parallel().
+        List<ResultSet> resultSets = IntStream.range(0,10).parallel().
                 mapToObj(i-> api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, a.age")).
                 collect(Collectors.toList());
 
@@ -360,7 +372,7 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(api.query("social", "CREATE (:worker{lastName:'b'})"));
         Assert.assertNotNull(api.query("social", "MATCH (a:worker), (b:worker) WHERE (a.lastName = 'a' AND b.lastName='b')  CREATE (a)-[:worksWith]->(b)"));
 
-        resultSets = IntStream.range(0,16).parallel().
+        resultSets = IntStream.range(0,10).parallel().
                 mapToObj(i-> api.query("social", "MATCH (a:worker)-[r:worksWith]->(b:worker) RETURN a,r")).
                 collect(Collectors.toList());
 

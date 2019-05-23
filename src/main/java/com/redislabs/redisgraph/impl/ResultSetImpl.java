@@ -31,7 +31,8 @@ public class ResultSetImpl implements ResultSet {
 
             header = parseHeader(new ArrayList<>());
             results = new ArrayList<>();
-            statistics = parseStatistics(rawResponse.get(rawResponse.size() - 1));
+            statistics = rawResponse.size()> 0 ? parseStatistics(rawResponse.get(rawResponse.size() - 1)) :
+                    parseStatistics(new ArrayList<Objects>());
 
         } else {
 
