@@ -296,8 +296,9 @@ public class RedisGraphAPITest {
         ResultSet resultSet = api.query("social", "CREATE ({name:'roi',age:32})");
         api.query("social", "MATCH (a:person) RETURN a");
         for (int i =0; i < 10000; i++){
-            List<ResultSet> resultSets = IntStream.range(0,10).parallel().
-                    mapToObj(j-> api.query("social", "MATCH (a:person) RETURN a")).
+            List<ResultSet> resultSets = IntStream.range(0,16).parallel().
+                    mapToObj(
+                            j-> api.query("social", "MATCH (a:person) RETURN a")).
                     collect(Collectors.toList());
 
         }
@@ -309,7 +310,7 @@ public class RedisGraphAPITest {
 
         Assert.assertNotNull(api.query("social", "CREATE (:person {name:'roi', age:32})-[:knows]->(:person {name:'amit',age:30}) "));
 
-        List<ResultSet> resultSets = IntStream.range(0,10).parallel().
+        List<ResultSet> resultSets = IntStream.range(0,16).parallel().
                 mapToObj(i-> api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, a.age")).
                 collect(Collectors.toList());
 
@@ -372,7 +373,7 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(api.query("social", "CREATE (:worker{lastName:'b'})"));
         Assert.assertNotNull(api.query("social", "MATCH (a:worker), (b:worker) WHERE (a.lastName = 'a' AND b.lastName='b')  CREATE (a)-[:worksWith]->(b)"));
 
-        resultSets = IntStream.range(0,10).parallel().
+        resultSets = IntStream.range(0,16).parallel().
                 mapToObj(i-> api.query("social", "MATCH (a:worker)-[r:worksWith]->(b:worker) RETURN a,r")).
                 collect(Collectors.toList());
 

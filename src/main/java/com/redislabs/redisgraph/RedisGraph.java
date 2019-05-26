@@ -89,16 +89,22 @@ public class RedisGraph implements Closeable {
             query = String.format(query, args);
         }
         graphCaches.putIfAbsent(graphId, new GraphCache(graphId, this));
-
-        try (Jedis conn = getConnection()) {
-            List<Object> rawResponsw = sendCompactCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply();
+        Jedis conn = null;
+        List<Object> rawResponse = new ArrayList<Object>();
+        try  {
+            conn = getConnection();
+            rawResponse= sendCompactCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply();
             conn.close();
-            return new ResultSetImpl(rawResponsw, graphCaches.get(graphId));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            if(conn != null && conn.isConnected()){
+                conn.close();
+                throw e;
+            }
         }
-        catch (Exception e){
-//            e.printStackTrace();
-            return new ResultSetImpl(new ArrayList<Object>(), graphCaches.get(graphId));
-        }
+        return new ResultSetImpl(rawResponse, graphCaches.get(graphId));
+
     }
 
     /**
