@@ -8,7 +8,7 @@ jobs:
     docker:
       - image: circleci/openjdk:8u171-jdk
 
-      - image: redislabs/redisgraph:edge
+      - image: redislabs/redisgraph:2.0-edge
         port: 6379:6379
 
     working_directory: ~/repo
@@ -44,7 +44,7 @@ jobs:
       
       - run: bash <(curl -s https://codecov.io/bash) -t ${CODECOV_TOKEN}  
           
-      - run: mvn -s .circleci.settings.xml -DskipTests deploy
+      - run: mvn -s  .circleci.settings.xml -DskipTests deploy
 
 workflows:
   version: 2

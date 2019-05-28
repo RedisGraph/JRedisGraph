@@ -1,6 +1,7 @@
 package com.redislabs.redisgraph.impl;
 
 import java.util.List;
+import java.util.Objects;
 
 import com.redislabs.redisgraph.Record;
 
@@ -55,9 +56,24 @@ public class RecordImpl implements Record {
   }
 
   @Override
-  public String toString() {
-    return this.values.toString();
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof RecordImpl)) return false;
+    RecordImpl record = (RecordImpl) o;
+    return Objects.equals(header, record.header) &&
+            Objects.equals(values, record.values);
   }
 
+  @Override
+  public int hashCode() {
+    return Objects.hash(header, values);
+  }
 
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("Record{");
+    sb.append("values=").append(values);
+    sb.append('}');
+    return sb.toString();
+  }
 }
