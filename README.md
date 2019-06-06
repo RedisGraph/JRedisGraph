@@ -22,6 +22,7 @@ RedisGraph Java client
 ```
 
 ### Snapshots
+To be used with RedisGraph 2.0 (not officially released)
 
 ```xml
   <repositories>
@@ -39,7 +40,7 @@ and
     <dependency>
       <groupId>com.redislabs</groupId>
       <artifactId>jredisgraph</artifactId>
-      <version>1.0.5-SNAPSHOT</version>
+      <version>2.0.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 ```
