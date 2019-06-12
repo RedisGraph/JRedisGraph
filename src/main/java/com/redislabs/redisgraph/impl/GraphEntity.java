@@ -52,6 +52,14 @@ public abstract class GraphEntity {
     }
 
     /**
+     *
+     * @return Entity's property names, as a Set
+     */
+    public Set<String> getEntityPropertyNames(){
+        return propertyMap.keySet();
+    }
+
+    /**
      * Add a property to the entity
      * @param property
      */

@@ -280,6 +280,10 @@ public class RedisGraphAPITest {
                 place, since, doubleValue, false, null),
                 record.values());
 
+        Node a = record.getValue("a");
+        for (String propertyName : expectedNode.getEntityPropertyNames()){
+            Assert.assertEquals(expectedNode.getProperty(propertyName) ,a.getProperty(propertyName));
+        }
 
         Assert.assertEquals( "roi", record.getString(2));
     	Assert.assertEquals( "32", record.getString(3));
@@ -408,9 +412,9 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(b)"));
 
 
-        List<ResultSet> resultSets = IntStream.range(0,16).parallel().
-                mapToObj(i-> api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r")).
-                collect(Collectors.toList());
+//        List<ResultSet> resultSets = IntStream.range(0,16).parallel().
+//                mapToObj(i-> api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r")).
+//                collect(Collectors.toList());
 
         //expected objects init
         Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, "roi");
