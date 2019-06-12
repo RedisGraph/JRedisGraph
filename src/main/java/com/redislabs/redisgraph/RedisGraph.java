@@ -1,6 +1,6 @@
 package com.redislabs.redisgraph;
 
-import com.redislabs.redisgraph.impl.GraphCache;
+import com.redislabs.redisgraph.impl.graph_cache.GraphCache;
 import com.redislabs.redisgraph.impl.ResultSetImpl;
 import org.apache.commons.text.translate.AggregateTranslator;
 import org.apache.commons.text.translate.CharSequenceTranslator;

@@ -1,9 +1,11 @@
 package com.redislabs.redisgraph.impl;
 
-import com.redislabs.redisgraph.Header;
-import com.redislabs.redisgraph.Record;
-import com.redislabs.redisgraph.ResultSet;
-import com.redislabs.redisgraph.Statistics;
+import com.redislabs.redisgraph.*;
+import com.redislabs.redisgraph.graph_entities.Edge;
+import com.redislabs.redisgraph.graph_entities.GraphEntity;
+import com.redislabs.redisgraph.graph_entities.Node;
+import com.redislabs.redisgraph.graph_entities.Property;
+import com.redislabs.redisgraph.impl.graph_cache.GraphCache;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package com.redislabs.redisgraph.impl;
+package com.redislabs.redisgraph.graph_entities;
 
 
 import com.redislabs.redisgraph.ResultSet.ResultSetScalarTypes;
