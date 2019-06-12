@@ -1,4 +1,4 @@
-package com.redislabs.redisgraph.impl;
+package com.redislabs.redisgraph.graph_entities;
 
 
 import com.redislabs.redisgraph.ResultSet.ResultSetScalarTypes;
@@ -49,6 +49,14 @@ public abstract class GraphEntity {
 
         addProperty(new Property(name, type, value));
 
+    }
+
+    /**
+     *
+     * @return Entity's property names, as a Set
+     */
+    public Set<String> getEntityPropertyNames(){
+        return propertyMap.keySet();
     }
 
     /**

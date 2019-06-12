@@ -7,9 +7,9 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.redislabs.redisgraph.impl.Edge;
-import com.redislabs.redisgraph.impl.Node;
-import com.redislabs.redisgraph.impl.Property;
+import com.redislabs.redisgraph.graph_entities.Edge;
+import com.redislabs.redisgraph.graph_entities.Node;
+import com.redislabs.redisgraph.graph_entities.Property;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -280,6 +280,10 @@ public class RedisGraphAPITest {
                 place, since, doubleValue, false, null),
                 record.values());
 
+        Node a = record.getValue("a");
+        for (String propertyName : expectedNode.getEntityPropertyNames()){
+            Assert.assertEquals(expectedNode.getProperty(propertyName) ,a.getProperty(propertyName));
+        }
 
         Assert.assertEquals( "roi", record.getString(2));
     	Assert.assertEquals( "32", record.getString(3));
@@ -406,11 +410,6 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(api.query("social", "CREATE (:person{name:'roi',age:32})"));
         Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
         Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(b)"));
-
-
-        List<ResultSet> resultSets = IntStream.range(0,16).parallel().
-                mapToObj(i-> api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r")).
-                collect(Collectors.toList());
 
         //expected objects init
         Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, "roi");

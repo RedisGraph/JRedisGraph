@@ -1,4 +1,4 @@
-package com.redislabs.redisgraph.impl;
+package com.redislabs.redisgraph.impl.graph_cache;
 
 import com.redislabs.redisgraph.Record;
 import com.redislabs.redisgraph.RedisGraph;
