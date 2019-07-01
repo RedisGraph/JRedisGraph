@@ -78,7 +78,7 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
 
         // Connect source and destination nodes.
-        ResultSet resultSet = api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(a)");
+        ResultSet resultSet = api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(b)");
 
         Assert.assertFalse(resultSet.hasNext());
         Assert.assertNull(resultSet.getStatistics().getStringValue(Label.NODES_CREATED));
