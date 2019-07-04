@@ -10,6 +10,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.commands.ProtocolCommand;
 import redis.clients.jedis.util.Pool;
+import redis.clients.jedis.util.SafeEncoder;
 
 import java.io.Closeable;
 import java.util.*;
@@ -29,7 +30,7 @@ public class RedisGraph implements Closeable {
 
 
 
-    private static final CharSequenceTranslator ESCAPE_CHYPER;
+    public static final CharSequenceTranslator ESCAPE_CHYPER;
     static {
         final Map<CharSequence, CharSequence> escapeJavaMap = new HashMap<>();
         escapeJavaMap.put("\'", "\\'");
@@ -91,7 +92,7 @@ public class RedisGraph implements Closeable {
         graphCaches.putIfAbsent(graphId, new GraphCache(graphId, this));
         List<Object> rawResponse = null;
         try(Jedis conn = getConnection()){
-            rawResponse= sendCompactCommand(conn, Command.QUERY, graphId, query).getObjectMultiBulkReply();
+            rawResponse = (List<Object>) conn.sendCommand(Command.QUERY, graphId, query, "--COMPACT");
         }
         return new ResultSetImpl(rawResponse, graphCaches.get(graphId));
 
@@ -129,38 +130,9 @@ public class RedisGraph implements Closeable {
         //clear local state
         graphCaches.remove(graphId);
         try (Jedis conn = getConnection()) {
-            return sendCommand(conn, Command.DELETE, graphId).getBulkReply();
+            return SafeEncoder.encode((byte[]) conn.sendCommand(Command.DELETE, graphId));
         }
 
-    }
-
-
-    /**
-     * Sends command - will be replaced with sendCompactCommand once graph.delete support --compact flag
-     * @param conn - connection
-     * @param provider - command type
-     * @param args - command arguments
-     * @return
-     */
-    private BinaryClient sendCommand(Jedis conn, ProtocolCommand provider, String ...args) {
-        BinaryClient binaryClient = conn.getClient();
-        binaryClient.sendCommand(provider, args);
-        return binaryClient;
-    }
-
-
-    /**
-     * Sends the command with --COMPACT flag
-     * @param conn - connection
-     * @param provider - command type
-     * @param args - command arguments
-     * @return
-     */
-    private BinaryClient sendCompactCommand(Jedis conn, ProtocolCommand provider, String ...args) {
-        String[] t = new String[args.length +1];
-        System.arraycopy(args, 0 , t, 0, args.length);
-        t[args.length]="--COMPACT";
-        return sendCommand(conn, provider, t);
     }
 
     private Jedis getConnection() {
