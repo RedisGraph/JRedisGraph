@@ -16,8 +16,8 @@ public abstract class GraphEntity {
 
     //members
 
-    protected int id;
-    protected final Map<String, Property> propertyMap = new HashMap<>();
+    int id;
+    final Map<String, Property> propertyMap = new HashMap<>();
 
 
     //setters & getters

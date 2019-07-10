@@ -1,9 +1,10 @@
-package com.redislabs.redisgraph;
+package com.redislabs.redisgraph.impl;
 
 import org.apache.commons.text.translate.AggregateTranslator;
 import org.apache.commons.text.translate.CharSequenceTranslator;
 import org.apache.commons.text.translate.LookupTranslator;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +15,12 @@ import java.util.stream.Collectors;
  * Utilities class
  */
 public class Utils {
+    public static final List<String> dummyList = new ArrayList<>(0);
+    public static final Map<String, List<String>> dummyMap = new HashMap<>(0);
 
-    public static final CharSequenceTranslator ESCAPE_CHYPER;
+
+
+    private static final CharSequenceTranslator ESCAPE_CHYPER;
     static {
         final Map<CharSequence, CharSequence> escapeJavaMap = new HashMap<>();
         escapeJavaMap.put("\'", "\\'");
@@ -28,7 +33,7 @@ public class Utils {
      * @param str - a string
      * @return the input string surrounded with quotation marks, if needed
      */
-    public static String quoteString(String str){
+    private static String quoteString(String str){
         if(str.startsWith("\"") && str.endsWith("\"")){
             return str;
         }

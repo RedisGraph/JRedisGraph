@@ -3,16 +3,16 @@ package com.redislabs.redisgraph;
 import java.util.List;
 
 /**
- * Query response header interface. Represents the response schame (column names and types)
+ * Query response header interface. Represents the response schema (column names and types)
  */
 public interface Header {
 
 
-    public enum ResultSetColumnTypes {
+    enum ResultSetColumnTypes {
         COLUMN_UNKNOWN,
         COLUMN_SCALAR,
         COLUMN_NODE,
-        COLUMN_RELATION;
+        COLUMN_RELATION
 
     }
 

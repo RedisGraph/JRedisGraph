@@ -28,7 +28,7 @@ public class Node extends GraphEntity {
 
     /**
      * @param index - label index
-     * @return the proprty label
+     * @return the property label
      * @throws IndexOutOfBoundsException if the index is out of range
      *                                   ({@code index < 0 || index >= getNumberOfLabels()})
      */

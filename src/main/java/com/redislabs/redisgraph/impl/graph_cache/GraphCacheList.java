@@ -7,17 +7,16 @@ import com.redislabs.redisgraph.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 
 /**
  * Represents a local cache of list of strings. Holds data from a specific procedure, for a specific graph.
  */
-public class GraphCacheList {
+class GraphCacheList {
 
-    private Object mutex = new Object();
+    private final Object mutex = new Object();
     private final String graphId;
     private final String procedure;
-    private final RedisGraph redisGraph;
     private final List<String>  data = new CopyOnWriteArrayList<>();
 
 
@@ -26,12 +25,10 @@ public class GraphCacheList {
      *
      * @param graphId - graph id
      * @param procedure - exact procedure command
-     * @param redisGraph - a client to use in the cache, for re-validate it by calling procedures
      */
-    public GraphCacheList(String graphId, String procedure, RedisGraph redisGraph) {
+    public GraphCacheList(String graphId, String procedure) {
         this.graphId = graphId;
         this.procedure = procedure;
-        this.redisGraph = redisGraph;
     }
 
 
@@ -40,23 +37,22 @@ public class GraphCacheList {
      * @param index index of data item
      * @return The string value of the specific procedure response, at the given index.
      */
-    public String getCachedData(int index) {
+    public String getCachedData(int index, RedisGraph redisGraph) {
         if (index >= data.size()) {
             synchronized (mutex){
                 if (index >= data.size()) {
-                    getProcedureInfo();
+                    getProcedureInfo(redisGraph);
                 }
             }
         }
-        String s = data.get(index);
-        return s;
+        return data.get(index);
 
     }
 
     /**
      * Auxiliary method to parse a procedure result set and refresh the cache
      */
-    private void getProcedureInfo() {
+    private void getProcedureInfo(RedisGraph redisGraph) {
         ResultSet resultSet = redisGraph.callProcedure(graphId, procedure);
         List<String> newData = new ArrayList<>();
         int i = 0;

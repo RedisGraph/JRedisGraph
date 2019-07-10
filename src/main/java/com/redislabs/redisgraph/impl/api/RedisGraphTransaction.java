@@ -1,38 +1,33 @@
-package com.redislabs.redisgraph.impl;
+package com.redislabs.redisgraph.impl.api;
 
-
-import com.redislabs.redisgraph.Command;
 import com.redislabs.redisgraph.RedisGraph;
 import com.redislabs.redisgraph.ResultSet;
-import com.redislabs.redisgraph.Utils;
-import com.redislabs.redisgraph.impl.graph_cache.GraphCache;
+import com.redislabs.redisgraph.impl.Utils;
+import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
+import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
 import redis.clients.jedis.Builder;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Client;
-import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Response;
 import redis.clients.jedis.Transaction;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
  * This class is extending Jedis Transaction
  */
-public class JRedisGraphTransaction extends Transaction {
+public class RedisGraphTransaction extends Transaction implements com.redislabs.redisgraph.RedisGraphTransaction, RedisGraphCacheHolder {
 
     private final RedisGraph redisGraph;
-    private final Map<String, GraphCache> graphCaches;
+    private RedisGraphCaches caches;
 
 
-    public JRedisGraphTransaction(Client client, RedisGraph redisGraph, Map<String, GraphCache> graphCaches){
+    public RedisGraphTransaction(Client client, RedisGraph redisGraph){
         // init as in Jedis
         super(client);
 
         this.redisGraph = redisGraph;
-        this.graphCaches = graphCaches;
     }
 
     /**
@@ -43,14 +38,13 @@ public class JRedisGraphTransaction extends Transaction {
      * @param args
      * @return response with a result set
      */
-    public Response<ResultSet> graphQuery(String graphId, String query, Object ...args){
+    public Response<ResultSet> query(String graphId, String query, Object ...args){
         String preparedQuery = Utils.prepareQuery(query, args);
-        graphCaches.putIfAbsent(graphId, new GraphCache(graphId, redisGraph));
-        client.sendCommand(Command.QUERY, graphId, preparedQuery, "--COMPACT");
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, "--COMPACT");
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, graphCaches.get(graphId));
+                return new ResultSetImpl((List<Object>)o, redisGraph, graphId, caches.getGraphCache(graphId));
             }
         });
     }
@@ -62,8 +56,8 @@ public class JRedisGraphTransaction extends Transaction {
      * @param procedure procedure name to invoke
      * @return response with result set with the procedure data
      */
-    public Response<ResultSet> graphCallProcedure(String graphId, String procedure){
-        return graphCallProcedure(graphId, procedure, new ArrayList<>(), new HashMap<>());
+    public Response<ResultSet> callProcedure(String graphId, String procedure){
+        return callProcedure(graphId, procedure, Utils.dummyList, Utils.dummyMap);
     }
 
     /**
@@ -73,8 +67,8 @@ public class JRedisGraphTransaction extends Transaction {
      * @param args procedure arguments
      * @return response with result set with the procedure data
      */
-    public Response<ResultSet> graphCallProcedure(String graphId, String procedure, List<String> args  ){
-        return graphCallProcedure(graphId, procedure, args, new HashMap<>());
+    public Response<ResultSet> callProcedure(String graphId, String procedure, List<String> args  ){
+        return callProcedure(graphId, procedure, args, Utils.dummyMap);
     }
 
 
@@ -86,10 +80,10 @@ public class JRedisGraphTransaction extends Transaction {
      * @param kwargs - procedure output arguments
      * @return response with result set with the procedure data
      */
-    public Response<ResultSet> graphCallProcedure(String graphId, String procedure, List<String> args,
-                                                  HashMap<String, List<String>> kwargs) {
+    public Response<ResultSet> callProcedure(String graphId, String procedure, List<String> args,
+                                                  Map<String, List<String>> kwargs) {
         String preparedProcedure = Utils.prepareProcedure(procedure, args, kwargs);
-        return graphQuery(graphId, preparedProcedure);
+        return query(graphId, preparedProcedure);
     }
 
 
@@ -98,9 +92,17 @@ public class JRedisGraphTransaction extends Transaction {
      * @param graphId graph to delete
      * @return response with the deletion running time statistics
      */
-    public Response<String> graphDeleteGraph(String graphId){
-        graphCaches.remove(graphId);
-        client.sendCommand(Command.DELETE, graphId);
-        return getResponse(BuilderFactory.STRING);
+    public Response<String> deleteGraph(String graphId){
+
+        client.sendCommand(RedisGraphCommand.DELETE, graphId);
+        Response<String> response =  getResponse(BuilderFactory.STRING);
+        caches.removeGraphCache(graphId);
+        return response;
     }
+
+    @Override
+    public void setRedisGraphCaches(RedisGraphCaches caches) {
+        this.caches = caches;
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.redislabs.redisgraph.impl;
+package com.redislabs.redisgraph.impl.resultset;
 
 import com.redislabs.redisgraph.*;
 import com.redislabs.redisgraph.graph_entities.Edge;
@@ -6,6 +6,7 @@ import com.redislabs.redisgraph.graph_entities.GraphEntity;
 import com.redislabs.redisgraph.graph_entities.Node;
 import com.redislabs.redisgraph.graph_entities.Property;
 import com.redislabs.redisgraph.impl.graph_cache.GraphCache;
+import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
@@ -20,15 +21,19 @@ public class ResultSetImpl implements ResultSet {
     private final List<Record> results ;
 
     private int position = 0;
-    private final GraphCache graphCache;
+    private final RedisGraph redisGraph;
+    private final String graphId;
+    private final GraphCache cache;
 
     /**
      * @param rawResponse the raw representation of response is at most 3 lists of objects.
      *                    The last list is the statistics list.
-     * @param graphCache, the graph local cache
+     * @param redisGraph, the graph local cache
      */
-    public ResultSetImpl(List<Object> rawResponse, GraphCache graphCache) {
-        this.graphCache = graphCache;
+    public ResultSetImpl(List<Object> rawResponse, RedisGraph redisGraph, String graphId, GraphCache cache) {
+        this.redisGraph = redisGraph;
+        this.graphId = graphId;
+        this.cache = cache;
         if (rawResponse.size() != 3) {
 
             header = parseHeader(new ArrayList<>());
@@ -40,7 +45,7 @@ public class ResultSetImpl implements ResultSet {
 
             header = parseHeader((List<List<Object>>) rawResponse.get(0));
             results = parseResult((List<List<Object>>) rawResponse.get(1));
-            statistics = parseStatistics((List<Object>) rawResponse.get(2));
+            statistics = parseStatistics(rawResponse.get(2));
         }
     }
 
@@ -130,7 +135,7 @@ public class ResultSetImpl implements ResultSet {
         deserializeGraphEntityId(node, rawNodeData.get(0));
         List<Long> labelsIndices = (List<Long>) rawNodeData.get(1);
         for (long labelIndex : labelsIndices) {
-            String label = graphCache.getLabel((int) labelIndex);
+            String label = cache.getLabel((int) labelIndex, redisGraph);
             node.addLabel(label);
         }
         deserializeGraphEntityProperties(node, (List<List<Object>>) rawNodeData.get(2));
@@ -162,7 +167,8 @@ public class ResultSetImpl implements ResultSet {
         Edge edge = new Edge();
         deserializeGraphEntityId(edge, rawEdgeData.get(0));
 
-        String relationshipType = graphCache.getRelationshipType(((Long) rawEdgeData.get(1)).intValue());
+        String relationshipType = cache.getRelationshipType(((Long) rawEdgeData.get(1)).intValue(),
+                                                                        redisGraph);
         edge.setRelationshipType(relationshipType);
 
         edge.setSource((int) (long) rawEdgeData.get(2));
@@ -181,12 +187,13 @@ public class ResultSetImpl implements ResultSet {
      *                      rawProperty.get(1) - property type
      *                      rawProperty.get(2) - property value
      */
-    void deserializeGraphEntityProperties(GraphEntity entity, List<List<Object>> rawProperties) {
+    private void deserializeGraphEntityProperties(GraphEntity entity, List<List<Object>> rawProperties) {
 
 
         for (List<Object> rawProperty : rawProperties) {
             Property property = new Property();
-            property.setName(graphCache.getPropertyName(((Long) rawProperty.get(0)).intValue()));
+            property.setName(cache.getPropertyName(((Long) rawProperty.get(0)).intValue(),
+                                                                redisGraph));
 
             //trimmed for getting to value using deserializeScalar
             List<Object> propertyScalar = rawProperty.subList(1, rawProperty.size());
@@ -214,7 +221,7 @@ public class ResultSetImpl implements ResultSet {
             case PROPERTY_DOUBLE:
                 return Double.parseDouble(SafeEncoder.encode((byte[]) obj));
             case PROPERTY_INTEGER:
-                return (Integer) ((Long) obj).intValue();
+                return ((Long) obj).intValue();
             case PROPERTY_STRING:
                 return SafeEncoder.encode((byte[]) obj);
             case PROPERTY_UNKNOWN:

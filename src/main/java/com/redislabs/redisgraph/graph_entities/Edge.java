@@ -8,7 +8,7 @@ import java.util.Objects;
  */
 public class Edge extends GraphEntity {
 
-    //memebers
+    //members
     private  String relationshipType;
     private int source;
     private int destination;

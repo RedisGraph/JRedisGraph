@@ -15,36 +15,35 @@ public class GraphCache {
     /**
      *
      * @param graphId - graph Id
-     * @param redisGraph - a client to use in the cache, for re-validate it by calling procedures
      */
-    public GraphCache(String graphId, RedisGraph redisGraph) {
-        this.labels = new GraphCacheList(graphId, "db.labels", redisGraph);
-        this.propertyNames = new GraphCacheList(graphId, "db.propertyKeys", redisGraph);
-        this.relationshipTypes = new GraphCacheList(graphId, "db.relationshipTypes", redisGraph);
+    public GraphCache(String graphId) {
+        this.labels = new GraphCacheList(graphId, "db.labels");
+        this.propertyNames = new GraphCacheList(graphId, "db.propertyKeys");
+        this.relationshipTypes = new GraphCacheList(graphId, "db.relationshipTypes");
     }
 
     /**
      * @param index - index of label
      * @return requested label
      */
-    public String getLabel(int index) {
-        return labels.getCachedData(index);
+    public String getLabel(int index, RedisGraph redisGraph) {
+        return labels.getCachedData(index, redisGraph);
     }
 
     /**
      * @param index index of the relationship type
      * @return requested relationship type
      */
-    public String getRelationshipType(int index) {
-        return relationshipTypes.getCachedData(index);
+    public String getRelationshipType(int index, RedisGraph redisGraph) {
+        return relationshipTypes.getCachedData(index, redisGraph);
     }
 
     /**
      * @param index index of property name
      * @return requested property
      */
-    public String getPropertyName(int index) {
+    public String getPropertyName(int index, RedisGraph redisGraph) {
 
-        return propertyNames.getCachedData(index);
+        return propertyNames.getCachedData(index, redisGraph);
     }
 }
