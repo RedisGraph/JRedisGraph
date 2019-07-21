@@ -2,6 +2,7 @@ package com.redislabs.redisgraph.impl.api;
 
 import com.redislabs.redisgraph.RedisGraphContexted;
 import com.redislabs.redisgraph.ResultSet;
+import com.redislabs.redisgraph.impl.Utils;
 import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
 import redis.clients.jedis.Client;
@@ -45,7 +46,14 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
     @Override
     protected ResultSet sendQuery(String graphId, String preparedQuery) {
         Jedis conn = getConnection();
-        List<Object> rawResponse = (List<Object>) conn.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, "--COMPACT");
+        List<Object> rawResponse;
+        try {
+            rawResponse = (List<Object>) conn.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.compactString);
+        }
+        catch (Exception e) {
+            conn.close();
+            throw e;
+        }
         return new ResultSetImpl(rawResponse, this, graphId, caches.getGraphCache(graphId));
     }
 
@@ -98,7 +106,15 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
      */
     @Override
     public String deleteGraph(String graphId) {
-        Object response = getConnection().sendCommand(RedisGraphCommand.DELETE, graphId);
+        Jedis conn = getConnection();
+        Object response;
+        try {
+            response = conn.sendCommand(RedisGraphCommand.DELETE, graphId);
+        }
+        catch (Exception e) {
+            conn.close();
+            throw e;
+        }
         //clear local state
         caches.removeGraphCache(graphId);
         return SafeEncoder.encode((byte[]) response);

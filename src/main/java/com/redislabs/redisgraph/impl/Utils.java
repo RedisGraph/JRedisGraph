@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class Utils {
     public static final List<String> dummyList = new ArrayList<>(0);
     public static final Map<String, List<String>> dummyMap = new HashMap<>(0);
+    public static final String compactString = "--COMPACT";
 
 
 
@@ -77,10 +78,23 @@ public class Utils {
     public static String prepareProcedure(String procedure, List<String> args  , Map<String, List<String>> kwargs){
         args = args.stream().map( s -> Utils.quoteString(s)).collect(Collectors.toList());
         StringBuilder queryStringBuilder =  new StringBuilder();
-        queryStringBuilder.append(String.format("CALL %s(%s)", procedure, String.join(",", args)));
+        queryStringBuilder.append("CALL ").append(procedure).append("(");
+        int i = 0;
+        for (; i < args.size() - 1; i++) {
+            queryStringBuilder.append(args.get(i)).append(",");
+        }
+        if (i == args.size()-1) {
+            queryStringBuilder.append(args.get(i));
+        }
+        queryStringBuilder.append(")");
         List<String> kwargsList = kwargs.getOrDefault("y", null);
         if(kwargsList != null){
-            queryStringBuilder.append(String.join(",", kwargsList));
+            i = 0;
+            for (; i < kwargsList.size() - 1; i++) {
+                queryStringBuilder.append(kwargsList.get(i)).append(",");
+
+            }
+            queryStringBuilder.append(kwargsList.get(i));
         }
         return queryStringBuilder.toString();
     }

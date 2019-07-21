@@ -14,12 +14,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 class GraphCacheList {
 
-    private final Object mutex = new Object();
     private final String graphId;
     private final String procedure;
     private final List<String>  data = new CopyOnWriteArrayList<>();
-
-
 
     /**
      *
@@ -39,7 +36,7 @@ class GraphCacheList {
      */
     public String getCachedData(int index, RedisGraph redisGraph) {
         if (index >= data.size()) {
-            synchronized (mutex){
+            synchronized (data){
                 if (index >= data.size()) {
                     getProcedureInfo(redisGraph);
                 }

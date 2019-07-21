@@ -3,6 +3,7 @@ package com.redislabs.redisgraph.impl.api;
 import com.redislabs.redisgraph.RedisGraphContexted;
 import com.redislabs.redisgraph.RedisGraphGeneralContext;
 import com.redislabs.redisgraph.ResultSet;
+import com.redislabs.redisgraph.impl.Utils;
 import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
 import redis.clients.jedis.Jedis;
@@ -68,11 +69,10 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphGeneralC
      */
     @Override
     protected ResultSet sendQuery(String graphId, String preparedQuery){
-        List<Object> rawResponse;
-        try(Jedis conn = getConnection()){
-            rawResponse = (List<Object>) conn.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, "--COMPACT");
+        try (ContextedRedisGraph contextedRedisGraph = new ContextedRedisGraph(getConnection())) {
+            contextedRedisGraph.setRedisGraphCaches(caches);
+            return contextedRedisGraph.sendQuery(graphId, preparedQuery);
         }
-        return new ResultSetImpl(rawResponse, this, graphId, caches.getGraphCache(graphId));
     }
 
 
