@@ -54,7 +54,7 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
             conn.close();
             throw e;
         }
-        return new ResultSetImpl(rawResponse, this, graphId, caches.getGraphCache(graphId));
+        return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
     }
 
     /**

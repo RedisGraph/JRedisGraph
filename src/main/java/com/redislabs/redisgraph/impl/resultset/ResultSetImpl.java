@@ -6,7 +6,6 @@ import com.redislabs.redisgraph.graph_entities.GraphEntity;
 import com.redislabs.redisgraph.graph_entities.Node;
 import com.redislabs.redisgraph.graph_entities.Property;
 import com.redislabs.redisgraph.impl.graph_cache.GraphCache;
-import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ public class ResultSetImpl implements ResultSet {
 
     private int position = 0;
     private final RedisGraph redisGraph;
-    private final String graphId;
     private final GraphCache cache;
 
     /**
@@ -30,9 +28,8 @@ public class ResultSetImpl implements ResultSet {
      *                    The last list is the statistics list.
      * @param redisGraph, the graph local cache
      */
-    public ResultSetImpl(List<Object> rawResponse, RedisGraph redisGraph, String graphId, GraphCache cache) {
+    public ResultSetImpl(List<Object> rawResponse, RedisGraph redisGraph, GraphCache cache) {
         this.redisGraph = redisGraph;
-        this.graphId = graphId;
         this.cache = cache;
         if (rawResponse.size() != 3) {
 
@@ -80,8 +77,13 @@ public class ResultSetImpl implements ResultSet {
                             break;
                         case COLUMN_SCALAR: {
                             parsedRow.add(deserializeScalar(obj));
-
+                            break;
                         }
+                        default: {
+                            parsedRow.add(null);
+                            break;
+                        }
+
                     }
 
                 }

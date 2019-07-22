@@ -44,7 +44,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, graphId, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
