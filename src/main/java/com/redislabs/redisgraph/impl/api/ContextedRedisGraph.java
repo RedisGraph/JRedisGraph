@@ -48,13 +48,13 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
         Jedis conn = getConnection();
         List<Object> rawResponse;
         try {
-            rawResponse = (List<Object>) conn.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.compactString);
+            rawResponse = (List<Object>) conn.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
         }
         catch (Exception e) {
             conn.close();
             throw e;
         }
-        return new ResultSetImpl(rawResponse, this, graphId, caches.getGraphCache(graphId));
+        return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
     }
 
     /**

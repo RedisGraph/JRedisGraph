@@ -43,11 +43,11 @@ public abstract class AbstractRedisGraph implements RedisGraph {
 
 
     public ResultSet callProcedure(String graphId, String procedure){
-        return callProcedure(graphId, procedure, Utils.dummyList, Utils.dummyMap);
+        return callProcedure(graphId, procedure, Utils.DUMMY_LIST, Utils.DUMMY_MAP);
     }
 
     public ResultSet callProcedure(String graphId, String procedure, List<String> args){
-        return callProcedure(graphId, procedure, args, Utils.dummyMap);
+        return callProcedure(graphId, procedure, args, Utils.DUMMY_MAP);
     }
 
     public ResultSet callProcedure(String graphId, String procedure, List<String> args  , Map<String, List<String>> kwargs){
