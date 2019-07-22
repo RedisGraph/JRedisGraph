@@ -15,11 +15,9 @@ import java.util.stream.Collectors;
  * Utilities class
  */
 public class Utils {
-    public static final List<String> dummyList = new ArrayList<>(0);
-    public static final Map<String, List<String>> dummyMap = new HashMap<>(0);
-    public static final String compactString = "--COMPACT";
-
-
+    public static final List<String> DUMMY_LIST = new ArrayList<>(0);
+    public static final Map<String, List<String>> DUMMY_MAP = new HashMap<>(0);
+    public static final String COMPACT_STRING = "--COMPACT";
 
     private static final CharSequenceTranslator ESCAPE_CHYPER;
     static {
@@ -28,6 +26,8 @@ public class Utils {
         escapeJavaMap.put("\"", "\\\"");
         ESCAPE_CHYPER = new AggregateTranslator(new LookupTranslator(Collections.unmodifiableMap(escapeJavaMap)));
     }
+    
+    private Utils() {}
 
     /**
      *
