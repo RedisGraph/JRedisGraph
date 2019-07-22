@@ -9,7 +9,6 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.util.Pool;
 import redis.clients.jedis.util.SafeEncoder;
 
-
 /**
  *
  */

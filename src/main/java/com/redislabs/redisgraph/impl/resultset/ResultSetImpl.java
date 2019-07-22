@@ -136,8 +136,8 @@ public class ResultSetImpl implements ResultSet {
         Node node = new Node();
         deserializeGraphEntityId(node, rawNodeData.get(0));
         List<Long> labelsIndices = (List<Long>) rawNodeData.get(1);
-        for (long labelIndex : labelsIndices) {
-            String label = cache.getLabel((int) labelIndex, redisGraph);
+        for (Long labelIndex : labelsIndices) {
+            String label = cache.getLabel(labelIndex.intValue(), redisGraph);
             node.addLabel(label);
         }
         deserializeGraphEntityProperties(node, (List<List<Object>>) rawNodeData.get(2));
@@ -151,7 +151,7 @@ public class ResultSetImpl implements ResultSet {
      * @param rawEntityId raw representation of entity id to be set to the graph entity
      */
     private void deserializeGraphEntityId(GraphEntity graphEntity, Object rawEntityId) {
-        int id = (int) (long) rawEntityId;
+        int id = ((Long) rawEntityId).intValue();
         graphEntity.setId(id);
     }
 
