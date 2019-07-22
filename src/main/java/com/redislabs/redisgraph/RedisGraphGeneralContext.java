@@ -1,7 +1,5 @@
 package com.redislabs.redisgraph;
 
-import redis.clients.jedis.Jedis;
-
 public interface RedisGraphGeneralContext extends RedisGraph {
 
     /**

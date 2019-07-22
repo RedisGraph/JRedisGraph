@@ -3,7 +3,6 @@ package com.redislabs.redisgraph.impl.api;
 import com.redislabs.redisgraph.RedisGraph;
 import com.redislabs.redisgraph.ResultSet;
 import com.redislabs.redisgraph.impl.Utils;
-import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
 import redis.clients.jedis.Jedis;
 
 import java.util.List;

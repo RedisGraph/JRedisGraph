@@ -3,17 +3,11 @@ package com.redislabs.redisgraph.impl.api;
 import com.redislabs.redisgraph.RedisGraphContexted;
 import com.redislabs.redisgraph.RedisGraphGeneralContext;
 import com.redislabs.redisgraph.ResultSet;
-import com.redislabs.redisgraph.impl.Utils;
 import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
-import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.util.Pool;
 import redis.clients.jedis.util.SafeEncoder;
-
-import java.util.*;
-
-
 
 /**
  *

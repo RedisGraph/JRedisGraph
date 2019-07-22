@@ -6,7 +6,6 @@ import com.redislabs.redisgraph.graph_entities.GraphEntity;
 import com.redislabs.redisgraph.graph_entities.Node;
 import com.redislabs.redisgraph.graph_entities.Property;
 import com.redislabs.redisgraph.impl.graph_cache.GraphCache;
-import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ public class ResultSetImpl implements ResultSet {
 
     private int position = 0;
     private final RedisGraph redisGraph;
-    private final String graphId;
     private final GraphCache cache;
 
     /**
@@ -30,9 +28,8 @@ public class ResultSetImpl implements ResultSet {
      *                    The last list is the statistics list.
      * @param redisGraph, the graph local cache
      */
-    public ResultSetImpl(List<Object> rawResponse, RedisGraph redisGraph, String graphId, GraphCache cache) {
+    public ResultSetImpl(List<Object> rawResponse, RedisGraph redisGraph, GraphCache cache) {
         this.redisGraph = redisGraph;
-        this.graphId = graphId;
         this.cache = cache;
         if (rawResponse.size() != 3) {
 
@@ -78,10 +75,8 @@ public class ResultSetImpl implements ResultSet {
                         case COLUMN_RELATION:
                             parsedRow.add(deserializeEdge(obj));
                             break;
-                        case COLUMN_SCALAR: {
+                        case COLUMN_SCALAR: 
                             parsedRow.add(deserializeScalar(obj));
-
-                        }
                     }
 
                 }
@@ -134,8 +129,8 @@ public class ResultSetImpl implements ResultSet {
         Node node = new Node();
         deserializeGraphEntityId(node, rawNodeData.get(0));
         List<Long> labelsIndices = (List<Long>) rawNodeData.get(1);
-        for (long labelIndex : labelsIndices) {
-            String label = cache.getLabel((int) labelIndex, redisGraph);
+        for (Long labelIndex : labelsIndices) {
+            String label = cache.getLabel(labelIndex.intValue(), redisGraph);
             node.addLabel(label);
         }
         deserializeGraphEntityProperties(node, (List<List<Object>>) rawNodeData.get(2));
@@ -149,7 +144,7 @@ public class ResultSetImpl implements ResultSet {
      * @param rawEntityId raw representation of entity id to be set to the graph entity
      */
     private void deserializeGraphEntityId(GraphEntity graphEntity, Object rawEntityId) {
-        int id = (int) (long) rawEntityId;
+        int id = ((Long) rawEntityId).intValue();
         graphEntity.setId(id);
     }
 
