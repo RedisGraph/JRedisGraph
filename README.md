@@ -89,7 +89,6 @@ import com.redislabs.redisgraph.graph_entities.Edge;
 import com.redislabs.redisgraph.graph_entities.Node;
 import com.redislabs.redisgraph.impl.api.RedisGraph;
 
-import java.io.IOException;
 import java.util.List;
 
 public class RedisGraphExample {
@@ -133,12 +132,8 @@ public class RedisGraphExample {
             System.out.println(execResults.toString());
 
             context.deleteGraph("contextSocial");
-        } catch (IOException e) {
-            
         }
-
     }
 }
-
 
 ```
