@@ -226,7 +226,6 @@ public class RedisGraphAPITest {
             + "doubleValue=Property{name='doubleValue', type=PROPERTY_DOUBLE, value=3.14}, "
             + "nullValue=Property{name='nullValue', type=PROPERTY_NULL, value=null}, "
             + "age=Property{name='age', type=PROPERTY_INTEGER, value=32}}}", expectedNode.toString());
-        Assert.assertEquals(2013991279, expectedNode.hashCode());
 
         Edge expectedEdge = new Edge();
         expectedEdge.setId(0);
@@ -244,7 +243,6 @@ public class RedisGraphAPITest {
             + "doubleValue=Property{name='doubleValue', type=PROPERTY_DOUBLE, value=3.14}, "
             + "nullValue=Property{name='nullValue', type=PROPERTY_NULL, value=null}, "
             + "since=Property{name='since', type=PROPERTY_INTEGER, value=2000}}}", expectedEdge.toString());
-        Assert.assertEquals(-1182568484, expectedEdge.hashCode());
 
         Assert.assertNotNull(api.query("social", "CREATE (:person{name:%s',age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
         Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));

@@ -112,17 +112,5 @@ public abstract class GraphEntity {
         return Objects.hash(id, propertyMap);
     }
 
-
-    /**
-     * Default toString implementation.
-     * @return
-     */
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("GraphEntity{");
-        sb.append("id=").append(id);
-        sb.append(", propertyMap=").append(propertyMap);
-        sb.append('}');
-        return sb.toString();
-    }
+    public abstract String toString();
 }
