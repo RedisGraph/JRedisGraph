@@ -219,6 +219,14 @@ public class RedisGraphAPITest {
         expectedNode.addProperty(doubleProperty);
         expectedNode.addProperty(trueBooleanProperty);
         expectedNode.addProperty(nullProperty);
+        Assert.assertEquals(
+            "Node{labels=[person], id=0, "
+            + "propertyMap={name=Property{name='name', type=PROPERTY_STRING, value=roi}, "
+            + "boolValue=Property{name='boolValue', type=PROPERTY_BOOLEAN, value=true}, "
+            + "doubleValue=Property{name='doubleValue', type=PROPERTY_DOUBLE, value=3.14}, "
+            + "nullValue=Property{name='nullValue', type=PROPERTY_NULL, value=null}, "
+            + "age=Property{name='age', type=PROPERTY_INTEGER, value=32}}}", expectedNode.toString());
+        Assert.assertEquals(2013991279, expectedNode.hashCode());
 
         Edge expectedEdge = new Edge();
         expectedEdge.setId(0);
@@ -230,8 +238,13 @@ public class RedisGraphAPITest {
         expectedEdge.addProperty(doubleProperty);
         expectedEdge.addProperty(falseBooleanProperty);
         expectedEdge.addProperty(nullProperty);
-
-
+        Assert.assertEquals("Edge{relationshipType='knows', source=0, destination=1, id=0, "
+            + "propertyMap={boolValue=Property{name='boolValue', type=PROPERTY_BOOLEAN, value=false}, "
+            + "place=Property{name='place', type=PROPERTY_STRING, value=TLV}, "
+            + "doubleValue=Property{name='doubleValue', type=PROPERTY_DOUBLE, value=3.14}, "
+            + "nullValue=Property{name='nullValue', type=PROPERTY_NULL, value=null}, "
+            + "since=Property{name='since', type=PROPERTY_INTEGER, value=2000}}}", expectedEdge.toString());
+        Assert.assertEquals(-1182568484, expectedEdge.hashCode());
 
         Assert.assertNotNull(api.query("social", "CREATE (:person{name:%s',age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
         Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
