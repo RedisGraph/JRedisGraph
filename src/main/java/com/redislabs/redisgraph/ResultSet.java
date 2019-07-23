@@ -1,14 +1,13 @@
 package com.redislabs.redisgraph;
 
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Hold a query result
  */
 public interface ResultSet extends Iterator<Record> {
 
-    public enum ResultSetScalarTypes {
+    enum ResultSetScalarTypes {
         PROPERTY_UNKNOWN,
         PROPERTY_NULL,
         PROPERTY_STRING,
@@ -17,7 +16,7 @@ public interface ResultSet extends Iterator<Record> {
         PROPERTY_DOUBLE,
     }
 
-    public int size();
+    int size();
 
     Statistics getStatistics();
 

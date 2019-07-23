@@ -1,6 +1,7 @@
 package com.redislabs.redisgraph;
 
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -10,6 +11,8 @@ import java.util.stream.IntStream;
 import com.redislabs.redisgraph.graph_entities.Edge;
 import com.redislabs.redisgraph.graph_entities.Node;
 import com.redislabs.redisgraph.graph_entities.Property;
+import com.redislabs.redisgraph.impl.api.RedisGraph;
+import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,7 +23,7 @@ import com.redislabs.redisgraph.Statistics.Label;
 import static com.redislabs.redisgraph.Header.ResultSetColumnTypes.*;
 
 public class RedisGraphAPITest {
-    RedisGraph api;
+    private RedisGraphGeneralContext api;
 
     public RedisGraphAPITest() {
     }
@@ -33,9 +36,12 @@ public class RedisGraphAPITest {
     public void deleteGraph() {
 
         api.deleteGraph("social");
-        api.close();
+        try {
+            api.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
-
 
 
     @Test
@@ -57,7 +63,7 @@ public class RedisGraphAPITest {
         try {
             resultSet.next();
             Assert.fail();
-        } catch (NoSuchElementException e) {
+        } catch (NoSuchElementException ignored) {
         }
     }
 
@@ -493,5 +499,277 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(api.query("social", "CREATE (:escaped{s1:%s,s2:%s})", "S\"\'", "S\\'\\\""));
         Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1=%s and n.s2=%s RETURN n", "S\"\'", "S\\'\\\""));
         Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1='S\"\\'' RETURN n"));
+    }
+
+
+    @Test
+    public void testMultiExec(){
+        RedisGraphTransaction transaction = api.getContextedAPI().multi();
+
+        transaction.set("x", "1");
+        transaction.query("social", "CREATE (:Person {name:'a'})");
+        transaction.query("g", "CREATE (:Person {name:'a'})");
+        transaction.incr("x");
+        transaction.get("x");
+        transaction.query("social", "MATCH (n:Person) RETURN n");
+        transaction.deleteGraph("g");
+        transaction.callProcedure("social", "db.labels");
+        List<Object> results = transaction.exec();
+
+        // Redis set command
+        Assert.assertEquals(String.class, results.get(0).getClass());
+        Assert.assertEquals("OK", results.get(0));
+
+        // Redis graph command
+        Assert.assertEquals(ResultSetImpl.class, results.get(1).getClass());
+        ResultSet resultSet = (ResultSet) results.get(1);
+        Assert.assertEquals(1, resultSet.getStatistics().nodesCreated());
+        Assert.assertEquals(1, resultSet.getStatistics().propertiesSet());
+
+
+        Assert.assertEquals(ResultSetImpl.class, results.get(2).getClass());
+        resultSet = (ResultSet) results.get(2);
+        Assert.assertEquals(1, resultSet.getStatistics().nodesCreated());
+        Assert.assertEquals(1, resultSet.getStatistics().propertiesSet());
+
+        // Redis incr command
+        Assert.assertEquals(Long.class, results.get(3).getClass());
+        Assert.assertEquals((long)2, results.get(3));
+
+        // Redis get command
+        Assert.assertEquals(String.class, results.get(4).getClass());
+        Assert.assertEquals("2", results.get(4));
+
+        // Graph query result
+        Assert.assertEquals(ResultSetImpl.class, results.get(5).getClass());
+        resultSet = (ResultSet) results.get(5);
+
+        Assert.assertNotNull(resultSet.getHeader());
+        Header header = resultSet.getHeader();
+
+
+        List<String> schemaNames = header.getSchemaNames();
+        List<Header.ResultSetColumnTypes> schemaTypes = header.getSchemaTypes();
+
+        Assert.assertNotNull(schemaNames);
+        Assert.assertNotNull(schemaTypes);
+
+        Assert.assertEquals(1, schemaNames.size());
+        Assert.assertEquals(1, schemaTypes.size());
+
+        Assert.assertEquals("n", schemaNames.get(0));
+
+        Assert.assertEquals(COLUMN_NODE, schemaTypes.get(0));
+
+        Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, "a");
+
+        Node expectedNode = new Node();
+        expectedNode.setId(0);
+        expectedNode.addLabel("Person");
+        expectedNode.addProperty(nameProperty);
+        // see that the result were pulled from the right graph
+        Assert.assertEquals(1, resultSet.size());
+        Assert.assertTrue(resultSet.hasNext());
+        Record record = resultSet.next();
+        Assert.assertFalse(resultSet.hasNext());
+        Assert.assertEquals(Arrays.asList("n"), record.keys());
+        Assert.assertEquals(expectedNode, record.getValue("n"));
+
+        // Graph delete
+        Assert.assertTrue(((String)results.get(6)).startsWith("Graph removed"));
+
+
+        Assert.assertEquals(ResultSetImpl.class, results.get(7).getClass());
+        resultSet = (ResultSet) results.get(7);
+
+        Assert.assertNotNull(resultSet.getHeader());
+        header = resultSet.getHeader();
+
+
+        schemaNames = header.getSchemaNames();
+        schemaTypes = header.getSchemaTypes();
+
+        Assert.assertNotNull(schemaNames);
+        Assert.assertNotNull(schemaTypes);
+
+        Assert.assertEquals(1, schemaNames.size());
+        Assert.assertEquals(1, schemaTypes.size());
+
+        Assert.assertEquals("label", schemaNames.get(0));
+
+        Assert.assertEquals(COLUMN_SCALAR, schemaTypes.get(0));
+
+        Assert.assertEquals(1, resultSet.size());
+        Assert.assertTrue(resultSet.hasNext());
+        record = resultSet.next();
+        Assert.assertFalse(resultSet.hasNext());
+        Assert.assertEquals(Arrays.asList("label"), record.keys());
+        Assert.assertEquals("Person", record.getValue("label"));
+
+    }
+
+    @Test
+    public void testContextedAPI(){
+
+        String name = "roi";
+        int age = 32;
+        double doubleValue = 3.14;
+        boolean boolValue  = true;
+
+        String place = "TLV";
+        int since = 2000;
+
+
+
+        Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, name);
+        Property ageProperty = new Property("age", ResultSet.ResultSetScalarTypes.PROPERTY_INTEGER, age);
+        Property doubleProperty = new Property("doubleValue", ResultSet.ResultSetScalarTypes.PROPERTY_DOUBLE, doubleValue);
+        Property trueBooleanProperty = new Property("boolValue", ResultSet.ResultSetScalarTypes.PROPERTY_BOOLEAN, true);
+        Property falseBooleanProperty = new Property("boolValue", ResultSet.ResultSetScalarTypes.PROPERTY_BOOLEAN, false);
+        Property nullProperty = new Property("nullValue", ResultSet.ResultSetScalarTypes.PROPERTY_NULL, null);
+
+        Property placeProperty = new Property("place", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, place);
+        Property sinceProperty = new Property("since", ResultSet.ResultSetScalarTypes.PROPERTY_INTEGER, since);
+
+        Node expectedNode = new Node();
+        expectedNode.setId(0);
+        expectedNode.addLabel("person");
+        expectedNode.addProperty(nameProperty);
+        expectedNode.addProperty(ageProperty);
+        expectedNode.addProperty(doubleProperty);
+        expectedNode.addProperty(trueBooleanProperty);
+        expectedNode.addProperty(nullProperty);
+
+        Edge expectedEdge = new Edge();
+        expectedEdge.setId(0);
+        expectedEdge.setSource(0);
+        expectedEdge.setDestination(1);
+        expectedEdge.setRelationshipType("knows");
+        expectedEdge.addProperty(placeProperty);
+        expectedEdge.addProperty(sinceProperty);
+        expectedEdge.addProperty(doubleProperty);
+        expectedEdge.addProperty(falseBooleanProperty);
+        expectedEdge.addProperty(nullProperty);
+
+        RedisGraphContexted c = api.getContextedAPI();
+
+        Assert.assertNotNull(c.query("social", "CREATE (:person{name:%s',age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
+        Assert.assertNotNull(c.query("social", "CREATE (:person{name:'amit',age:30})"));
+        Assert.assertNotNull(c.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  " +
+                "CREATE (a)-[:knows{place:'TLV', since:2000,doubleValue:3.14, boolValue:false, nullValue:null}]->(b)"));
+
+        ResultSet resultSet = c.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, " +
+                "a.name, a.age, a.doubleValue, a.boolValue, a.nullValue, " +
+                "r.place, r.since, r.doubleValue, r.boolValue, r.nullValue");
+        Assert.assertNotNull(resultSet);
+
+
+        Assert.assertEquals(0, resultSet.getStatistics().nodesCreated());
+        Assert.assertEquals(0, resultSet.getStatistics().nodesDeleted());
+        Assert.assertEquals(0, resultSet.getStatistics().labelsAdded());
+        Assert.assertEquals(0, resultSet.getStatistics().propertiesSet());
+        Assert.assertEquals(0, resultSet.getStatistics().relationshipsCreated());
+        Assert.assertEquals(0, resultSet.getStatistics().relationshipsDeleted());
+        Assert.assertNotNull(resultSet.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME));
+
+
+        Assert.assertEquals(1, resultSet.size());
+        Assert.assertTrue(resultSet.hasNext());
+        Record record = resultSet.next();
+        Assert.assertFalse(resultSet.hasNext());
+
+        Node node = record.getValue(0);
+        Assert.assertNotNull(node);
+
+        Assert.assertEquals(expectedNode, node);
+
+        node = record.getValue("a");
+        Assert.assertEquals(expectedNode, node);
+
+        Edge edge = record.getValue(1);
+        Assert.assertNotNull(edge);
+        Assert.assertEquals(expectedEdge, edge);
+
+        edge = record.getValue("r");
+        Assert.assertEquals(expectedEdge, edge);
+
+        Assert.assertEquals(Arrays.asList("a", "r", "a.name", "a.age", "a.doubleValue", "a.boolValue", "a.nullValue",
+                "r.place", "r.since", "r.doubleValue", "r.boolValue", "r.nullValue"), record.keys());
+
+        Assert.assertEquals(Arrays.asList(expectedNode, expectedEdge,
+                name, age, doubleValue, true, null,
+                place, since, doubleValue, false, null),
+                record.values());
+
+        Node a = record.getValue("a");
+        for (String propertyName : expectedNode.getEntityPropertyNames()){
+            Assert.assertEquals(expectedNode.getProperty(propertyName) ,a.getProperty(propertyName));
+        }
+
+        Assert.assertEquals( "roi", record.getString(2));
+        Assert.assertEquals( "32", record.getString(3));
+        Assert.assertEquals( 32L, ((Integer)(record.getValue(3))).longValue());
+        Assert.assertEquals( 32L, ((Integer)record.getValue("a.age")).longValue());
+        Assert.assertEquals( "roi", record.getString("a.name"));
+        Assert.assertEquals( "32", record.getString("a.age"));
+
+
+    }
+
+    @Test
+    public void testWriteTransactionWatch(){
+
+        RedisGraphContexted c1 = api.getContextedAPI();
+        RedisGraphContexted c2 = api.getContextedAPI();
+
+        c1.watch("social");
+        RedisGraphTransaction t1 = c1.multi();
+
+
+        t1.query("social", "CREATE (:Person {name:'a'})");
+        c2.query("social", "CREATE (:Person {name:'b'})");
+        List<Object> returnValue = t1.exec();
+        Assert.assertNull(returnValue);
+
+        try {
+            c1.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            c2.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void testReadTransactionWatch(){
+
+        RedisGraphContexted c1 = api.getContextedAPI();
+        RedisGraphContexted c2 = api.getContextedAPI();
+        Assert.assertNotEquals(c1.getConnectionContext(), c2.getConnectionContext());
+        c1.query("social", "CREATE (:Person {name:'a'})");
+        c1.watch("social");
+        RedisGraphTransaction t1 = c1.multi();
+
+        t1.query("social", "CREATE (:Person {name:'b'})");
+        c2.query("social", "MATCH (n) return n");
+        List<Object> returnValue = t1.exec();
+
+        Assert.assertNotNull(returnValue);
+
+        try {
+            c1.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            c2.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }

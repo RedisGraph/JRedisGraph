@@ -1,4 +1,4 @@
-package com.redislabs.redisgraph.impl;
+package com.redislabs.redisgraph.impl.resultset;
 
 import java.util.List;
 import java.util.Objects;

@@ -10,7 +10,7 @@ import java.util.Objects;
 public class Node extends GraphEntity {
 
     //members
-    final private List<String> labels = new ArrayList<>();
+    private final List<String> labels = new ArrayList<>();
 
     /**
      * @param label - a label to be add
@@ -28,11 +28,11 @@ public class Node extends GraphEntity {
 
     /**
      * @param index - label index
-     * @return the proprty label
+     * @return the property label
      * @throws IndexOutOfBoundsException if the index is out of range
      *                                   ({@code index < 0 || index >= getNumberOfLabels()})
      */
-    public String getLabel(int index) throws IndexOutOfBoundsException{
+    public String getLabel(int index){
         return labels.get(index);
     }
 

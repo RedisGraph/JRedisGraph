@@ -1,4 +1,4 @@
-package com.redislabs.redisgraph.impl;
+package com.redislabs.redisgraph.impl.resultset;
 
 import java.util.EnumMap;
 import java.util.List;
@@ -18,7 +18,7 @@ public class StatisticsImpl implements Statistics  {
 	private final Map<Statistics.Label, String> statistics;
 
 	/**
-	 * A raw representation of query exection statistics is a list of strings
+	 * A raw representation of query execution statistics is a list of strings
 	 * (byte arrays which need to be de-serialized).
 	 * Each string is built in the form of "K:V" where K is statistics label and V is its value.
 	 * @param raw a raw representation of the query execution statistics
@@ -95,7 +95,7 @@ public class StatisticsImpl implements Statistics  {
 
 	/**
 	 *
-	 * @return number of lables added after query execution
+	 * @return number of labels added after query execution
 	 */
 	@Override
 	public int labelsAdded() {
@@ -134,7 +134,7 @@ public class StatisticsImpl implements Statistics  {
 		if (this == o) return true;
 		if (!(o instanceof StatisticsImpl)) return false;
 		StatisticsImpl that = (StatisticsImpl) o;
-		return Objects.equals(raw, raw) &&
+		return Objects.equals(raw, that.raw) &&
 				Objects.equals(getStatistics(), that.getStatistics());
 	}
 

@@ -1,4 +1,4 @@
-package com.redislabs.redisgraph.impl;
+package com.redislabs.redisgraph.impl.resultset;
 
 import com.redislabs.redisgraph.Header;
 import redis.clients.jedis.util.SafeEncoder;
