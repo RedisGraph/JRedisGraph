@@ -46,15 +46,14 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
     @Override
     protected ResultSet sendQuery(String graphId, String preparedQuery) {
         Jedis conn = getConnection();
-        List<Object> rawResponse;
         try {
-            rawResponse = (List<Object>) conn.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
+            List<Object> rawResponse = (List<Object>) conn.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
+            return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
         }
         catch (Exception e) {
             conn.close();
             throw e;
         }
-        return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
     }
 
     /**
