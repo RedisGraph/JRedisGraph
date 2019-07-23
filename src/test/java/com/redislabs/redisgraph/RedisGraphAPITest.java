@@ -23,7 +23,7 @@ import com.redislabs.redisgraph.Statistics.Label;
 import static com.redislabs.redisgraph.Header.ResultSetColumnTypes.*;
 
 public class RedisGraphAPITest {
-    private RedisGraphGeneralContext api;
+    private RedisGraphContextGenerator api;
 
     public RedisGraphAPITest() {
     }
@@ -504,7 +504,7 @@ public class RedisGraphAPITest {
 
     @Test
     public void testMultiExec(){
-        RedisGraphTransaction transaction = api.getContextedAPI().multi();
+        RedisGraphTransaction transaction = api.getContext().multi();
 
         transaction.set("x", "1");
         transaction.query("social", "CREATE (:Person {name:'a'})");
@@ -651,7 +651,7 @@ public class RedisGraphAPITest {
         expectedEdge.addProperty(falseBooleanProperty);
         expectedEdge.addProperty(nullProperty);
 
-        RedisGraphContexted c = api.getContextedAPI();
+        RedisGraphContext c = api.getContext();
 
         Assert.assertNotNull(c.query("social", "CREATE (:person{name:%s',age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
         Assert.assertNotNull(c.query("social", "CREATE (:person{name:'amit',age:30})"));
@@ -719,8 +719,8 @@ public class RedisGraphAPITest {
     @Test
     public void testWriteTransactionWatch(){
 
-        RedisGraphContexted c1 = api.getContextedAPI();
-        RedisGraphContexted c2 = api.getContextedAPI();
+        RedisGraphContext c1 = api.getContext();
+        RedisGraphContext c2 = api.getContext();
 
         c1.watch("social");
         RedisGraphTransaction t1 = c1.multi();
@@ -747,8 +747,8 @@ public class RedisGraphAPITest {
     @Test
     public void testReadTransactionWatch(){
 
-        RedisGraphContexted c1 = api.getContextedAPI();
-        RedisGraphContexted c2 = api.getContextedAPI();
+        RedisGraphContext c1 = api.getContext();
+        RedisGraphContext c2 = api.getContext();
         Assert.assertNotEquals(c1.getConnectionContext(), c2.getConnectionContext());
         c1.query("social", "CREATE (:Person {name:'a'})");
         c1.watch("social");

@@ -1,7 +1,7 @@
 package com.redislabs.redisgraph.impl.api;
 
-import com.redislabs.redisgraph.RedisGraphContexted;
-import com.redislabs.redisgraph.RedisGraphGeneralContext;
+import com.redislabs.redisgraph.RedisGraphContext;
+import com.redislabs.redisgraph.RedisGraphContextGenerator;
 import com.redislabs.redisgraph.ResultSet;
 import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
 import redis.clients.jedis.Jedis;
@@ -12,7 +12,7 @@ import redis.clients.jedis.util.SafeEncoder;
 /**
  *
  */
-public class RedisGraph extends AbstractRedisGraph implements RedisGraphGeneralContext {
+public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextGenerator {
 
     private final Pool<Jedis> client;
     private RedisGraphCaches caches = new RedisGraphCaches();
@@ -99,7 +99,7 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphGeneralC
      * @return ContextedRedisGraph
      */
     @Override
-    public RedisGraphContexted getContextedAPI() {
+    public RedisGraphContext getContext() {
         ContextedRedisGraph contextedRedisGraph =  new ContextedRedisGraph(getConnection());
         contextedRedisGraph.setRedisGraphCaches(this.caches);
         return contextedRedisGraph;

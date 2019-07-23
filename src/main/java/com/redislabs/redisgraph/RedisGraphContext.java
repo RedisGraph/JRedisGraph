@@ -2,7 +2,7 @@ package com.redislabs.redisgraph;
 
 import redis.clients.jedis.Jedis;
 
-public interface RedisGraphContexted extends RedisGraph {
+public interface RedisGraphContext extends RedisGraph {
 
 
     /**

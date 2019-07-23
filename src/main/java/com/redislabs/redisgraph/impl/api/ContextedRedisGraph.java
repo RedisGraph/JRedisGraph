@@ -1,6 +1,6 @@
 package com.redislabs.redisgraph.impl.api;
 
-import com.redislabs.redisgraph.RedisGraphContexted;
+import com.redislabs.redisgraph.RedisGraphContext;
 import com.redislabs.redisgraph.ResultSet;
 import com.redislabs.redisgraph.impl.Utils;
 import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
@@ -12,10 +12,10 @@ import redis.clients.jedis.util.SafeEncoder;
 import java.util.List;
 
 /**
- * An implementaion of RedisGraphContexted. Allows sending RedisGraph and some Redis commands,
+ * An implementaion of RedisGraphContext. Allows sending RedisGraph and some Redis commands,
  * within a specific connection context
  */
-public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGraphContexted, RedisGraphCacheHolder {
+public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGraphContext, RedisGraphCacheHolder {
 
     private Jedis connectionContext;
     private RedisGraphCaches caches;
