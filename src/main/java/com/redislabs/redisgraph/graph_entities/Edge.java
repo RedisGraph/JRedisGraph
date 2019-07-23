@@ -68,9 +68,9 @@ public class Edge extends GraphEntity {
         if (!(o instanceof Edge)) return false;
         if (!super.equals(o)) return false;
         Edge edge = (Edge) o;
-        return source == edge.source &&
-                destination == edge.destination &&
-                Objects.equals(relationshipType, edge.relationshipType);
+        return getSource() == edge.getSource() &&
+                getDestination() == edge.getDestination() &&
+                Objects.equals(getRelationshipType(), edge.getRelationshipType());
     }
 
     @Override
@@ -81,10 +81,10 @@ public class Edge extends GraphEntity {
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Edge{");
-        sb.append("relationshipType='").append(relationshipType).append('\'');
-        sb.append(", source=").append(source);
-        sb.append(", destination=").append(destination);
-        sb.append(", id=").append(id);
+        sb.append("relationshipType='").append(getRelationshipType()).append('\'');
+        sb.append(", source=").append(getSource());
+        sb.append(", destination=").append(getDestination());
+        sb.append(", id=").append(getId());
         sb.append(", propertyMap=").append(propertyMap);
         sb.append('}');
         return sb.toString();

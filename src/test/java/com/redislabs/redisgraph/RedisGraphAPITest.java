@@ -1,6 +1,7 @@
 package com.redislabs.redisgraph;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -15,9 +16,12 @@ import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.redislabs.redisgraph.Statistics.Label;
+import org.junit.rules.ExpectedException;
+import redis.clients.jedis.exceptions.JedisDataException;
 
 import static com.redislabs.redisgraph.Header.ResultSetColumnTypes.*;
 
@@ -37,7 +41,6 @@ public class RedisGraphAPITest {
         api.deleteGraph("social");
         api.close();
     }
-
 
     @Test
     public void testCreateNode() {
@@ -275,6 +278,9 @@ public class RedisGraphAPITest {
         Assert.assertEquals(expectedNode, node);
 
         node = record.getValue("a");
+        Assert.assertEquals(1, node.getNumberOfLabels());
+        Assert.assertEquals("person", node.getLabel(0));
+        Assert.assertEquals(5, node.getNumberOfProperties());
         Assert.assertEquals(expectedNode, node);
 
         Edge edge = record.getValue(1);
@@ -734,6 +740,13 @@ public class RedisGraphAPITest {
         c2.query("social", "CREATE (:Person {name:'b'})");
         List<Object> returnValue = t1.exec();
         Assert.assertNull(returnValue);
+
+        c1.unwatch();
+        t1 = c1.multi();
+        t1.query("social", "CREATE (:Person {name:'a'})");
+        returnValue = t1.exec();
+        Assert.assertNotNull(returnValue);
+
         c1.close();
         c2.close();
     }
@@ -755,5 +768,39 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(returnValue);
         c1.close();
         c2.close();
+    }
+
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+
+    @Test
+    public void testProcedure() {
+        List<String> args = new ArrayList<>(2);
+        args.add("arg1");
+        args.add("\"arg2\"");
+        api.query("social","CREATE (:person{name:'roi',age:32})");
+        api.query("social","CREATE (:person{name:%s,age:%d})", "amit", 30);
+        api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit') CREATE (a)-[:knows]->(b)");
+        exceptionRule.expect(JedisDataException.class);
+        exceptionRule.expectMessage("There is no procedure with the name `db.labelss` registered for this database instance. Please ensure you've spelled the procedure name correctly.");
+        ResultSet resultSet = api.callProcedure("social", "db.labelss", args);
+
+        exceptionRule.expect(JedisDataException.class);
+        exceptionRule.expectMessage("Procedure call does not provide the required number of arguments: got 2 expected 0.");
+        resultSet = api.callProcedure("social", "db.labels", args);
+
+        resultSet = api.callProcedure("social", "db.labels");
+        Assert.assertEquals("person", resultSet.next().getString(0));
+
+        resultSet = api.callProcedure("social", "db.properties");
+        Record r = resultSet.next();
+        Assert.assertTrue(r.containsKey("label"));
+        Assert.assertEquals(1, r.size());
+        Assert.assertEquals("name", resultSet.next().getString(0));
+        Assert.assertEquals("age", resultSet.next().getString(0));
+
+        resultSet = api.callProcedure("social", "db.relationshipTypes");
+        Assert.assertEquals("knows", resultSet.next().getString(0));
+
     }
 }

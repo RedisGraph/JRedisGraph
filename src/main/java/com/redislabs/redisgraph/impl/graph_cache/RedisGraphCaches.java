@@ -17,39 +17,6 @@ public class RedisGraphCaches {
     }
 
     /**
-     * Returns a String which represents the name of the label mapped to the label id
-     * @param graphId graph to perform the query
-     * @param index label index
-     * @param redisGraph RedisGraphAPI implementation
-     * @return label name
-     */
-    public String getLabel(String graphId, int index, RedisGraph redisGraph) {
-        return getGraphCache(graphId).getLabel(index, redisGraph);
-    }
-
-    /**
-     * Returns a String which represents the name of the relationship mapped to the label id
-     * @param graphId graph to perform the query
-     * @param index relationship index
-     * @param redisGraph RedisGraphAPI implementation
-     * @return relationship name
-     */
-    public String getRelationshipType(String graphId, int index, RedisGraph redisGraph){
-        return getGraphCache(graphId).getRelationshipType(index, redisGraph);
-    }
-
-    /**
-     * Returns a String which represents the name of the property mapped to the label id
-     * @param graphId graph to perform the query
-     * @param index property index
-     * @param redisGraph RedisGraphAPI implementation
-     * @return property name
-     */
-    public String getPropertyName(String graphId, int index, RedisGraph redisGraph){
-        return getGraphCache(graphId).getPropertyName(index, redisGraph);
-    }
-
-    /**
      * Removes a graph meta data cache
      * @param graphId
      */
