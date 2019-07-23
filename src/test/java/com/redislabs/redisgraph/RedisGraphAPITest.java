@@ -36,11 +36,7 @@ public class RedisGraphAPITest {
     public void deleteGraph() {
 
         api.deleteGraph("social");
-        try {
-            api.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        api.close();
     }
 
 
@@ -606,22 +602,19 @@ public class RedisGraphAPITest {
             Assert.assertFalse(resultSet.hasNext());
             Assert.assertEquals(Arrays.asList("label"), record.keys());
             Assert.assertEquals("Person", record.getValue("label"));
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
     @Test
-    public void testContextedAPI(){
+    public void testContextedAPI() {
 
         String name = "roi";
         int age = 32;
         double doubleValue = 3.14;
-        boolean boolValue  = true;
+        boolean boolValue = true;
 
         String place = "TLV";
         int since = 2000;
-
 
 
         Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, name);
@@ -654,7 +647,7 @@ public class RedisGraphAPITest {
         expectedEdge.addProperty(falseBooleanProperty);
         expectedEdge.addProperty(nullProperty);
 
-        try(RedisGraphContext c = api.getContext()) {
+        try (RedisGraphContext c = api.getContext()) {
             Assert.assertNotNull(c.query("social", "CREATE (:person{name:%s',age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
             Assert.assertNotNull(c.query("social", "CREATE (:person{name:'amit',age:30})"));
             Assert.assertNotNull(c.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  " +
@@ -704,18 +697,16 @@ public class RedisGraphAPITest {
                     record.values());
 
             Node a = record.getValue("a");
-            for (String propertyName : expectedNode.getEntityPropertyNames()){
-                Assert.assertEquals(expectedNode.getProperty(propertyName) ,a.getProperty(propertyName));
+            for (String propertyName : expectedNode.getEntityPropertyNames()) {
+                Assert.assertEquals(expectedNode.getProperty(propertyName), a.getProperty(propertyName));
             }
 
-            Assert.assertEquals( "roi", record.getString(2));
-            Assert.assertEquals( "32", record.getString(3));
-            Assert.assertEquals( 32L, ((Integer)(record.getValue(3))).longValue());
-            Assert.assertEquals( 32L, ((Integer)record.getValue("a.age")).longValue());
-            Assert.assertEquals( "roi", record.getString("a.name"));
-            Assert.assertEquals( "32", record.getString("a.age"));
-        } catch (IOException e) {
-            e.printStackTrace();
+            Assert.assertEquals("roi", record.getString(2));
+            Assert.assertEquals("32", record.getString(3));
+            Assert.assertEquals(32L, ((Integer) (record.getValue(3))).longValue());
+            Assert.assertEquals(32L, ((Integer) record.getValue("a.age")).longValue());
+            Assert.assertEquals("roi", record.getString("a.name"));
+            Assert.assertEquals("32", record.getString("a.age"));
         }
     }
 
@@ -733,18 +724,8 @@ public class RedisGraphAPITest {
         c2.query("social", "CREATE (:Person {name:'b'})");
         List<Object> returnValue = t1.exec();
         Assert.assertNull(returnValue);
-
-        try {
-            c1.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            c2.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        c1.close();
+        c2.close();
     }
 
     @Test
@@ -762,17 +743,7 @@ public class RedisGraphAPITest {
         List<Object> returnValue = t1.exec();
 
         Assert.assertNotNull(returnValue);
-
-        try {
-            c1.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            c2.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        c1.close();
+        c2.close();
     }
 }
