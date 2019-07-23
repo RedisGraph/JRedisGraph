@@ -56,7 +56,7 @@ and
 ```
 
 # Example: Using the Java Client
-
+## Up to 2.0.0
 ```java
 package com.redislabs.redisgraph;
 
@@ -77,6 +77,62 @@ public class RedisGraphExample {
 			System.out.println(record.getString("a.name"));
 		}
 	}
+}
+
+```
+## From 2.0.0
+
+```java
+package com.redislabs.redisgraph;
+
+import com.redislabs.redisgraph.graph_entities.Edge;
+import com.redislabs.redisgraph.graph_entities.Node;
+import com.redislabs.redisgraph.impl.api.RedisGraph;
+
+import java.util.List;
+
+public class RedisGraphExample {
+    public static void main(String[] args) {
+        // general context api. Not bound to graph key or connection
+        RedisGraphGeneralContext api = new RedisGraph();
+
+        // send queries to a specific graph called "social"
+        api.query("social","CREATE (:person{name:'roi',age:32})");
+        api.query("social","CREATE (:person{name:%s,age:%d})", "amit", 30);
+        api.query("social","MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit') CREATE (a)-[:knows]->(b)");
+
+        ResultSet resultSet = api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a, r, b");
+        while(resultSet.hasNext()) {
+            Record record = resultSet.next();
+            // get values
+            Node a = record.getValue("a");
+            Edge r =  record.getValue("r");
+
+            //print record
+            System.out.println(record.toString());
+        }
+
+        // delete graph
+        api.deleteGraph("social");
+
+        // get connection context
+        RedisGraphContexted contextApi = api.getContextedAPI();
+        contextApi.query("contextSocial","CREATE (:person{name:'roi',age:32})");
+        contextApi.query("contextSocial","CREATE (:person{name:%s,age:%d})", "amit", 30);
+        contextApi.query("contextSocial", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit') CREATE (a)-[:knows]->(b)");
+        // WATCH/MULTI/EXEC
+        contextApi.watch("contextSocial");
+        RedisGraphTransaction t = contextApi.multi();
+        t.query("contextSocial", "MATCH (a:person)-[r:knows]->(b:person) RETURN a, r, b");
+        // support for Redis/Jedis native commands in transaction
+        t.set("x", "1");
+        t.get("x");
+        // get multi/exec results
+        List<Object> execResults =  t.exec();
+        System.out.println(execResults.toString());
+
+        contextApi.deleteGraph("contextSocial");
+    }
 }
 
 ```
