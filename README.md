@@ -1,7 +1,7 @@
 [![license](https://img.shields.io/github/license/RedisGraph/JRedisGraph.svg)](https://github.com/RedisGraph/JRedisGraph)
+[![GitHub issues](https://img.shields.io/github/release/RedisGraph/JRedisGraph.svg)](https://github.com/RedisGraph/JRedisGraph/releases/latest)
 [![CircleCI](https://circleci.com/gh/RedisGraph/JRedisGraph/tree/master.svg?style=svg)](https://circleci.com/gh/RedisGraph/JRedisGraph/tree/master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.redislabs/jredisgraph/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.redislabs/jredisgraph)
-[![GitHub issues](https://img.shields.io/github/release/RedisGraph/JRedisGraph.svg)](https://github.com/RedisGraph/JRedisGraph/releases/latest)
 [![Javadocs](https://www.javadoc.io/badge/com.redislabs/jredisgraph.svg)](https://www.javadoc.io/doc/com.redislabs/jredisgraph)
 [![Codecov](https://codecov.io/gh/RedisGraph/JRedisGraph/branch/master/graph/badge.svg)](https://codecov.io/gh/RedisGraph/JRedisGraph)
 
@@ -16,7 +16,17 @@ RedisGraph Java client
     <dependency>
       <groupId>com.redislabs</groupId>
       <artifactId>jredisgraph</artifactId>
-      <version>1.0.4</version>
+      <version>1.0.6</version>
+    </dependency>
+  </dependencies>
+
+Or
+
+  <dependencies>
+    <dependency>
+      <groupId>com.redislabs</groupId>
+      <artifactId>jredisgraph</artifactId>
+      <version>2.0.0-rc1</version>
     </dependency>
   </dependencies>
 ```
