@@ -49,4 +49,6 @@ public interface RedisGraph extends Closeable {
      */
     String deleteGraph(String graphId);
 
+    @Override
+    void close();
 }
