@@ -89,6 +89,7 @@ import com.redislabs.redisgraph.graph_entities.Edge;
 import com.redislabs.redisgraph.graph_entities.Node;
 import com.redislabs.redisgraph.impl.api.RedisGraph;
 
+import java.io.IOException;
 import java.util.List;
 
 public class RedisGraphExample {
@@ -115,24 +116,29 @@ public class RedisGraphExample {
         // delete graph
         graph.deleteGraph("social");
 
-        // get connection context
-        RedisGraphContext context = graph.getContext();
-        context.query("contextSocial","CREATE (:person{name:'roi',age:32})");
-        context.query("contextSocial","CREATE (:person{name:%s,age:%d})", "amit", 30);
-        context.query("contextSocial", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit') CREATE (a)-[:knows]->(b)");
-        // WATCH/MULTI/EXEC
-        context.watch("contextSocial");
-        RedisGraphTransaction t = context.multi();
-        t.query("contextSocial", "MATCH (a:person)-[r:knows]->(b:person) RETURN a, r, b");
-        // support for Redis/Jedis native commands in transaction
-        t.set("x", "1");
-        t.get("x");
-        // get multi/exec results
-        List<Object> execResults =  t.exec();
-        System.out.println(execResults.toString());
+        // get connection context - closable object
+        try(RedisGraphContext context = graph.getContext()) {
+            context.query("contextSocial","CREATE (:person{name:'roi',age:32})");
+            context.query("contextSocial","CREATE (:person{name:%s,age:%d})", "amit", 30);
+            context.query("contextSocial", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit') CREATE (a)-[:knows]->(b)");
+            // WATCH/MULTI/EXEC
+            context.watch("contextSocial");
+            RedisGraphTransaction t = context.multi();
+            t.query("contextSocial", "MATCH (a:person)-[r:knows]->(b:person) RETURN a, r, b");
+            // support for Redis/Jedis native commands in transaction
+            t.set("x", "1");
+            t.get("x");
+            // get multi/exec results
+            List<Object> execResults =  t.exec();
+            System.out.println(execResults.toString());
 
-        context.deleteGraph("contextSocial");
+            context.deleteGraph("contextSocial");
+        } catch (IOException e) {
+            
+        }
+
     }
 }
+
 
 ```
