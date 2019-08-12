@@ -201,15 +201,15 @@ public class RedisGraphAPITest {
 
 
 
-        Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.VALUE_STRING, name);
-        Property ageProperty = new Property("age", ResultSet.ResultSetScalarTypes.VALUE_INTEGER, age);
-        Property doubleProperty = new Property("doubleValue", ResultSet.ResultSetScalarTypes.VALUE_DOUBLE, doubleValue);
-        Property trueBooleanProperty = new Property("boolValue", ResultSet.ResultSetScalarTypes.VALUE_BOOLEAN, true);
-        Property falseBooleanProperty = new Property("boolValue", ResultSet.ResultSetScalarTypes.VALUE_BOOLEAN, false);
-        Property nullProperty = new Property("nullValue", ResultSet.ResultSetScalarTypes.VALUE_NULL, null);
+        Property nameProperty = new Property("name", ResultSet.ResultSetValueTypes.VALUE_STRING, name);
+        Property ageProperty = new Property("age", ResultSet.ResultSetValueTypes.VALUE_INTEGER, age);
+        Property doubleProperty = new Property("doubleValue", ResultSet.ResultSetValueTypes.VALUE_DOUBLE, doubleValue);
+        Property trueBooleanProperty = new Property("boolValue", ResultSet.ResultSetValueTypes.VALUE_BOOLEAN, true);
+        Property falseBooleanProperty = new Property("boolValue", ResultSet.ResultSetValueTypes.VALUE_BOOLEAN, false);
+        Property nullProperty = new Property("nullValue", ResultSet.ResultSetValueTypes.VALUE_NULL, null);
 
-        Property placeProperty = new Property("place", ResultSet.ResultSetScalarTypes.VALUE_STRING, place);
-        Property sinceProperty = new Property("since", ResultSet.ResultSetScalarTypes.VALUE_INTEGER, since);
+        Property placeProperty = new Property("place", ResultSet.ResultSetValueTypes.VALUE_STRING, place);
+        Property sinceProperty = new Property("since", ResultSet.ResultSetValueTypes.VALUE_INTEGER, since);
 
         Node expectedNode = new Node();
         expectedNode.setId(0);
@@ -330,9 +330,9 @@ public class RedisGraphAPITest {
                 mapToObj(i-> api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, a.age")).
                 collect(Collectors.toList());
 
-        Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.VALUE_STRING, "roi");
-        Property ageProperty = new Property("age", ResultSet.ResultSetScalarTypes.VALUE_INTEGER, 32);
-        Property lastNameProperty =new Property("lastName", ResultSet.ResultSetScalarTypes.VALUE_STRING, "a");
+        Property nameProperty = new Property("name", ResultSet.ResultSetValueTypes.VALUE_STRING, "roi");
+        Property ageProperty = new Property("age", ResultSet.ResultSetValueTypes.VALUE_INTEGER, 32);
+        Property lastNameProperty =new Property("lastName", ResultSet.ResultSetValueTypes.VALUE_STRING, "a");
 
         Node expectedNode = new Node();
         expectedNode.setId(0);
@@ -424,9 +424,9 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(b)"));
 
         //expected objects init
-        Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.VALUE_STRING, "roi");
-        Property ageProperty = new Property("age", ResultSet.ResultSetScalarTypes.VALUE_INTEGER, 32);
-        Property lastNameProperty =new Property("lastName", ResultSet.ResultSetScalarTypes.VALUE_STRING, "a");
+        Property nameProperty = new Property("name", ResultSet.ResultSetValueTypes.VALUE_STRING, "roi");
+        Property ageProperty = new Property("age", ResultSet.ResultSetValueTypes.VALUE_INTEGER, 32);
+        Property lastNameProperty =new Property("lastName", ResultSet.ResultSetValueTypes.VALUE_STRING, "a");
 
         Node expectedNode = new Node();
         expectedNode.setId(0);
@@ -568,7 +568,7 @@ public class RedisGraphAPITest {
 
             Assert.assertEquals(COLUMN_NODE, schemaTypes.get(0));
 
-            Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.VALUE_STRING, "a");
+            Property nameProperty = new Property("name", ResultSet.ResultSetValueTypes.VALUE_STRING, "a");
 
             Node expectedNode = new Node();
             expectedNode.setId(0);
@@ -627,15 +627,15 @@ public class RedisGraphAPITest {
         int since = 2000;
 
 
-        Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.VALUE_STRING, name);
-        Property ageProperty = new Property("age", ResultSet.ResultSetScalarTypes.VALUE_INTEGER, age);
-        Property doubleProperty = new Property("doubleValue", ResultSet.ResultSetScalarTypes.VALUE_DOUBLE, doubleValue);
-        Property trueBooleanProperty = new Property("boolValue", ResultSet.ResultSetScalarTypes.VALUE_BOOLEAN, true);
-        Property falseBooleanProperty = new Property("boolValue", ResultSet.ResultSetScalarTypes.VALUE_BOOLEAN, false);
-        Property nullProperty = new Property("nullValue", ResultSet.ResultSetScalarTypes.VALUE_NULL, null);
+        Property nameProperty = new Property("name", ResultSet.ResultSetValueTypes.VALUE_STRING, name);
+        Property ageProperty = new Property("age", ResultSet.ResultSetValueTypes.VALUE_INTEGER, age);
+        Property doubleProperty = new Property("doubleValue", ResultSet.ResultSetValueTypes.VALUE_DOUBLE, doubleValue);
+        Property trueBooleanProperty = new Property("boolValue", ResultSet.ResultSetValueTypes.VALUE_BOOLEAN, true);
+        Property falseBooleanProperty = new Property("boolValue", ResultSet.ResultSetValueTypes.VALUE_BOOLEAN, false);
+        Property nullProperty = new Property("nullValue", ResultSet.ResultSetValueTypes.VALUE_NULL, null);
 
-        Property placeProperty = new Property("place", ResultSet.ResultSetScalarTypes.VALUE_STRING, place);
-        Property sinceProperty = new Property("since", ResultSet.ResultSetScalarTypes.VALUE_INTEGER, since);
+        Property placeProperty = new Property("place", ResultSet.ResultSetValueTypes.VALUE_STRING, place);
+        Property sinceProperty = new Property("since", ResultSet.ResultSetValueTypes.VALUE_INTEGER, since);
 
         Node expectedNode = new Node();
         expectedNode.setId(0);
@@ -763,9 +763,9 @@ public class RedisGraphAPITest {
         Node expectedANode = new Node();
         expectedANode.setId(0);
         expectedANode.addLabel("person");
-        Property aNameProperty = new Property("name", ResultSet.ResultSetScalarTypes.VALUE_STRING, "a");
-        Property aAgeProperty = new Property("age", ResultSet.ResultSetScalarTypes.VALUE_INTEGER, 32);
-        Property aListProperty = new Property("array", ResultSet.ResultSetScalarTypes.VALUE_ARRAY, Arrays.asList(0,1,2));
+        Property aNameProperty = new Property("name", ResultSet.ResultSetValueTypes.VALUE_STRING, "a");
+        Property aAgeProperty = new Property("age", ResultSet.ResultSetValueTypes.VALUE_INTEGER, 32);
+        Property aListProperty = new Property("array", ResultSet.ResultSetValueTypes.VALUE_ARRAY, Arrays.asList(0,1,2));
         expectedANode.addProperty(aNameProperty);
         expectedANode.addProperty(aAgeProperty);
         expectedANode.addProperty(aListProperty);
@@ -774,9 +774,9 @@ public class RedisGraphAPITest {
         Node expectedBNode = new Node();
         expectedBNode.setId(1);
         expectedBNode.addLabel("person");
-        Property bNameProperty = new Property("name", ResultSet.ResultSetScalarTypes.VALUE_STRING, "b");
-        Property bAgeProperty = new Property("age", ResultSet.ResultSetScalarTypes.VALUE_INTEGER, 30);
-        Property bListProperty = new Property("array", ResultSet.ResultSetScalarTypes.VALUE_ARRAY, Arrays.asList(3,4,5));
+        Property bNameProperty = new Property("name", ResultSet.ResultSetValueTypes.VALUE_STRING, "b");
+        Property bAgeProperty = new Property("age", ResultSet.ResultSetValueTypes.VALUE_INTEGER, 30);
+        Property bListProperty = new Property("array", ResultSet.ResultSetValueTypes.VALUE_ARRAY, Arrays.asList(3,4,5));
         expectedBNode.addProperty(bNameProperty);
         expectedBNode.addProperty(bAgeProperty);
         expectedBNode.addProperty(bListProperty);

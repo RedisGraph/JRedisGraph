@@ -199,7 +199,7 @@ public class ResultSetImpl implements ResultSet {
 
             //trimmed for getting to value using deserializeScalar
             List<Object> propertyScalar = rawProperty.subList(1, rawProperty.size());
-            property.setType(getScalarTypeFromObject(propertyScalar.get(0)));
+            property.setValueType(getValueTypeFromObject(propertyScalar.get(0)));
             property.setValue(deserializeScalar(propertyScalar));
 
             entity.addProperty(property);
@@ -213,7 +213,8 @@ public class ResultSetImpl implements ResultSet {
      * @return value of the specific scalar type
      */
     private Object deserializeScalar(List<Object> rawScalarData) {
-        ResultSetScalarTypes type = getScalarTypeFromObject(rawScalarData.get(0));
+        ResultSetValueTypes type = getValueTypeFromObject(rawScalarData.get(0));
+
         Object obj = rawScalarData.get(1);
         switch (type) {
             case VALUE_NULL:
@@ -239,8 +240,8 @@ public class ResultSetImpl implements ResultSet {
     }
 
     private List<Object> deserializeArray(Object rawScalarData) {
-        List<Object> res = new ArrayList<>();
         List<List<Object>> array = (List<List<Object>>) rawScalarData;
+        List<Object> res = new ArrayList<>(array.size());
         for (List<Object> arrayValue : array) {
             res.add(deserializeScalar(arrayValue));
         }
@@ -253,8 +254,8 @@ public class ResultSetImpl implements ResultSet {
      * @param rawScalarType
      * @return scalar type
      */
-    private ResultSetScalarTypes getScalarTypeFromObject(Object rawScalarType) {
-        return ResultSetScalarTypes.values()[((Long) rawScalarType).intValue()];
+    private ResultSetValueTypes getValueTypeFromObject(Object rawScalarType) {
+        return ResultSetValueTypes.values()[((Long) rawScalarType).intValue()];
     }
 
     @Override

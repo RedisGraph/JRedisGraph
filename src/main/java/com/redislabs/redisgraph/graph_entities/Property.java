@@ -12,6 +12,8 @@ public class Property {
     //members
     private String name;
     private ResultSet.ResultSetScalarTypes type;
+
+    private ResultSet.ResultSetValueTypes valueType;
     private Object value;
 
 
@@ -29,9 +31,16 @@ public class Property {
      * @param type
      * @param value
      */
+    @Deprecated
     public Property(String name, ResultSet.ResultSetScalarTypes type, Object value) {
         this.name = name;
         this.type = type;
+        this.value = value;
+    }
+
+    public Property(String name, ResultSet.ResultSetValueTypes type, Object value) {
+        this.name = name;
+        this.valueType = type;
         this.value = value;
     }
 
@@ -54,6 +63,7 @@ public class Property {
     /**
      * @return property type
      */
+    @Deprecated
     public ResultSet.ResultSetScalarTypes getType() {
         return type;
     }
@@ -61,8 +71,22 @@ public class Property {
     /**
      * @param type property type to be set
      */
+    @Deprecated
     public void setType(ResultSet.ResultSetScalarTypes type) {
         this.type = type;
+    }
+
+    /**
+     * @return property type
+     */
+    public ResultSet.ResultSetValueTypes getValueType() {return valueType;}
+
+
+    /**
+     * @param type property type to be set
+     */
+    public void setValueType(ResultSet.ResultSetValueTypes type) {
+        this.valueType = type;
     }
 
 
@@ -88,13 +112,13 @@ public class Property {
         if (!(o instanceof Property)) return false;
         Property property = (Property) o;
         return Objects.equals(name, property.name) &&
-                type == property.type &&
+                valueType == property.valueType &&
                 Objects.equals(value, property.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, type, value);
+        return Objects.hash(name, valueType, value);
     }
 
     /**
@@ -105,7 +129,7 @@ public class Property {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Property{");
         sb.append("name='").append(name).append('\'');
-        sb.append(", type=").append(type);
+        sb.append(", type=").append(valueType);
         sb.append(", value=").append(value);
         sb.append('}');
         return sb.toString();

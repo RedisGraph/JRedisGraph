@@ -7,7 +7,17 @@ import java.util.Iterator;
  */
 public interface ResultSet extends Iterator<Record> {
 
+    @Deprecated
     enum ResultSetScalarTypes {
+        PROPERTY_UNKNOWN,
+        PROPERTY_NULL,
+        PROPERTY_STRING,
+        PROPERTY_INTEGER,
+        PROPERTY_BOOLEAN,
+        PROPERTY_DOUBLE
+    }
+
+    enum ResultSetValueTypes {
         VALUE_UNKNOWN,
         VALUE_NULL,
         VALUE_STRING,
