@@ -216,20 +216,35 @@ public class ResultSetImpl implements ResultSet {
         ResultSetScalarTypes type = getScalarTypeFromObject(rawScalarData.get(0));
         Object obj = rawScalarData.get(1);
         switch (type) {
-            case PROPERTY_NULL:
+            case VALUE_NULL:
                 return null;
-            case PROPERTY_BOOLEAN:
+            case VALUE_BOOLEAN:
                 return Boolean.parseBoolean(SafeEncoder.encode((byte[]) obj));
-            case PROPERTY_DOUBLE:
+            case VALUE_DOUBLE:
                 return Double.parseDouble(SafeEncoder.encode((byte[]) obj));
-            case PROPERTY_INTEGER:
+            case VALUE_INTEGER:
                 return ((Long) obj).intValue();
-            case PROPERTY_STRING:
+            case VALUE_STRING:
                 return SafeEncoder.encode((byte[]) obj);
-            case PROPERTY_UNKNOWN:
+            case VALUE_ARRAY:
+                return deserializeArray(obj);
+            case VALUE_NODE:
+                return deserializeNode((List<Object>) obj);
+            case VALUE_EDGE:
+                return deserializeEdge((List<Object>) obj);
+            case VALUE_UNKNOWN:
             default:
                 return obj;
         }
+    }
+
+    private List<Object> deserializeArray(Object rawScalarData) {
+        List<Object> res = new ArrayList<>();
+        List<List<Object>> array = (List<List<Object>>) rawScalarData;
+        for (List<Object> arrayValue : array) {
+            res.add(deserializeScalar(arrayValue));
+        }
+        return res;
     }
 
     /**

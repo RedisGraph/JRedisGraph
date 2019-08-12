@@ -8,12 +8,15 @@ import java.util.Iterator;
 public interface ResultSet extends Iterator<Record> {
 
     enum ResultSetScalarTypes {
-        PROPERTY_UNKNOWN,
-        PROPERTY_NULL,
-        PROPERTY_STRING,
-        PROPERTY_INTEGER,
-        PROPERTY_BOOLEAN,
-        PROPERTY_DOUBLE,
+        VALUE_UNKNOWN,
+        VALUE_NULL,
+        VALUE_STRING,
+        VALUE_INTEGER,
+        VALUE_BOOLEAN,
+        VALUE_DOUBLE,
+        VALUE_ARRAY,
+        VALUE_EDGE,
+        VALUE_NODE
     }
 
     int size();
