@@ -7,17 +7,20 @@ import java.util.Iterator;
  */
 public interface ResultSet extends Iterator<Record> {
 
-    @Deprecated
-    enum ResultSetScalarTypes {
-        PROPERTY_UNKNOWN,
-        PROPERTY_NULL,
-        PROPERTY_STRING,
-        PROPERTY_INTEGER,
-        PROPERTY_BOOLEAN,
-        PROPERTY_DOUBLE
-    }
 
-    enum ResultSetValueTypes {
+    enum ResultSetScalarTypes {
+        @Deprecated
+        PROPERTY_UNKNOWN,
+        @Deprecated
+        PROPERTY_NULL,
+        @Deprecated
+        PROPERTY_STRING,
+        @Deprecated
+        PROPERTY_INTEGER,
+        @Deprecated
+        PROPERTY_BOOLEAN,
+        @Deprecated
+        PROPERTY_DOUBLE,
         VALUE_UNKNOWN,
         VALUE_NULL,
         VALUE_STRING,
@@ -28,6 +31,7 @@ public interface ResultSet extends Iterator<Record> {
         VALUE_EDGE,
         VALUE_NODE
     }
+    
 
     int size();
 
