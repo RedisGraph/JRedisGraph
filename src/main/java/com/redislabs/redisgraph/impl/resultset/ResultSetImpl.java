@@ -6,6 +6,7 @@ import com.redislabs.redisgraph.graph_entities.GraphEntity;
 import com.redislabs.redisgraph.graph_entities.Node;
 import com.redislabs.redisgraph.graph_entities.Property;
 import com.redislabs.redisgraph.impl.graph_cache.GraphCache;
+import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.jedis.util.SafeEncoder;
 
 import java.util.ArrayList;
@@ -226,6 +227,8 @@ public class ResultSetImpl implements ResultSet {
                 return ((Long) obj).intValue();
             case PROPERTY_STRING:
                 return SafeEncoder.encode((byte[]) obj);
+            case VALUE_ERROR:
+                throw (JedisException) obj;
             case PROPERTY_UNKNOWN:
             default:
                 return obj;

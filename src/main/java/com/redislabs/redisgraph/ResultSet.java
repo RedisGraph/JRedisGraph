@@ -14,6 +14,7 @@ public interface ResultSet extends Iterator<Record> {
         PROPERTY_INTEGER,
         PROPERTY_BOOLEAN,
         PROPERTY_DOUBLE,
+        VALUE_ERROR
     }
 
     int size();

@@ -15,9 +15,12 @@ import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.redislabs.redisgraph.Statistics.Label;
+import org.junit.rules.ExpectedException;
+import redis.clients.jedis.exceptions.JedisDataException;
 
 import static com.redislabs.redisgraph.Header.ResultSetColumnTypes.*;
 
@@ -755,5 +758,18 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(returnValue);
         c1.close();
         c2.close();
+    }
+
+    @Rule
+    public ExpectedException exceptionRule = ExpectedException.none();
+
+    @Test
+    public void testRuntimeException() {
+
+        api.query("social", "create ()");
+        exceptionRule.expect(JedisDataException.class);
+        exceptionRule.expectMessage("Type mismatch: expected Integer but was String");
+        api.query("social", "RETURN abs('q')");
+
     }
 }
