@@ -12,6 +12,7 @@ import com.redislabs.redisgraph.graph_entities.Node;
 import com.redislabs.redisgraph.graph_entities.Property;
 import com.redislabs.redisgraph.impl.api.RedisGraph;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -152,10 +153,13 @@ public class RedisGraphAPITest {
         Assert.assertFalse(createIndexResult.hasNext());
         Assert.assertEquals(1, createIndexResult.getStatistics().indicesAdded());
 
-        ResultSet failCreateIndexResult = api.query("social", "CREATE INDEX ON :person(age1)");
-        Assert.assertFalse(failCreateIndexResult.hasNext());
-        Assert.assertNull(failCreateIndexResult.getStatistics().getStringValue(Label.INDICES_ADDED));
-        Assert.assertEquals(0, failCreateIndexResult.getStatistics().indicesAdded());
+        // since RediSearch as index, those action are allowed
+        ResultSet createNonExistingIndexResult = api.query("social", "CREATE INDEX ON :person(age1)");
+        Assert.assertFalse(createNonExistingIndexResult.hasNext());
+        Assert.assertNotNull(createNonExistingIndexResult.getStatistics().getStringValue(Label.INDICES_ADDED));
+        Assert.assertEquals(1, createNonExistingIndexResult.getStatistics().indicesAdded());
+
+
     }
 
     @Test
