@@ -12,7 +12,6 @@ import com.redislabs.redisgraph.graph_entities.Node;
 import com.redislabs.redisgraph.graph_entities.Property;
 import com.redislabs.redisgraph.impl.api.RedisGraph;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -158,7 +157,6 @@ public class RedisGraphAPITest {
         Assert.assertFalse(createNonExistingIndexResult.hasNext());
         Assert.assertNotNull(createNonExistingIndexResult.getStatistics().getStringValue(Label.INDICES_ADDED));
         Assert.assertEquals(1, createNonExistingIndexResult.getStatistics().indicesAdded());
-
 
     }
 
