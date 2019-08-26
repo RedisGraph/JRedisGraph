@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.junit.Assert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 public class UtilsTest {
  
@@ -24,17 +26,19 @@ public class UtilsTest {
     
     Assert.assertEquals("CALL prc()ka,kb", Utils.prepareProcedure("prc", Arrays.asList(new String[]{}), kwargs));
   }
-  
+
+  @Rule
+  public ExpectedException exceptionRule = ExpectedException.none();
+
+
   @Test
   public void prepareQuery() {   
     Assert.assertEquals("query %s %d end of query", Utils.prepareQuery("query %s %d end of query"));
     
     Assert.assertEquals("query 'a' 33 end of query", Utils.prepareQuery("query %s %d end of query", "a", 33));
-    
-    try {
-      Assert.assertEquals("CALL prc(\"a\",\"b\")ka,kb", Utils.prepareQuery("query %s %d end of query", "a", "b"));
-      Assert.fail();
-    } catch (IllegalFormatConversionException e) {}
+
+    exceptionRule.expect(IllegalFormatConversionException.class);
+    Assert.assertEquals("CAL prc(\"a\",\"b\")ka,kb", Utils.prepareQuery("query %s %d end of query", "a", "b"));
   }
 
 }
