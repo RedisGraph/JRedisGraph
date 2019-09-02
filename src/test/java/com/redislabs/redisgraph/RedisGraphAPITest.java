@@ -155,10 +155,12 @@ public class RedisGraphAPITest {
         Assert.assertFalse(createIndexResult.hasNext());
         Assert.assertEquals(1, createIndexResult.getStatistics().indicesAdded());
 
-        ResultSet failCreateIndexResult = api.query("social", "CREATE INDEX ON :person(age1)");
-        Assert.assertFalse(failCreateIndexResult.hasNext());
-        Assert.assertNull(failCreateIndexResult.getStatistics().getStringValue(Label.INDICES_ADDED));
-        Assert.assertEquals(0, failCreateIndexResult.getStatistics().indicesAdded());
+        // since RediSearch as index, those action are allowed
+        ResultSet createNonExistingIndexResult = api.query("social", "CREATE INDEX ON :person(age1)");
+        Assert.assertFalse(createNonExistingIndexResult.hasNext());
+        Assert.assertNotNull(createNonExistingIndexResult.getStatistics().getStringValue(Label.INDICES_ADDED));
+        Assert.assertEquals(1, createNonExistingIndexResult.getStatistics().indicesAdded());
+
     }
 
     @Test
@@ -247,7 +249,7 @@ public class RedisGraphAPITest {
             + "nullValue=Property{name='nullValue', type=PROPERTY_NULL, value=null}, "
             + "since=Property{name='since', type=PROPERTY_INTEGER, value=2000}}}", expectedEdge.toString());
 
-        Assert.assertNotNull(api.query("social", "CREATE (:person{name:%s',age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:%s,age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
         Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
         Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  " +
                 "CREATE (a)-[:knows{place:'TLV', since:2000,doubleValue:3.14, boolValue:false, nullValue:null}]->(b)"));
@@ -304,9 +306,9 @@ public class RedisGraphAPITest {
         }
 
         Assert.assertEquals( "roi", record.getString(2));
-    	Assert.assertEquals( "32", record.getString(3));
-    	Assert.assertEquals( 32L, ((Integer)(record.getValue(3))).longValue());
-    	Assert.assertEquals( 32L, ((Integer)record.getValue("a.age")).longValue());
+        Assert.assertEquals( "32", record.getString(3));
+        Assert.assertEquals( 32L, ((Integer)(record.getValue(3))).longValue());
+        Assert.assertEquals( 32L, ((Integer)record.getValue("a.age")).longValue());
         Assert.assertEquals( "roi", record.getString("a.name"));
         Assert.assertEquals( "32", record.getString("a.age"));
 
@@ -508,9 +510,9 @@ public class RedisGraphAPITest {
 
     @Test
     public void testEscapedQuery() {
-        Assert.assertNotNull(api.query("social", "CREATE (:escaped{s1:%s,s2:%s})", "S\"\'", "S\\'\\\""));
-        Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1=%s and n.s2=%s RETURN n", "S\"\'", "S\\'\\\""));
-        Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1='S\"\\'' RETURN n"));
+        Assert.assertNotNull(api.query("social", "CREATE (:escaped{s1:%s,s2:%s})", "S\"'", "S'\""));
+        Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1=%s and n.s2=%s RETURN n", "S\"'", "S'\""));
+        Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1='S\"' RETURN n"));
     }
 
 
@@ -664,7 +666,7 @@ public class RedisGraphAPITest {
         expectedEdge.addProperty(nullProperty);
 
         try (RedisGraphContext c = api.getContext()) {
-            Assert.assertNotNull(c.query("social", "CREATE (:person{name:%s',age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
+            Assert.assertNotNull(c.query("social", "CREATE (:person{name:%s,age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
             Assert.assertNotNull(c.query("social", "CREATE (:person{name:'amit',age:30})"));
             Assert.assertNotNull(c.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  " +
                     "CREATE (a)-[:knows{place:'TLV', since:2000,doubleValue:3.14, boolValue:false, nullValue:null}]->(b)"));
