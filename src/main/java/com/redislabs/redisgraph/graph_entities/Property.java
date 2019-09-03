@@ -58,27 +58,14 @@ public class Property {
      */
     @Deprecated
     public ResultSet.ResultSetScalarTypes getType() {
-        if (type.ordinal() >= 6 && type.ordinal() < 12){
-            return ResultSet.ResultSetScalarTypes.values()[type.ordinal()-6];
-        }
         return type;
     }
-
-    public ResultSet.ResultSetScalarTypes getValueType() {
-        return type;
-    }
-
-
 
     /**
      * @param type property type to be set
      */
     public void setType(ResultSet.ResultSetScalarTypes type) {
-        ResultSet.ResultSetScalarTypes actualType = type;
-        if (type.ordinal() < 6) {
-            actualType = ResultSet.ResultSetScalarTypes.values()[type.ordinal() + 6];
-        }
-        this.type = actualType;
+        this.type = type;
     }
 
 

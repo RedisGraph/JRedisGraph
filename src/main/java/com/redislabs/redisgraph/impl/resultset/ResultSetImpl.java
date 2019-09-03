@@ -255,7 +255,7 @@ public class ResultSetImpl implements ResultSet {
      * @return scalar type
      */
     private ResultSetScalarTypes getValueTypeFromObject(Object rawScalarType) {
-        return ResultSetScalarTypes.values()[((Long) rawScalarType).intValue() +  6];
+        return ResultSetScalarTypes.values()[((Long) rawScalarType).intValue()];
     }
 
     @Override
