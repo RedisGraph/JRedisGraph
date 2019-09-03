@@ -56,7 +56,6 @@ public class Property {
     /**
      * @return property type
      */
-    @Deprecated
     public ResultSet.ResultSetScalarTypes getType() {
         return type;
     }
