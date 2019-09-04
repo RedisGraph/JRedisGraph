@@ -199,7 +199,6 @@ public class ResultSetImpl implements ResultSet {
 
             //trimmed for getting to value using deserializeScalar
             List<Object> propertyScalar = rawProperty.subList(1, rawProperty.size());
-            property.setType(getValueTypeFromObject(propertyScalar.get(0)));
             property.setValue(deserializeScalar(propertyScalar));
 
             entity.addProperty(property);

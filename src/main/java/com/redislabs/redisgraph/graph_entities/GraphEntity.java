@@ -42,12 +42,11 @@ public abstract class GraphEntity {
     /**
      * Adds a property to the entity, by composing name, type and value to a property object
      * @param name
-     * @param type
      * @param value
      */
-    public void addProperty(String name, ResultSetScalarTypes type, Object value){
+    public void addProperty(String name, Object value){
 
-        addProperty(new Property(name, type, value));
+        addProperty(new Property(name, value));
 
     }
 
