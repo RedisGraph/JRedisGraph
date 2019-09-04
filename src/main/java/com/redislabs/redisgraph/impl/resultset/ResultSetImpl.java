@@ -1,6 +1,10 @@
 package com.redislabs.redisgraph.impl.resultset;
 
-import com.redislabs.redisgraph.*;
+import com.redislabs.redisgraph.Header;
+import com.redislabs.redisgraph.Record;
+import com.redislabs.redisgraph.RedisGraph;
+import com.redislabs.redisgraph.ResultSet;
+import com.redislabs.redisgraph.Statistics;
 import com.redislabs.redisgraph.graph_entities.Edge;
 import com.redislabs.redisgraph.graph_entities.GraphEntity;
 import com.redislabs.redisgraph.graph_entities.Node;
@@ -254,7 +258,7 @@ public class ResultSetImpl implements ResultSet {
      * @return scalar type
      */
     private ResultSetScalarTypes getValueTypeFromObject(Object rawScalarType) {
-        return ResultSetScalarTypes.values()[((Long) rawScalarType).intValue()];
+        return ResultSetScalarTypes.getValue(((Long) rawScalarType).intValue());
     }
 
     @Override
