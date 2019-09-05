@@ -203,15 +203,15 @@ public class RedisGraphAPITest {
 
 
 
-        Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, name);
-        Property ageProperty = new Property("age", ResultSet.ResultSetScalarTypes.PROPERTY_INTEGER, age);
-        Property doubleProperty = new Property("doubleValue", ResultSet.ResultSetScalarTypes.PROPERTY_DOUBLE, doubleValue);
-        Property trueBooleanProperty = new Property("boolValue", ResultSet.ResultSetScalarTypes.PROPERTY_BOOLEAN, true);
-        Property falseBooleanProperty = new Property("boolValue", ResultSet.ResultSetScalarTypes.PROPERTY_BOOLEAN, false);
-        Property nullProperty = new Property("nullValue", ResultSet.ResultSetScalarTypes.PROPERTY_NULL, null);
+        Property nameProperty = new Property("name", name);
+        Property ageProperty = new Property("age", age);
+        Property doubleProperty = new Property("doubleValue", doubleValue);
+        Property trueBooleanProperty = new Property("boolValue", true);
+        Property falseBooleanProperty = new Property("boolValue", false);
+        Property nullProperty = new Property("nullValue", null);
 
-        Property placeProperty = new Property("place", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, place);
-        Property sinceProperty = new Property("since", ResultSet.ResultSetScalarTypes.PROPERTY_INTEGER, since);
+        Property placeProperty = new Property("place", place);
+        Property sinceProperty = new Property("since", since);
 
         Node expectedNode = new Node();
         expectedNode.setId(0);
@@ -223,11 +223,11 @@ public class RedisGraphAPITest {
         expectedNode.addProperty(nullProperty);
         Assert.assertEquals(
             "Node{labels=[person], id=0, "
-            + "propertyMap={name=Property{name='name', type=PROPERTY_STRING, value=roi}, "
-            + "boolValue=Property{name='boolValue', type=PROPERTY_BOOLEAN, value=true}, "
-            + "doubleValue=Property{name='doubleValue', type=PROPERTY_DOUBLE, value=3.14}, "
-            + "nullValue=Property{name='nullValue', type=PROPERTY_NULL, value=null}, "
-            + "age=Property{name='age', type=PROPERTY_INTEGER, value=32}}}", expectedNode.toString());
+            + "propertyMap={name=Property{name='name', value=roi}, "
+            + "boolValue=Property{name='boolValue', value=true}, "
+            + "doubleValue=Property{name='doubleValue', value=3.14}, "
+            + "nullValue=Property{name='nullValue', value=null}, "
+            + "age=Property{name='age', value=32}}}", expectedNode.toString());
 
         Edge expectedEdge = new Edge();
         expectedEdge.setId(0);
@@ -240,11 +240,11 @@ public class RedisGraphAPITest {
         expectedEdge.addProperty(falseBooleanProperty);
         expectedEdge.addProperty(nullProperty);
         Assert.assertEquals("Edge{relationshipType='knows', source=0, destination=1, id=0, "
-            + "propertyMap={boolValue=Property{name='boolValue', type=PROPERTY_BOOLEAN, value=false}, "
-            + "place=Property{name='place', type=PROPERTY_STRING, value=TLV}, "
-            + "doubleValue=Property{name='doubleValue', type=PROPERTY_DOUBLE, value=3.14}, "
-            + "nullValue=Property{name='nullValue', type=PROPERTY_NULL, value=null}, "
-            + "since=Property{name='since', type=PROPERTY_INTEGER, value=2000}}}", expectedEdge.toString());
+            + "propertyMap={boolValue=Property{name='boolValue', value=false}, "
+            + "place=Property{name='place', value=TLV}, "
+            + "doubleValue=Property{name='doubleValue', value=3.14}, "
+            + "nullValue=Property{name='nullValue', value=null}, "
+            + "since=Property{name='since', value=2000}}}", expectedEdge.toString());
 
         Assert.assertNotNull(api.query("social", "CREATE (:person{name:%s,age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
         Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
@@ -332,9 +332,9 @@ public class RedisGraphAPITest {
                 mapToObj(i-> api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, a.age")).
                 collect(Collectors.toList());
 
-        Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, "roi");
-        Property ageProperty = new Property("age", ResultSet.ResultSetScalarTypes.PROPERTY_INTEGER, 32);
-        Property lastNameProperty =new Property("lastName", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, "a");
+        Property nameProperty = new Property("name", "roi");
+        Property ageProperty = new Property("age", 32);
+        Property lastNameProperty =new Property("lastName", "a");
 
         Node expectedNode = new Node();
         expectedNode.setId(0);
@@ -426,9 +426,9 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(b)"));
 
         //expected objects init
-        Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, "roi");
-        Property ageProperty = new Property("age", ResultSet.ResultSetScalarTypes.PROPERTY_INTEGER, 32);
-        Property lastNameProperty =new Property("lastName", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, "a");
+        Property nameProperty = new Property("name", "roi");
+        Property ageProperty = new Property("age", 32);
+        Property lastNameProperty =new Property("lastName", "a");
 
         Node expectedNode = new Node();
         expectedNode.setId(0);
@@ -570,7 +570,7 @@ public class RedisGraphAPITest {
 
             Assert.assertEquals(COLUMN_NODE, schemaTypes.get(0));
 
-            Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, "a");
+            Property nameProperty = new Property("name", "a");
 
             Node expectedNode = new Node();
             expectedNode.setId(0);
@@ -629,15 +629,15 @@ public class RedisGraphAPITest {
         int since = 2000;
 
 
-        Property nameProperty = new Property("name", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, name);
-        Property ageProperty = new Property("age", ResultSet.ResultSetScalarTypes.PROPERTY_INTEGER, age);
-        Property doubleProperty = new Property("doubleValue", ResultSet.ResultSetScalarTypes.PROPERTY_DOUBLE, doubleValue);
-        Property trueBooleanProperty = new Property("boolValue", ResultSet.ResultSetScalarTypes.PROPERTY_BOOLEAN, true);
-        Property falseBooleanProperty = new Property("boolValue", ResultSet.ResultSetScalarTypes.PROPERTY_BOOLEAN, false);
-        Property nullProperty = new Property("nullValue", ResultSet.ResultSetScalarTypes.PROPERTY_NULL, null);
+        Property nameProperty = new Property("name", name);
+        Property ageProperty = new Property("age", age);
+        Property doubleProperty = new Property("doubleValue", doubleValue);
+        Property trueBooleanProperty = new Property("boolValue", true);
+        Property falseBooleanProperty = new Property("boolValue", false);
+        Property nullProperty = new Property("nullValue", null);
 
-        Property placeProperty = new Property("place", ResultSet.ResultSetScalarTypes.PROPERTY_STRING, place);
-        Property sinceProperty = new Property("since", ResultSet.ResultSetScalarTypes.PROPERTY_INTEGER, since);
+        Property placeProperty = new Property("place", place);
+        Property sinceProperty = new Property("since", since);
 
         Node expectedNode = new Node();
         expectedNode.setId(0);
@@ -757,5 +757,128 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(returnValue);
         c1.close();
         c2.close();
+    }
+
+    @Test
+    public void testArraySupport() {
+
+        Node expectedANode = new Node();
+        expectedANode.setId(0);
+        expectedANode.addLabel("person");
+        Property aNameProperty = new Property("name", "a");
+        Property aAgeProperty = new Property("age", 32);
+        Property aListProperty = new Property("array", Arrays.asList(0,1,2));
+        expectedANode.addProperty(aNameProperty);
+        expectedANode.addProperty(aAgeProperty);
+        expectedANode.addProperty(aListProperty);
+
+
+        Node expectedBNode = new Node();
+        expectedBNode.setId(1);
+        expectedBNode.addLabel("person");
+        Property bNameProperty = new Property("name", "b");
+        Property bAgeProperty = new Property("age", 30);
+        Property bListProperty = new Property("array", Arrays.asList(3,4,5));
+        expectedBNode.addProperty(bNameProperty);
+        expectedBNode.addProperty(bAgeProperty);
+        expectedBNode.addProperty(bListProperty);
+
+
+
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'a',age:32,array:[0,1,2]})"));
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'b',age:30,array:[3,4,5]})"));
+
+
+        // test array
+
+        ResultSet resultSet = api.query("social", "WITH [0,1,2] as x return x");
+
+        // check header
+        Assert.assertNotNull(resultSet.getHeader());
+        Header header = resultSet.getHeader();
+
+
+        List<String> schemaNames = header.getSchemaNames();
+        List<Header.ResultSetColumnTypes> schemaTypes = header.getSchemaTypes();
+
+        Assert.assertNotNull(schemaNames);
+        Assert.assertNotNull(schemaTypes);
+
+        Assert.assertEquals(1, schemaNames.size());
+        Assert.assertEquals(1, schemaTypes.size());
+
+        Assert.assertEquals("x", schemaNames.get(0));
+        Assert.assertEquals(COLUMN_SCALAR, schemaTypes.get(0));
+
+        // check record
+        Assert.assertEquals(1, resultSet.size());
+        Assert.assertTrue(resultSet.hasNext());
+        Record record = resultSet.next();
+        Assert.assertFalse(resultSet.hasNext());
+        Assert.assertEquals(Arrays.asList("x"), record.keys());
+
+
+        List x = record.getValue("x");
+        Assert.assertEquals(Arrays.asList(0,1,2), x);
+
+        // test collect
+        resultSet = api.query("social", "MATCH(n) return collect(n) as x");
+
+        Assert.assertNotNull(resultSet.getHeader());
+        header = resultSet.getHeader();
+
+
+        schemaNames = header.getSchemaNames();
+        schemaTypes = header.getSchemaTypes();
+
+        Assert.assertNotNull(schemaNames);
+        Assert.assertNotNull(schemaTypes);
+
+        Assert.assertEquals(1, schemaNames.size());
+        Assert.assertEquals(1, schemaTypes.size());
+
+        Assert.assertEquals("x", schemaNames.get(0));
+        Assert.assertEquals(COLUMN_SCALAR, schemaTypes.get(0));
+
+        // check record
+        Assert.assertEquals(1, resultSet.size());
+        Assert.assertTrue(resultSet.hasNext());
+        record = resultSet.next();
+        Assert.assertFalse(resultSet.hasNext());
+        Assert.assertEquals(Arrays.asList("x"), record.keys());
+        x = record.getValue("x");
+        Assert.assertEquals(Arrays.asList(expectedANode, expectedBNode), x);
+
+
+        // test unwind
+        resultSet = api.query("social", "unwind([0,1,2]) as x return x");
+
+        Assert.assertNotNull(resultSet.getHeader());
+        header = resultSet.getHeader();
+
+
+        schemaNames = header.getSchemaNames();
+        schemaTypes = header.getSchemaTypes();
+
+        Assert.assertNotNull(schemaNames);
+        Assert.assertNotNull(schemaTypes);
+
+        Assert.assertEquals(1, schemaNames.size());
+        Assert.assertEquals(1, schemaTypes.size());
+
+        Assert.assertEquals("x", schemaNames.get(0));
+        Assert.assertEquals(COLUMN_SCALAR, schemaTypes.get(0));
+
+        // check record
+        Assert.assertEquals(3, resultSet.size());
+
+        for (int i = 0; i < 3; i++) {
+            Assert.assertTrue(resultSet.hasNext());
+            record = resultSet.next();
+            Assert.assertEquals(Arrays.asList("x"), record.keys());
+            Assert.assertEquals(i, (int) record.getValue("x"));
+
+        }
+
     }
 }

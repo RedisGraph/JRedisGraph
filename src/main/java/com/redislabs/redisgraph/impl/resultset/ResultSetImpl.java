@@ -1,6 +1,10 @@
 package com.redislabs.redisgraph.impl.resultset;
 
-import com.redislabs.redisgraph.*;
+import com.redislabs.redisgraph.Header;
+import com.redislabs.redisgraph.Record;
+import com.redislabs.redisgraph.RedisGraph;
+import com.redislabs.redisgraph.ResultSet;
+import com.redislabs.redisgraph.Statistics;
 import com.redislabs.redisgraph.graph_entities.Edge;
 import com.redislabs.redisgraph.graph_entities.GraphEntity;
 import com.redislabs.redisgraph.graph_entities.Node;
@@ -199,7 +203,6 @@ public class ResultSetImpl implements ResultSet {
 
             //trimmed for getting to value using deserializeScalar
             List<Object> propertyScalar = rawProperty.subList(1, rawProperty.size());
-            property.setType(getScalarTypeFromObject(propertyScalar.get(0)));
             property.setValue(deserializeScalar(propertyScalar));
 
             entity.addProperty(property);
@@ -213,23 +216,39 @@ public class ResultSetImpl implements ResultSet {
      * @return value of the specific scalar type
      */
     private Object deserializeScalar(List<Object> rawScalarData) {
-        ResultSetScalarTypes type = getScalarTypeFromObject(rawScalarData.get(0));
+        ResultSetScalarTypes type = getValueTypeFromObject(rawScalarData.get(0));
+
         Object obj = rawScalarData.get(1);
         switch (type) {
-            case PROPERTY_NULL:
+            case VALUE_NULL:
                 return null;
-            case PROPERTY_BOOLEAN:
+            case VALUE_BOOLEAN:
                 return Boolean.parseBoolean(SafeEncoder.encode((byte[]) obj));
-            case PROPERTY_DOUBLE:
+            case VALUE_DOUBLE:
                 return Double.parseDouble(SafeEncoder.encode((byte[]) obj));
-            case PROPERTY_INTEGER:
+            case VALUE_INTEGER:
                 return ((Long) obj).intValue();
-            case PROPERTY_STRING:
+            case VALUE_STRING:
                 return SafeEncoder.encode((byte[]) obj);
-            case PROPERTY_UNKNOWN:
+            case VALUE_ARRAY:
+                return deserializeArray(obj);
+            case VALUE_NODE:
+                return deserializeNode((List<Object>) obj);
+            case VALUE_EDGE:
+                return deserializeEdge((List<Object>) obj);
+            case VALUE_UNKNOWN:
             default:
                 return obj;
         }
+    }
+
+    private List<Object> deserializeArray(Object rawScalarData) {
+        List<List<Object>> array = (List<List<Object>>) rawScalarData;
+        List<Object> res = new ArrayList<>(array.size());
+        for (List<Object> arrayValue : array) {
+            res.add(deserializeScalar(arrayValue));
+        }
+        return res;
     }
 
     /**
@@ -238,8 +257,8 @@ public class ResultSetImpl implements ResultSet {
      * @param rawScalarType
      * @return scalar type
      */
-    private ResultSetScalarTypes getScalarTypeFromObject(Object rawScalarType) {
-        return ResultSetScalarTypes.values()[((Long) rawScalarType).intValue()];
+    private ResultSetScalarTypes getValueTypeFromObject(Object rawScalarType) {
+        return ResultSetScalarTypes.getValue(((Long) rawScalarType).intValue());
     }
 
     @Override
