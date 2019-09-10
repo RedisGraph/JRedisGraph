@@ -67,6 +67,9 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
             contextedRedisGraph.setRedisGraphCaches(caches);
             return contextedRedisGraph.sendQuery(graphId, preparedQuery);
         }
+        catch (Exception e) {
+            throw e;
+        }
     }
 
 

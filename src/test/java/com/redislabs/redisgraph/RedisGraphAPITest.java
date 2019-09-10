@@ -881,4 +881,24 @@ public class RedisGraphAPITest {
         }
 
     }
+
+    @Test
+    public void testErrorReporting() {
+        Assert.assertNotNull(api.query("social", "CREATE (:person{mixed_prop: 'strval'}), (:person{mixed_prop: 50})"));
+
+        // Issue a query that causes a compile-time error
+        try {
+            api.query("social", "RETURN toUpper(5)");
+            Assert.fail(); // should be unreachable
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("Type mismatch"));
+        }
+
+        // Issue a query that causes a run-time error
+        try {
+            api.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)");
+        } catch (Exception e) {
+            Assert.assertTrue(e.getMessage().contains("Type mismatch"));
+        }
+    }
 }

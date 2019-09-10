@@ -11,6 +11,7 @@ import com.redislabs.redisgraph.graph_entities.Node;
 import com.redislabs.redisgraph.graph_entities.Property;
 import com.redislabs.redisgraph.impl.graph_cache.GraphCache;
 import redis.clients.jedis.util.SafeEncoder;
+import redis.clients.jedis.exceptions.JedisDataException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,13 @@ public class ResultSetImpl implements ResultSet {
     public ResultSetImpl(List<Object> rawResponse, RedisGraph redisGraph, GraphCache cache) {
         this.redisGraph = redisGraph;
         this.cache = cache;
+
+        // If a run-time error occured, the last member of the rawResponse will be a JedisDataException.
+        if (rawResponse.get(rawResponse.size()-1) instanceof JedisDataException) {
+
+            throw (JedisDataException)rawResponse.get(rawResponse.size() - 1);
+        }
+
         if (rawResponse.size() != 3) {
 
             header = parseHeader(new ArrayList<>());
