@@ -5,6 +5,7 @@ import com.redislabs.redisgraph.Record;
 import com.redislabs.redisgraph.RedisGraph;
 import com.redislabs.redisgraph.ResultSet;
 import com.redislabs.redisgraph.Statistics;
+import com.redislabs.redisgraph.exceptions.JRedisGraphRunTimeError;
 import com.redislabs.redisgraph.graph_entities.Edge;
 import com.redislabs.redisgraph.graph_entities.GraphEntity;
 import com.redislabs.redisgraph.graph_entities.Node;
@@ -40,7 +41,7 @@ public class ResultSetImpl implements ResultSet {
         // If a run-time error occured, the last member of the rawResponse will be a JedisDataException.
         if (rawResponse.get(rawResponse.size()-1) instanceof JedisDataException) {
 
-            throw (JedisDataException)rawResponse.get(rawResponse.size() - 1);
+            throw new JRedisGraphRunTimeError((Throwable) rawResponse.get(rawResponse.size() - 1));
         }
 
         if (rawResponse.size() != 3) {
