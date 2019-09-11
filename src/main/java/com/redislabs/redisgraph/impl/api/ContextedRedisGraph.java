@@ -3,6 +3,7 @@ package com.redislabs.redisgraph.impl.api;
 import com.redislabs.redisgraph.RedisGraphContext;
 import com.redislabs.redisgraph.ResultSet;
 import com.redislabs.redisgraph.exceptions.JRedisGraphCompileTimeError;
+import com.redislabs.redisgraph.exceptions.JRedisGraphRunTimeError;
 import com.redislabs.redisgraph.impl.Utils;
 import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
@@ -51,7 +52,12 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
             List<Object> rawResponse = (List<Object>) conn.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
             return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
         }
+        catch (JRedisGraphRunTimeError rt) {
+            conn.close();
+            throw rt;
+        }
         catch (JedisDataException j) {
+            conn.close();
             throw new JRedisGraphCompileTimeError(j);
         }
         catch (Exception e) {
