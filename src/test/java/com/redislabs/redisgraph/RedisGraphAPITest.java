@@ -584,10 +584,6 @@ public class RedisGraphAPITest {
             Assert.assertEquals(Arrays.asList("n"), record.keys());
             Assert.assertEquals(expectedNode, record.getValue("n"));
 
-            // Graph delete
-            Assert.assertTrue(((String)results.get(6)).startsWith("Graph removed"));
-
-
             Assert.assertEquals(ResultSetImpl.class, results.get(7).getClass());
             resultSet = (ResultSet) results.get(7);
 
@@ -881,4 +877,5 @@ public class RedisGraphAPITest {
         }
 
     }
+
 }

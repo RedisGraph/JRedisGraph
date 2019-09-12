@@ -2,17 +2,19 @@ package com.redislabs.redisgraph.impl.api;
 
 import com.redislabs.redisgraph.RedisGraphContext;
 import com.redislabs.redisgraph.ResultSet;
+import com.redislabs.redisgraph.exceptions.JRedisGraphCompileTimeException;
+import com.redislabs.redisgraph.exceptions.JRedisGraphRunTimeException;
 import com.redislabs.redisgraph.impl.Utils;
 import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
 import redis.clients.jedis.Client;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.util.SafeEncoder;
-
+import redis.clients.jedis.exceptions.JedisDataException;
 import java.util.List;
 
 /**
- * An implementaion of RedisGraphContext. Allows sending RedisGraph and some Redis commands,
+ * An implementation of RedisGraphContext. Allows sending RedisGraph and some Redis commands,
  * within a specific connection context
  */
 public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGraphContext, RedisGraphCacheHolder {
@@ -50,9 +52,11 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
             List<Object> rawResponse = (List<Object>) conn.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
             return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
         }
-        catch (Exception e) {
-            conn.close();
-            throw e;
+        catch (JRedisGraphRunTimeException rt) {
+            throw rt;
+        }
+        catch (JedisDataException j) {
+            throw new JRedisGraphCompileTimeException(j);
         }
     }
 
