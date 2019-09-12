@@ -53,16 +53,10 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
             return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
         }
         catch (JRedisGraphRunTimeError rt) {
-            conn.close();
             throw rt;
         }
         catch (JedisDataException j) {
-            conn.close();
             throw new JRedisGraphCompileTimeError(j);
-        }
-        catch (Exception e) {
-            conn.close();
-            throw e;
         }
     }
 
