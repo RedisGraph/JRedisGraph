@@ -20,11 +20,6 @@ import org.junit.Test;
 import com.redislabs.redisgraph.Statistics.Label;
 
 import static com.redislabs.redisgraph.Header.ResultSetColumnTypes.*;
-import com.redislabs.redisgraph.exceptions.JRedisGraphCompileTimeError;
-import com.redislabs.redisgraph.exceptions.JRedisGraphRunTimeError;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
-import redis.clients.jedis.exceptions.JedisDataException;
 
 public class RedisGraphAPITest {
     private RedisGraphContextGenerator api;
@@ -589,10 +584,6 @@ public class RedisGraphAPITest {
             Assert.assertEquals(Arrays.asList("n"), record.keys());
             Assert.assertEquals(expectedNode, record.getValue("n"));
 
-            // Graph delete
-            Assert.assertTrue(((String)results.get(6)).startsWith("Graph removed"));
-
-
             Assert.assertEquals(ResultSetImpl.class, results.get(7).getClass());
             resultSet = (ResultSet) results.get(7);
 
@@ -887,21 +878,4 @@ public class RedisGraphAPITest {
 
     }
 
-    @Rule
-    public ExpectedException exceptionRule = ExpectedException.none();
-
-    @Test
-    public void testErrorReporting() {
-        Assert.assertNotNull(api.query("social", "CREATE (:person{mixed_prop: 'strval'}), (:person{mixed_prop: 50})"));
-
-        exceptionRule.expect(JRedisGraphCompileTimeError.class);
-        exceptionRule.expectMessage("Type mismatch: expected String but was Integer");
-
-        // Issue a query that causes a compile-time error
-        api.query("social", "RETURN toUpper(5)");
-
-        exceptionRule.expect(JRedisGraphRunTimeError.class);
-        // Issue a query that causes a run-time error
-        api.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)");
-    }
 }
