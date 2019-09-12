@@ -32,7 +32,7 @@ public class JRedisGraphErrorTest {
 
     @Test
     public void testSyntaxErrorReporting() {
-        exceptionRule.expect(JRedisGraphCompileTimeError.class);
+        exceptionRule.expect(JRedisGraphCompileTimeException.class);
         exceptionRule.expectMessage("Type mismatch: expected String but was Integer");
 
         // Issue a query that causes a compile-time error
@@ -42,7 +42,7 @@ public class JRedisGraphErrorTest {
 
     @Test
     public void testRuntimeErrorReporting() {
-        exceptionRule.expect(JRedisGraphRunTimeError.class);
+        exceptionRule.expect(JRedisGraphRunTimeException.class);
         exceptionRule.expectMessage("Type mismatch: expected String but was Integer");
 
         // Issue a query that causes a run-time error
@@ -57,7 +57,7 @@ public class JRedisGraphErrorTest {
             api.query("social", "RETURN toUpper(5)");
         }
         catch (Exception e) {
-            Assert.assertEquals(JRedisGraphCompileTimeError.class, e.getClass());
+            Assert.assertEquals(JRedisGraphCompileTimeException.class, e.getClass());
             Assert.assertTrue( e.getMessage().contains("Type mismatch: expected String but was Integer"));
         }
 
@@ -68,7 +68,7 @@ public class JRedisGraphErrorTest {
             api.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)");
         }
         catch (Exception e) {
-            Assert.assertEquals(JRedisGraphRunTimeError.class, e.getClass());
+            Assert.assertEquals(JRedisGraphRunTimeException.class, e.getClass());
             Assert.assertTrue( e.getMessage().contains("Type mismatch: expected String but was Integer"));
         }
 
@@ -77,7 +77,7 @@ public class JRedisGraphErrorTest {
 
     @Test
     public void testContextSyntaxErrorReporting() {
-        exceptionRule.expect(JRedisGraphCompileTimeError.class);
+        exceptionRule.expect(JRedisGraphCompileTimeException.class);
         exceptionRule.expectMessage("Type mismatch: expected String but was Integer");
         RedisGraphContext c = api.getContext();
 
@@ -88,15 +88,13 @@ public class JRedisGraphErrorTest {
 
     @Test
     public void testContextRuntimeErrorReporting() {
-        exceptionRule.expect(JRedisGraphRunTimeError.class);
+        exceptionRule.expect(JRedisGraphRunTimeException.class);
         exceptionRule.expectMessage("Type mismatch: expected String but was Integer");
 
         RedisGraphContext c = api.getContext();
         // Issue a query that causes a run-time error
         c.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)");
     }
-
-
 
 
     @Test
@@ -108,7 +106,7 @@ public class JRedisGraphErrorTest {
             c.query("social", "RETURN toUpper(5)");
         }
         catch (Exception e) {
-            Assert.assertEquals(JRedisGraphCompileTimeError.class, e.getClass());
+            Assert.assertEquals(JRedisGraphCompileTimeException.class, e.getClass());
             Assert.assertTrue( e.getMessage().contains("Type mismatch: expected String but was Integer"));
         }
 
@@ -119,11 +117,9 @@ public class JRedisGraphErrorTest {
             c.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)");
         }
         catch (Exception e) {
-            Assert.assertEquals(JRedisGraphRunTimeError.class, e.getClass());
+            Assert.assertEquals(JRedisGraphRunTimeException.class, e.getClass());
             Assert.assertTrue( e.getMessage().contains("Type mismatch: expected String but was Integer"));
         }
 
     }
-
-
 }
