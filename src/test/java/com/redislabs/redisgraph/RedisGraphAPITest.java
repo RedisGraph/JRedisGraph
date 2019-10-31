@@ -11,51 +11,15 @@ import com.redislabs.redisgraph.graph_entities.Path;
 import com.redislabs.redisgraph.graph_entities.Property;
 import com.redislabs.redisgraph.impl.api.RedisGraph;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import com.redislabs.redisgraph.test.utils.PathBuilder;
+import org.junit.*;
 
 import com.redislabs.redisgraph.Statistics.Label;
+import org.junit.rules.ExpectedException;
 
 import static com.redislabs.redisgraph.Header.ResultSetColumnTypes.*;
 
 public class RedisGraphAPITest {
-
-    private class PathBuilder{
-        List<Node> nodes;
-        List<Edge> edges;
-        Class currentAppendClass;
-
-        public PathBuilder(int nodesCount){
-            nodes = new ArrayList<>(nodesCount);
-            edges = new ArrayList<>(nodesCount-1);
-            currentAppendClass = Node.class;
-        }
-
-        public PathBuilder append(Object object){
-            Class c = object.getClass();
-            if(!currentAppendClass.equals(c)) throw new IllegalArgumentException("");
-            if(c.equals(Node.class)) return appendNode((Node)object);
-            else return appendEdge((Edge)object);
-        }
-
-        private PathBuilder appendEdge(Edge edge) {
-            edges.add(edge);
-            currentAppendClass = Node.class;
-            return this;
-        }
-
-        public PathBuilder appendNode(Node node){
-            nodes.add(node);
-            currentAppendClass = Edge.class;
-            return this;
-        }
-
-        public Path build(){
-            return new Path(nodes, edges);
-        }
-    }
 
     private RedisGraphContextGenerator api;
 
@@ -935,9 +899,9 @@ public class RedisGraphAPITest {
 
         Set<Path> expectedPaths = new HashSet<>();
 
-        Path path01 = new Path(Arrays.asList(nodes.get(0), nodes.get(1)), Arrays.asList(edges.get(0)));
-        Path path12 = new Path(Arrays.asList(nodes.get(1), nodes.get(2)), Arrays.asList(edges.get(1)));
-        Path path02 = new Path(Arrays.asList(nodes.get(0), nodes.get(1), nodes.get(2)), Arrays.asList(edges.get(0), edges.get(1)));
+        Path path01 = new PathBuilder(2).append(nodes.get(0)).append(edges.get(0)).append(nodes.get(1)).build();
+        Path path12 = new PathBuilder(2).append(nodes.get(1)).append(edges.get(1)).append(nodes.get(2)).build();
+        Path path02 = new PathBuilder(3).append(nodes.get(0)).append(edges.get(0)).append(nodes.get(1)).append(edges.get(1)).append(nodes.get(2)).build();
 
         expectedPaths.add(path01);
         expectedPaths.add(path12);
