@@ -90,6 +90,7 @@ package com.redislabs.redisgraph;
 
 import com.redislabs.redisgraph.graph_entities.Edge;
 import com.redislabs.redisgraph.graph_entities.Node;
+import com.redislabs.redisgraph.graph_entities.Path;
 import com.redislabs.redisgraph.impl.api.RedisGraph;
 
 import java.util.List;
@@ -113,6 +114,15 @@ public class RedisGraphExample {
 
             //print record
             System.out.println(record.toString());
+        }
+
+        resultSet = graph.query("social", "MATCH p = (:person)-[:knows]->(:person) RETURN p");
+        while(resultSet.hasNext()) {
+            Record record = resultSet.next();
+            Path p = record.getValue("p");
+
+            // More path API at Javadoc.
+            System.out.println(p.nodeCount());
         }
 
         // delete graph
