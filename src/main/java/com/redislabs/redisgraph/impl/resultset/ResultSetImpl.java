@@ -6,10 +6,7 @@ import com.redislabs.redisgraph.RedisGraph;
 import com.redislabs.redisgraph.ResultSet;
 import com.redislabs.redisgraph.Statistics;
 import com.redislabs.redisgraph.exceptions.JRedisGraphRunTimeException;
-import com.redislabs.redisgraph.graph_entities.Edge;
-import com.redislabs.redisgraph.graph_entities.GraphEntity;
-import com.redislabs.redisgraph.graph_entities.Node;
-import com.redislabs.redisgraph.graph_entities.Property;
+import com.redislabs.redisgraph.graph_entities.*;
 import com.redislabs.redisgraph.impl.graph_cache.GraphCache;
 import redis.clients.jedis.util.SafeEncoder;
 import redis.clients.jedis.exceptions.JedisDataException;
@@ -245,10 +242,19 @@ public class ResultSetImpl implements ResultSet {
                 return deserializeNode((List<Object>) obj);
             case VALUE_EDGE:
                 return deserializeEdge((List<Object>) obj);
+            case VALUE_PATH:
+                return deserializePath(obj);
             case VALUE_UNKNOWN:
             default:
                 return obj;
         }
+    }
+
+    private Path deserializePath(Object rawScalarData) {
+        List<List<Object>> array = (List<List<Object>>) rawScalarData;
+        List<Node> nodes = (List<Node>) deserializeScalar(array.get(0));
+        List<Edge> edges = (List<Edge>) deserializeScalar(array.get(1));
+        return new Path(nodes, edges);
     }
 
     private List<Object> deserializeArray(Object rawScalarData) {
