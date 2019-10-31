@@ -7,10 +7,10 @@ import com.redislabs.redisgraph.graph_entities.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PathBuilder{
-    List<Node> nodes;
-    List<Edge> edges;
-    Class currentAppendClass;
+public final class PathBuilder{
+    private final List<Node> nodes;
+    private final List<Edge> edges;
+    private Class currentAppendClass;
 
     public PathBuilder() {
         this.nodes = new ArrayList<>(0);
