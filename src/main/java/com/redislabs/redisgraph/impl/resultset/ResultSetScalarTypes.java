@@ -11,7 +11,8 @@ enum ResultSetScalarTypes {
     VALUE_DOUBLE,
     VALUE_ARRAY,
     VALUE_EDGE,
-    VALUE_NODE;
+    VALUE_NODE,
+    VALUE_PATH;
 
 
     static ResultSetScalarTypes[] values = values();

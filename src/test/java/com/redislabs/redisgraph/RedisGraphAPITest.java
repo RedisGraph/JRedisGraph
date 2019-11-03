@@ -1,27 +1,26 @@
 package com.redislabs.redisgraph;
 
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.redislabs.redisgraph.graph_entities.Edge;
 import com.redislabs.redisgraph.graph_entities.Node;
+import com.redislabs.redisgraph.graph_entities.Path;
 import com.redislabs.redisgraph.graph_entities.Property;
 import com.redislabs.redisgraph.impl.api.RedisGraph;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import com.redislabs.redisgraph.test.utils.PathBuilder;
+import org.junit.*;
 
 import com.redislabs.redisgraph.Statistics.Label;
+import org.junit.rules.ExpectedException;
 
 import static com.redislabs.redisgraph.Header.ResultSetColumnTypes.*;
 
 public class RedisGraphAPITest {
+
     private RedisGraphContextGenerator api;
 
     public RedisGraphAPITest() {
@@ -874,6 +873,49 @@ public class RedisGraphAPITest {
             Assert.assertEquals(Arrays.asList("x"), record.keys());
             Assert.assertEquals(i, (int) record.getValue("x"));
 
+        }
+
+    }
+
+    @Test
+    public void testPath(){
+        List<Node> nodes =  new ArrayList<>(3);
+        for(int i =0; i < 3; i++){
+            Node node = new Node();
+            node.setId(i);
+            node.addLabel("L1");
+            nodes.add(node);
+        }
+
+        List<Edge> edges = new ArrayList<>(2);
+        for(int i =0; i <2; i++){
+            Edge edge = new Edge();
+            edge.setId(i);
+            edge.setRelationshipType("R1");
+            edge.setSource(i);
+            edge.setDestination(i + 1);
+            edges.add(edge);
+        }
+
+        Set<Path> expectedPaths = new HashSet<>();
+
+        Path path01 = new PathBuilder(2).append(nodes.get(0)).append(edges.get(0)).append(nodes.get(1)).build();
+        Path path12 = new PathBuilder(2).append(nodes.get(1)).append(edges.get(1)).append(nodes.get(2)).build();
+        Path path02 = new PathBuilder(3).append(nodes.get(0)).append(edges.get(0)).append(nodes.get(1)).append(edges.get(1)).append(nodes.get(2)).build();
+
+        expectedPaths.add(path01);
+        expectedPaths.add(path12);
+        expectedPaths.add(path02);
+
+        api.query("social", "CREATE (:L1)-[:R1]->(:L1)-[:R1]->(:L1)");
+
+        ResultSet resultSet = api.query("social", "MATCH p = (:L1)-[:R1*]->(:L1) RETURN p");
+
+        Assert.assertEquals(expectedPaths.size(), resultSet.size());
+        for(int i =0; i < resultSet.size(); i++){
+            Path p = resultSet.next().getValue("p");
+            Assert.assertTrue(expectedPaths.contains(p));
+            expectedPaths.remove(p);
         }
 
     }
