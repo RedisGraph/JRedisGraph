@@ -100,9 +100,13 @@ public class RedisGraphExample {
         // general context api. Not bound to graph key or connection
         RedisGraph graph = new RedisGraph();
 
-        // send queries to a specific graph called "social"
-        graph.query("social","CREATE (:person{name:'roi',age:32})");
-        graph.query("social","CREATE (:person{name:%s,age:%d})", "amit", 30);
+        Map<String, Object> params = new HashMap<>();
+           params.put("age", 30);
+           params.put("name", "amit");
+       
+           // send queries to a specific graph called "social"
+           graph.query("social","CREATE (:person{name:'roi',age:32})");
+           graph.query("social","CREATE (:person{name:$name,age:$age})", params);
         graph.query("social","MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit') CREATE (a)-[:knows]->(b)");
 
         ResultSet resultSet = graph.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a, r, b");
@@ -131,7 +135,7 @@ public class RedisGraphExample {
         // get connection context - closable object
         try(RedisGraphContext context = graph.getContext()) {
             context.query("contextSocial","CREATE (:person{name:'roi',age:32})");
-            context.query("contextSocial","CREATE (:person{name:%s,age:%d})", "amit", 30);
+            context.query("social","CREATE (:person{name:$name,age:$age})", params);
             context.query("contextSocial", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit') CREATE (a)-[:knows]->(b)");
             // WATCH/MULTI/EXEC
             context.watch("contextSocial");
