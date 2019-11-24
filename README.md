@@ -150,3 +150,6 @@ public class RedisGraphExample {
 }
 
 ```
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2FRedisGraph%2FJRedisGraph.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2FRedisGraph%2FJRedisGraph?ref=badge_large)
