@@ -46,15 +46,15 @@ public class Utils {
         return sb.toString();
     }
 
-    @Deprecated
+
     /**
-     * This function is deprecated and will be removed soon. Instead use
-     * String prepareQuery(String query, Map<String, Object> params).
      * Prepare and formats a query and query arguments
      * @param query - query
      * @param args - query arguments
      * @return formatted query
+     * @deprecated use {@link #prepareQuery(String, Map)} instead.
      */
+    @Deprecated
     public static String prepareQuery(String query, Object ...args){
         if(args.length > 0) {
             for(int i=0; i<args.length; ++i) {
