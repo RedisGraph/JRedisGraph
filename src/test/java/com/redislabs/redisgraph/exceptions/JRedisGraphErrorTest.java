@@ -10,6 +10,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import java.util.HashMap;
+
 
 public class JRedisGraphErrorTest {
 
@@ -84,6 +86,20 @@ public class JRedisGraphErrorTest {
         // Issue a query that causes a compile-time error
         c.query("social", "RETURN toUpper(5)");
 
+    }
+
+    @Test
+    public void testMissingParametersSyntaxErrorReporting(){
+        exceptionRule.expect(JRedisGraphCompileTimeException.class);
+        exceptionRule.expectMessage("Missing parameters");
+        api.query("social","RETURN $param");
+    }
+
+    @Test
+    public void testMissingParametersSyntaxErrorReporting2(){
+        exceptionRule.expect(JRedisGraphCompileTimeException.class);
+        exceptionRule.expectMessage("Missing parameters");
+        api.query("social","RETURN $param", new HashMap<>());
     }
 
     @Test
