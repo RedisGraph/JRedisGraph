@@ -58,6 +58,12 @@ public class UtilsTest {
     List<Integer> list = Arrays.asList(1,2,3);
     params.put("param", list);
     Assert.assertEquals("CYPHER param=[1, 2, 3] RETURN $param", Utils.prepareQuery("RETURN $param", params));
+    String strArr[] = {"1", "2", "3"};
+    params.put("param", strArr);
+    Assert.assertEquals("CYPHER param=[\"1\", \"2\", \"3\"] RETURN $param", Utils.prepareQuery("RETURN $param", params));
+    List<String> stringList = Arrays.asList("1", "2", "3");
+    params.put("param", stringList);
+    Assert.assertEquals("CYPHER param=[\"1\", \"2\", \"3\"] RETURN $param", Utils.prepareQuery("RETURN $param", params));
   }
 
 }

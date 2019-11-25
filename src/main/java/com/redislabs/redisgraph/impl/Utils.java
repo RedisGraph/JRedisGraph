@@ -46,13 +46,15 @@ public class Utils {
         return sb.toString();
     }
 
+    @Deprecated
     /**
+     * This function is deprecated and will be removed soon. Instead use
+     * String prepareQuery(String query, Map<String, Object> params).
      * Prepare and formats a query and query arguments
      * @param query - query
      * @param args - query arguments
      * @return formatted query
      */
-    @Deprecated
     public static String prepareQuery(String query, Object ...args){
         if(args.length > 0) {
             for(int i=0; i<args.length; ++i) {
@@ -76,23 +78,35 @@ public class Utils {
         for(Map.Entry<String, Object> entry : params.entrySet()) {
             String key = entry.getKey();
             Object value = entry.getValue();
-            sb.append(key).append("=");
+            sb.append(key).append('=');
             sb.append(valueToString(value));
-            sb.append(" ");
+            sb.append(' ');
         }
         sb.append(query);
+        return sb.toString();
+    }
+
+    private static String arrayToString(Object[] arr) {
+        StringBuilder sb = new StringBuilder().append('[');
+        sb.append(String.join(", ", Arrays.stream(arr).map(obj->valueToString(obj)).collect(Collectors.toList())));
+        sb.append(']');
         return sb.toString();
     }
 
     private static String valueToString(Object value) {
         if(value == null)
             return "null";
-        Class valueClass = value.getClass();
-        if(valueClass == String.class){
+        if(String.class.isInstance(value)){
             return quoteString((String) value);
         }
-        if(valueClass.isArray()){
-            return Arrays.toString((Object[]) value);
+
+        if(value.getClass().isArray()){
+            return arrayToString((Object[]) value);
+
+        }
+        if(List.class.isInstance(value)){
+            List<Object> list = (List<Object>)value;
+            return arrayToString(list.toArray());
         }
         return value.toString();
     }

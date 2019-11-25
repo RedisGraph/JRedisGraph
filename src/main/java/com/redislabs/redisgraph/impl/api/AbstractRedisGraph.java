@@ -30,7 +30,7 @@ public abstract class AbstractRedisGraph implements RedisGraph {
     protected abstract ResultSet sendQuery(String graphId, String preparedQuery);
 
     /**
-     * Execute a Cypher query with arguments
+     * Execute a Cypher query.
      * @param graphId a graph to perform the query on
      * @param query Cypher query
      * @return a result set
@@ -53,7 +53,7 @@ public abstract class AbstractRedisGraph implements RedisGraph {
     }
 
     /**
-     * Executes a parameterized cypher query.
+     * Executes a cypher query with parameters.
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.
      * @param params parameters map.

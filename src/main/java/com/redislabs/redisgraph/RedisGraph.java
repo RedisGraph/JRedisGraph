@@ -7,25 +7,27 @@ import java.util.Map;
 public interface RedisGraph extends Closeable {
 
     /**
-     * Execute a Cypher query with arguments
+     * Execute a Cypher query.
      * @param graphId a graph to perform the query on
      * @param query Cypher query
      * @return a result set
      */
     ResultSet query(String graphId, String query);
 
+    @Deprecated
     /**
+     *  This function is deprecated and will be removed soon. Instead use
+     *  query(String graphId, String query, Map<String, Object> params)
      * Execute a Cypher query with arguments
      * @param graphId a graph to perform the query on
      * @param query Cypher query
      * @param args
      * @return a result set
      */
-    @Deprecated
     ResultSet query(String graphId, String query, Object ...args);
 
     /**
-     * Executes a parameterized cypher query.
+     * Executes a cypher query with parameters.
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.
      * @param params parameters map.
