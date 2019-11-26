@@ -30,14 +30,38 @@ public abstract class AbstractRedisGraph implements RedisGraph {
     protected abstract ResultSet sendQuery(String graphId, String preparedQuery);
 
     /**
+     * Execute a Cypher query.
+     * @param graphId a graph to perform the query on
+     * @param query Cypher query
+     * @return a result set
+     */
+    public ResultSet query(String graphId, String query) {
+        return sendQuery(graphId, query);
+    }
+
+    /**
      * Execute a Cypher query with arguments
      * @param graphId a graph to perform the query on
      * @param query Cypher query
      * @param args
      * @return a result set
+     * @deprecated use {@link #query(String, String, Map)} instead.
      */
+    @Deprecated
     public ResultSet query(String graphId, String query, Object ...args) {
         String preparedQuery = Utils.prepareQuery(query, args);
+        return sendQuery(graphId, preparedQuery);
+    }
+
+    /**
+     * Executes a cypher query with parameters.
+     * @param graphId a graph to perform the query on.
+     * @param query Cypher query.
+     * @param params parameters map.
+     * @return a result set.
+     */
+    public ResultSet query(String graphId, String query, Map<String, Object> params) {
+        String preparedQuery = Utils.prepareQuery(query, params);
         return sendQuery(graphId, preparedQuery);
     }
 

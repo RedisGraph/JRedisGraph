@@ -4,11 +4,7 @@ import org.apache.commons.text.translate.AggregateTranslator;
 import org.apache.commons.text.translate.CharSequenceTranslator;
 import org.apache.commons.text.translate.LookupTranslator;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -50,12 +46,15 @@ public class Utils {
         return sb.toString();
     }
 
+
     /**
      * Prepare and formats a query and query arguments
      * @param query - query
      * @param args - query arguments
      * @return formatted query
+     * @deprecated use {@link #prepareQuery(String, Map)} instead.
      */
+    @Deprecated
     public static String prepareQuery(String query, Object ...args){
         if(args.length > 0) {
             for(int i=0; i<args.length; ++i) {
@@ -66,6 +65,50 @@ public class Utils {
             query = String.format(query, args);
         }
         return query;
+    }
+
+    /**
+     * Prepare and formats a query and query arguments
+     * @param query - query
+     * @param params - query parameters
+     * @return query with parameters header
+     */
+    public static String prepareQuery(String query, Map<String, Object> params){
+        StringBuilder sb = new StringBuilder("CYPHER ");
+        for(Map.Entry<String, Object> entry : params.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            sb.append(key).append('=');
+            sb.append(valueToString(value));
+            sb.append(' ');
+        }
+        sb.append(query);
+        return sb.toString();
+    }
+
+    private static String arrayToString(Object[] arr) {
+        StringBuilder sb = new StringBuilder().append('[');
+        sb.append(String.join(", ", Arrays.stream(arr).map(obj->valueToString(obj)).collect(Collectors.toList())));
+        sb.append(']');
+        return sb.toString();
+    }
+
+    private static String valueToString(Object value) {
+        if(value == null)
+            return "null";
+        if(String.class.isInstance(value)){
+            return quoteString((String) value);
+        }
+
+        if(value.getClass().isArray()){
+            return arrayToString((Object[]) value);
+
+        }
+        if(List.class.isInstance(value)){
+            List<Object> list = (List<Object>)value;
+            return arrayToString(list.toArray());
+        }
+        return value.toString();
     }
 
     /**
