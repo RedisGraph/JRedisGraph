@@ -94,7 +94,7 @@ public class StatisticsImpl implements Statistics  {
 
 
 	@Override
-	public int indicesRemoved() {return getIntValue(Label.INDICES_DELETED);}
+	public int indicesDeleted() {return getIntValue(Label.INDICES_DELETED);}
 
 	/**
 	 *

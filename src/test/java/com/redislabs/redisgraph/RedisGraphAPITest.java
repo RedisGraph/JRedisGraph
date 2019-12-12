@@ -15,7 +15,6 @@ import com.redislabs.redisgraph.test.utils.PathBuilder;
 import org.junit.*;
 
 import com.redislabs.redisgraph.Statistics.Label;
-import org.junit.rules.ExpectedException;
 
 import static com.redislabs.redisgraph.Header.ResultSetColumnTypes.*;
 
@@ -165,7 +164,7 @@ public class RedisGraphAPITest {
         ResultSet deleteExistingIndexResult = api.query("social", "DROP INDEX ON :person(age)");
         Assert.assertFalse(deleteExistingIndexResult.hasNext());
         Assert.assertNotNull(deleteExistingIndexResult.getStatistics().getStringValue(Label.INDICES_DELETED));
-        Assert.assertEquals(1, deleteExistingIndexResult.getStatistics().indicesRemoved());
+        Assert.assertEquals(1, deleteExistingIndexResult.getStatistics().indicesDeleted());
 
     }
 

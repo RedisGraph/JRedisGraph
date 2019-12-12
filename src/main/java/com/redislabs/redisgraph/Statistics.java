@@ -56,7 +56,7 @@ public interface Statistics {
 	
 	int indicesAdded();
 
-	int indicesRemoved();
+	int indicesDeleted();
 	
 	int labelsAdded();
 	
