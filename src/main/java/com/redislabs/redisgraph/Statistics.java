@@ -8,7 +8,8 @@ public interface Statistics {
 	 */
 	enum Label{
 		LABELS_ADDED("Labels added"),
-		INDICES_ADDED("Indices added"),
+		INDICES_ADDED("Indices created"),
+		INDICES_DELETED("Indices deleted"),
 		NODES_CREATED("Nodes created"),
 		NODES_DELETED("Nodes deleted"),
 		RELATIONSHIPS_DELETED("Relationships deleted"),
@@ -54,6 +55,8 @@ public interface Statistics {
 	int nodesDeleted();
 	
 	int indicesAdded();
+
+	int indicesRemoved();
 	
 	int labelsAdded();
 	
