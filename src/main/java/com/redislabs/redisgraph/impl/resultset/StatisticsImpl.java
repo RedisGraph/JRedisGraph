@@ -93,6 +93,9 @@ public class StatisticsImpl implements Statistics  {
    }
 
 
+	@Override
+	public int indicesDeleted() {return getIntValue(Label.INDICES_DELETED);}
+
 	/**
 	 *
 	 * @return number of labels added after query execution
