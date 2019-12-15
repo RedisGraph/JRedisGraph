@@ -15,7 +15,6 @@ import com.redislabs.redisgraph.test.utils.PathBuilder;
 import org.junit.*;
 
 import com.redislabs.redisgraph.Statistics.Label;
-import org.junit.rules.ExpectedException;
 
 import static com.redislabs.redisgraph.Header.ResultSetColumnTypes.*;
 
@@ -157,6 +156,16 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(createNonExistingIndexResult.getStatistics().getStringValue(Label.INDICES_ADDED));
         Assert.assertEquals(1, createNonExistingIndexResult.getStatistics().indicesAdded());
 
+        ResultSet createExistingIndexResult = api.query("social", "CREATE INDEX ON :person(age)");
+        Assert.assertFalse(createExistingIndexResult.hasNext());
+        Assert.assertNotNull(createExistingIndexResult.getStatistics().getStringValue(Label.INDICES_ADDED));
+        Assert.assertEquals(0, createExistingIndexResult.getStatistics().indicesAdded());
+
+        ResultSet deleteExistingIndexResult = api.query("social", "DROP INDEX ON :person(age)");
+        Assert.assertFalse(deleteExistingIndexResult.hasNext());
+        Assert.assertNotNull(deleteExistingIndexResult.getStatistics().getStringValue(Label.INDICES_DELETED));
+        Assert.assertEquals(1, deleteExistingIndexResult.getStatistics().indicesDeleted());
+
     }
 
     @Test
@@ -245,7 +254,13 @@ public class RedisGraphAPITest {
             + "nullValue=Property{name='nullValue', value=null}, "
             + "since=Property{name='since', value=2000}}}", expectedEdge.toString());
 
-        Assert.assertNotNull(api.query("social", "CREATE (:person{name:%s,age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("age", age);
+        params.put("boolValue", boolValue);
+        params.put("doubleValue", doubleValue);
+
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:$name,age:$age, doubleValue:$doubleValue, boolValue:$boolValue, nullValue:null})", params));
         Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
         Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  " +
                 "CREATE (a)-[:knows{place:'TLV', since:2000,doubleValue:3.14, boolValue:false, nullValue:null}]->(b)"));
@@ -654,8 +669,13 @@ public class RedisGraphAPITest {
         expectedEdge.addProperty(falseBooleanProperty);
         expectedEdge.addProperty(nullProperty);
 
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("age", age);
+        params.put("boolValue", boolValue);
+        params.put("doubleValue", doubleValue);
         try (RedisGraphContext c = api.getContext()) {
-            Assert.assertNotNull(c.query("social", "CREATE (:person{name:%s,age:%d, doubleValue:%f, boolValue:%b, nullValue:null})", name, age, doubleValue, boolValue));
+            Assert.assertNotNull(c.query("social", "CREATE (:person{name:$name, age:$age, doubleValue:$doubleValue, boolValue:$boolValue, nullValue:null})", params));
             Assert.assertNotNull(c.query("social", "CREATE (:person{name:'amit',age:30})"));
             Assert.assertNotNull(c.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  " +
                     "CREATE (a)-[:knows{place:'TLV', since:2000,doubleValue:3.14, boolValue:false, nullValue:null}]->(b)"));
@@ -918,6 +938,24 @@ public class RedisGraphAPITest {
             expectedPaths.remove(p);
         }
 
+    }
+
+    @Test
+    public void testParameters(){
+        Object[] parameters = {1, 2.3, true, false, null, "str", Arrays.asList(1,2,3), new Integer[]{1,2,3}};
+        Map<String, Object> param = new HashMap<>();
+        for (int i=0; i < parameters.length; i++) {
+            Object expected = parameters[i];
+            param.put("param", expected);
+            ResultSet resultSet = api.query("social", "RETURN $param", param);
+            Assert.assertEquals(1, resultSet.size());
+            Record r = resultSet.next();
+            Object o = r.getValue(0);
+            if(i == parameters.length-1) {
+                expected = Arrays.asList((Object[])expected);
+            }
+            Assert.assertEquals(expected, o);
+        }
     }
 
 }
