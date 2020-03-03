@@ -19,70 +19,12 @@ RedisGraph Java client
     <dependency>
       <groupId>com.redislabs</groupId>
       <artifactId>jredisgraph</artifactId>
-      <version>1.0.6</version>
-    </dependency>
-  </dependencies>
-
-Or
-
-  <dependencies>
-    <dependency>
-      <groupId>com.redislabs</groupId>
-      <artifactId>jredisgraph</artifactId>
-      <version>2.0.0-rc3</version>
-    </dependency>
-  </dependencies>
-```
-
-### Snapshots
-To be used with RedisGraph 2.0 (not officially released)
-
-```xml
-  <repositories>
-    <repository>
-      <id>snapshots-repo</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-    </repository>
-  </repositories>
-```
-
-and
-
-```xml
-  <dependencies>
-    <dependency>
-      <groupId>com.redislabs</groupId>
-      <artifactId>jredisgraph</artifactId>
-      <version>2.0.0-SNAPSHOT</version>
+      <version>2.0.0</version>
     </dependency>
   </dependencies>
 ```
 
 # Example: Using the Java Client
-## Up to 2.0.0
-```java
-package com.redislabs.redisgraph;
-
-public class RedisGraphExample {
-	public static void main(String[] args) {
-
-		RedisGraphAPI api = new RedisGraphAPI("social");
-
-		api.query("CREATE (:person{name:'roi',age:32})");
-		api.query("CREATE (:person{name:%s,age:%d})", "amit", 30);
-
-		api.query("MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit') CREATE (a)-[:knows]->(b)");
-
-		ResultSet resultSet = api.query("MATCH (a:person)-[:knows]->(b:person) RETURN a, b");
-
-		while(resultSet.hasNext()){
-			Record record = resultSet.next();
-			System.out.println(record.getString("a.name"));
-		}
-	}
-}
-
-```
 ## From 2.0.0
 
 ```java
