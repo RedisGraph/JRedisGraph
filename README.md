@@ -140,7 +140,7 @@ public class RedisGraphExample {
             // WATCH/MULTI/EXEC
             context.watch("contextSocial");
             RedisGraphTransaction t = context.multi();
-            t.query("contextSocial", "MATCH (a:person)-[r:knows]->(b:person) RETURN a, r, b");
+            t.query("contextSocial", "MATCH (a:person)-[r:knows]->(b:person{name:$name,age:$age}) RETURN a, r, b", params);
             // support for Redis/Jedis native commands in transaction
             t.set("x", "1");
             t.get("x");

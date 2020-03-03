@@ -765,7 +765,9 @@ public class RedisGraphAPITest {
         c1.watch("social");
         RedisGraphTransaction t1 = c1.multi();
 
-        t1.query("social", "CREATE (:Person {name:'b'})");
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", 'b');
+        t1.query("social", "CREATE (:Person {name:$name})", params);
         c2.query("social", "MATCH (n) return n");
         List<Object> returnValue = t1.exec();
 
