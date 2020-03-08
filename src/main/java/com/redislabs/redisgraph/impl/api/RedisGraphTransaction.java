@@ -31,15 +31,54 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     }
 
     /**
+     * Execute a Cypher query.
+     * @param graphId a graph to perform the query on
+     * @param query Cypher query
+     * @return a response which builds the result set with the query answer.
+     */
+    @Override
+    public Response<ResultSet> query(String graphId, String query) {
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, query, "--COMPACT");
+        return getResponse(new Builder<ResultSet>() {
+            @Override
+            public ResultSet build(Object o) {
+                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+            }
+        });
+    }
+
+    /**
      * Execute a Cypher query with arguments
      *
      * @param graphId a graph to perform the query on
      * @param query Cypher query
      * @param args
      * @return response with a result set
+     * @deprecated use {@link #query(String, String, Map)} instead.
      */
+    @Deprecated
+    @Override
     public Response<ResultSet> query(String graphId, String query, Object ...args){
         String preparedQuery = Utils.prepareQuery(query, args);
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, "--COMPACT");
+        return getResponse(new Builder<ResultSet>() {
+            @Override
+            public ResultSet build(Object o) {
+                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+            }
+        });
+    }
+
+    /**
+     * Executes a cypher query with parameters.
+     * @param graphId a graph to perform the query on.
+     * @param query Cypher query.
+     * @param params parameters map.
+     * @return  a response which builds the result set with the query answer.
+     */
+    @Override
+    public Response<ResultSet> query(String graphId, String query, Map<String, Object> params) {
+        String preparedQuery = Utils.prepareQuery(query, params);
         client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, "--COMPACT");
         return getResponse(new Builder<ResultSet>() {
             @Override

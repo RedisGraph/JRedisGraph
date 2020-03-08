@@ -23,13 +23,32 @@ public interface RedisGraphTransaction extends
         BinaryScriptingCommandsPipeline, ScriptingCommandsPipeline,
         BasicRedisPipeline, BinaryRedisPipeline, RedisPipeline, Closeable {
     /**
+     * Execute a Cypher query.
+     * @param graphId a graph to perform the query on
+     * @param query Cypher query
+     * @return a response which builds the result set with the query answer.
+     */
+    Response<ResultSet> query(String graphId, String query);
+
+    /**
      * Execute a Cypher query with arguments
      * @param graphId a graph to perform the query on
      * @param query Cypher query
      * @param args
-     * @return a response which builds the result set with the query answer
+     * @return a response which builds the result set with the query answer.
+     * @deprecated use {@link #query(String, String, Map)} instead.
      */
+    @Deprecated
     Response<ResultSet> query(String graphId, String query, Object ...args);
+
+    /**
+     * Executes a cypher query with parameters.
+     * @param graphId a graph to perform the query on.
+     * @param query Cypher query.
+     * @param params parameters map.
+     * @return  a response which builds the result set with the query answer.
+     */
+    Response<ResultSet> query(String graphId, String query, Map<String, Object> params);
 
     /**
      * Invokes stored procedures without arguments
