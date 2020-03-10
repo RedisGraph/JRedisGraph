@@ -4,11 +4,12 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.redislabs/jredisgraph/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.redislabs/jredisgraph)
 [![Javadocs](https://www.javadoc.io/badge/com.redislabs/jredisgraph.svg)](https://www.javadoc.io/doc/com.redislabs/jredisgraph)
 [![Codecov](https://codecov.io/gh/RedisGraph/JRedisGraph/branch/master/graph/badge.svg)](https://codecov.io/gh/RedisGraph/JRedisGraph)
+[![Known Vulnerabilities](https://snyk.io/test/github/RedisGraph/JRedisGraph/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/RedisGraph/JRedisGraph?targetFile=pom.xml)
 
+# JRedisGraph
 [![Mailing List](https://img.shields.io/badge/Mailing%20List-RedisGraph-blue)](https://groups.google.com/forum/#!forum/redisgraph)
 [![Gitter](https://badges.gitter.im/RedisLabs/RedisGraph.svg)](https://gitter.im/RedisLabs/RedisGraph?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-# JRedisGraph
 RedisGraph Java client
 
 
