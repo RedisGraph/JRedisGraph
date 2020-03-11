@@ -25,9 +25,29 @@ RedisGraph Java client
   </dependencies>
 ```
 
-# Example: Using the Java Client
-## From 2.0.0
+### Snapshots
+```xml
+  <repositories>
+    <repository>
+      <id>snapshots-repo</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
+  </repositories>
+```
 
+and
+
+```xml
+  <dependencies>
+    <dependency>
+      <groupId>com.redislabs</groupId>
+      <artifactId>jredisgraph</artifactId>
+      <version>2.0.1-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+```
+
+# Example: Using the Java Client
 ```java
 package com.redislabs.redisgraph;
 
