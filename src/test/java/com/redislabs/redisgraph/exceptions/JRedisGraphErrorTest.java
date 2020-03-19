@@ -90,14 +90,14 @@ public class JRedisGraphErrorTest {
 
     @Test
     public void testMissingParametersSyntaxErrorReporting(){
-        exceptionRule.expect(JRedisGraphCompileTimeException.class);
+        exceptionRule.expect(JRedisGraphRunTimeException.class);
         exceptionRule.expectMessage("Missing parameters");
         api.query("social","RETURN $param");
     }
 
     @Test
     public void testMissingParametersSyntaxErrorReporting2(){
-        exceptionRule.expect(JRedisGraphCompileTimeException.class);
+        exceptionRule.expect(JRedisGraphRunTimeException.class);
         exceptionRule.expectMessage("Missing parameters");
         api.query("social","RETURN $param", new HashMap<>());
     }
