@@ -976,13 +976,33 @@ public class RedisGraphAPITest {
         resultSet = api.query("social", "MATCH (a) OPTIONAL MATCH (a)-[e]->(b) RETURN a, e, b ORDER BY ID(a)");
         Assert.assertEquals(2, resultSet.size());
         record = resultSet.next();
+        Assert.assertEquals(3, record.size());
+
         Assert.assertNotNull(record.getValue(0));
         Assert.assertNotNull(record.getValue(1));
         Assert.assertNotNull(record.getValue(2));
 
         record = resultSet.next();
+        Assert.assertEquals(3, record.size());
+
         Assert.assertNotNull(record.getValue(0));
         Assert.assertNull(record.getValue(1));
         Assert.assertNull(record.getValue(2));
+
+        // Test a query that produces 2 records, the first containing a path and the second containing a null value.
+        resultSet = api.query("social", "MATCH (a) OPTIONAL MATCH p = (a)-[e]->(b) RETURN p");
+        Assert.assertEquals(2, resultSet.size());
+        record = resultSet.next();
+        Assert.assertEquals(1, record.size());
+
+        Object path = record.getValue(0);
+        Assert.assertNotNull(record.getValue(0));
+
+        record = resultSet.next();
+        Assert.assertEquals(1, record.size());
+
+        path = record.getValue(0);
+        Assert.assertNull(record.getValue(0));
+
     }
 }
