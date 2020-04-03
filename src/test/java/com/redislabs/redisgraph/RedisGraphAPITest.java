@@ -960,4 +960,29 @@ public class RedisGraphAPITest {
         }
     }
 
+    @Test
+    public void testNullGraphEntities() {
+        // Create two nodes connected by a single outgoing edge.
+        Assert.assertNotNull(api.query("social", "CREATE (:L)-[:E]->(:L2)"));
+        // Test a query that produces 1 record with 3 null values.
+        ResultSet resultSet = api.query("social", "OPTIONAL MATCH (a:NONEXISTENT)-[e]->(b) RETURN a, e, b");
+        Assert.assertEquals(1, resultSet.size());
+        Assert.assertTrue(resultSet.hasNext());
+        Record record = resultSet.next();
+        Assert.assertFalse(resultSet.hasNext());
+        Assert.assertEquals(Arrays.asList(null, null, null), record.values());
+
+        // Test a query that produces 2 records, with 2 null values in the second.
+        resultSet = api.query("social", "MATCH (a) OPTIONAL MATCH (a)-[e]->(b) RETURN a, e, b ORDER BY ID(a)");
+        Assert.assertEquals(2, resultSet.size());
+        record = resultSet.next();
+        Assert.assertNotNull(record.getValue(0));
+        Assert.assertNotNull(record.getValue(1));
+        Assert.assertNotNull(record.getValue(2));
+
+        record = resultSet.next();
+        Assert.assertNotNull(record.getValue(0));
+        Assert.assertNull(record.getValue(1));
+        Assert.assertNull(record.getValue(2));
+    }
 }

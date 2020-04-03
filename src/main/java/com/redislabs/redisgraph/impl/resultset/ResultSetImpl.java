@@ -143,6 +143,8 @@ public class ResultSetImpl implements ResultSet {
      * @return Node object
      */
     private Node deserializeNode(List<Object> rawNodeData) {
+        if(rawNodeData.size() < 3) return null;
+
         Node node = new Node();
         deserializeGraphEntityId(node, rawNodeData.get(0));
         List<Long> labelsIndices = (List<Long>) rawNodeData.get(1);
@@ -176,6 +178,8 @@ public class ResultSetImpl implements ResultSet {
      * @return Edge object
      */
     private Edge deserializeEdge(List<Object> rawEdgeData) {
+        if (rawEdgeData.size() < 5) return null;
+
         Edge edge = new Edge();
         deserializeGraphEntityId(edge, rawEdgeData.get(0));
 
