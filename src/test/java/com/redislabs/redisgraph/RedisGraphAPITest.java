@@ -193,9 +193,6 @@ public class RedisGraphAPITest {
         Assert.assertEquals("r", schemaNames.get(1));
         Assert.assertEquals("a.age", schemaNames.get(2));
 
-        Assert.assertEquals(COLUMN_NODE, schemaTypes.get(0));
-        Assert.assertEquals(COLUMN_RELATION, schemaTypes.get(1));
-        Assert.assertEquals(COLUMN_SCALAR, schemaTypes.get(2));
 
     }
 
@@ -376,9 +373,6 @@ public class RedisGraphAPITest {
             Assert.assertEquals("a", schemaNames.get(0));
             Assert.assertEquals("r", schemaNames.get(1));
             Assert.assertEquals("a.age", schemaNames.get(2));
-            Assert.assertEquals(COLUMN_NODE, schemaTypes.get(0));
-            Assert.assertEquals(COLUMN_RELATION, schemaTypes.get(1));
-            Assert.assertEquals(COLUMN_SCALAR, schemaTypes.get(2));
             Assert.assertEquals(1, resultSet.size());
             Assert.assertTrue(resultSet.hasNext());
             Record record = resultSet.next();
@@ -420,8 +414,6 @@ public class RedisGraphAPITest {
             Assert.assertEquals(2, schemaTypes.size());
             Assert.assertEquals("a", schemaNames.get(0));
             Assert.assertEquals("r", schemaNames.get(1));
-            Assert.assertEquals(COLUMN_NODE, schemaTypes.get(0));
-            Assert.assertEquals(COLUMN_RELATION, schemaTypes.get(1));
             Assert.assertEquals(1, resultSet.size());
             Assert.assertTrue(resultSet.hasNext());
             Record record = resultSet.next();
@@ -469,8 +461,6 @@ public class RedisGraphAPITest {
         Assert.assertEquals(2, schemaTypes.size());
         Assert.assertEquals("a", schemaNames.get(0));
         Assert.assertEquals("r", schemaNames.get(1));
-        Assert.assertEquals(COLUMN_NODE, schemaTypes.get(0));
-        Assert.assertEquals(COLUMN_RELATION, schemaTypes.get(1));
         Assert.assertEquals(1, resultSet.size());
         Assert.assertTrue(resultSet.hasNext());
         Record record = resultSet.next();
@@ -504,8 +494,6 @@ public class RedisGraphAPITest {
         Assert.assertEquals(2, schemaTypes.size());
         Assert.assertEquals("a", schemaNames.get(0));
         Assert.assertEquals("r", schemaNames.get(1));
-        Assert.assertEquals(COLUMN_NODE, schemaTypes.get(0));
-        Assert.assertEquals(COLUMN_RELATION, schemaTypes.get(1));
         Assert.assertEquals(1, resultSet.size());
         Assert.assertTrue(resultSet.hasNext());
         record = resultSet.next();
@@ -581,8 +569,6 @@ public class RedisGraphAPITest {
             Assert.assertEquals(1, schemaTypes.size());
 
             Assert.assertEquals("n", schemaNames.get(0));
-
-            Assert.assertEquals(COLUMN_NODE, schemaTypes.get(0));
 
             Property nameProperty = new Property("name", "a");
 
@@ -960,4 +946,49 @@ public class RedisGraphAPITest {
         }
     }
 
+    @Test
+    public void testNullGraphEntities() {
+        // Create two nodes connected by a single outgoing edge.
+        Assert.assertNotNull(api.query("social", "CREATE (:L)-[:E]->(:L2)"));
+        // Test a query that produces 1 record with 3 null values.
+        ResultSet resultSet = api.query("social", "OPTIONAL MATCH (a:NONEXISTENT)-[e]->(b) RETURN a, e, b");
+        Assert.assertEquals(1, resultSet.size());
+        Assert.assertTrue(resultSet.hasNext());
+        Record record = resultSet.next();
+        Assert.assertFalse(resultSet.hasNext());
+        Assert.assertEquals(Arrays.asList(null, null, null), record.values());
+
+        // Test a query that produces 2 records, with 2 null values in the second.
+        resultSet = api.query("social", "MATCH (a) OPTIONAL MATCH (a)-[e]->(b) RETURN a, e, b ORDER BY ID(a)");
+        Assert.assertEquals(2, resultSet.size());
+        record = resultSet.next();
+        Assert.assertEquals(3, record.size());
+
+        Assert.assertNotNull(record.getValue(0));
+        Assert.assertNotNull(record.getValue(1));
+        Assert.assertNotNull(record.getValue(2));
+
+        record = resultSet.next();
+        Assert.assertEquals(3, record.size());
+
+        Assert.assertNotNull(record.getValue(0));
+        Assert.assertNull(record.getValue(1));
+        Assert.assertNull(record.getValue(2));
+
+        // Test a query that produces 2 records, the first containing a path and the second containing a null value.
+        resultSet = api.query("social", "MATCH (a) OPTIONAL MATCH p = (a)-[e]->(b) RETURN p");
+        Assert.assertEquals(2, resultSet.size());
+        record = resultSet.next();
+        Assert.assertEquals(1, record.size());
+
+        Object path = record.getValue(0);
+        Assert.assertNotNull(record.getValue(0));
+
+        record = resultSet.next();
+        Assert.assertEquals(1, record.size());
+
+        path = record.getValue(0);
+        Assert.assertNull(record.getValue(0));
+
+    }
 }
