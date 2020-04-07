@@ -181,13 +181,10 @@ public class RedisGraphAPITest {
         Header header = queryResult.getHeader();
 
         List<String> schemaNames = header.getSchemaNames();
-        List<Header.ResultSetColumnTypes> schemaTypes = header.getSchemaTypes();
 
         Assert.assertNotNull(schemaNames);
-        Assert.assertNotNull(schemaTypes);
 
         Assert.assertEquals(3, schemaNames.size());
-        Assert.assertEquals(3, schemaTypes.size());
 
         Assert.assertEquals("a", schemaNames.get(0));
         Assert.assertEquals("r", schemaNames.get(1));
@@ -365,11 +362,8 @@ public class RedisGraphAPITest {
             Assert.assertNotNull(resultSet.getHeader());
             Header header = resultSet.getHeader();
             List<String> schemaNames = header.getSchemaNames();
-            List<Header.ResultSetColumnTypes> schemaTypes = header.getSchemaTypes();
             Assert.assertNotNull(schemaNames);
-            Assert.assertNotNull(schemaTypes);
             Assert.assertEquals(3, schemaNames.size());
-            Assert.assertEquals(3, schemaTypes.size());
             Assert.assertEquals("a", schemaNames.get(0));
             Assert.assertEquals("r", schemaNames.get(1));
             Assert.assertEquals("a.age", schemaNames.get(2));
@@ -407,11 +401,8 @@ public class RedisGraphAPITest {
             Assert.assertNotNull(resultSet.getHeader());
             Header header = resultSet.getHeader();
             List<String> schemaNames = header.getSchemaNames();
-            List<Header.ResultSetColumnTypes> schemaTypes = header.getSchemaTypes();
             Assert.assertNotNull(schemaNames);
-            Assert.assertNotNull(schemaTypes);
             Assert.assertEquals(2, schemaNames.size());
-            Assert.assertEquals(2, schemaTypes.size());
             Assert.assertEquals("a", schemaNames.get(0));
             Assert.assertEquals("r", schemaNames.get(1));
             Assert.assertEquals(1, resultSet.size());
@@ -454,11 +445,8 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(resultSet.getHeader());
         Header header = resultSet.getHeader();
         List<String> schemaNames = header.getSchemaNames();
-        List<Header.ResultSetColumnTypes> schemaTypes = header.getSchemaTypes();
         Assert.assertNotNull(schemaNames);
-        Assert.assertNotNull(schemaTypes);
         Assert.assertEquals(2, schemaNames.size());
-        Assert.assertEquals(2, schemaTypes.size());
         Assert.assertEquals("a", schemaNames.get(0));
         Assert.assertEquals("r", schemaNames.get(1));
         Assert.assertEquals(1, resultSet.size());
@@ -487,11 +475,8 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(resultSet.getHeader());
         header = resultSet.getHeader();
         schemaNames = header.getSchemaNames();
-        schemaTypes = header.getSchemaTypes();
         Assert.assertNotNull(schemaNames);
-        Assert.assertNotNull(schemaTypes);
         Assert.assertEquals(2, schemaNames.size());
-        Assert.assertEquals(2, schemaTypes.size());
         Assert.assertEquals("a", schemaNames.get(0));
         Assert.assertEquals("r", schemaNames.get(1));
         Assert.assertEquals(1, resultSet.size());
@@ -560,14 +545,8 @@ public class RedisGraphAPITest {
 
 
             List<String> schemaNames = header.getSchemaNames();
-            List<Header.ResultSetColumnTypes> schemaTypes = header.getSchemaTypes();
-
             Assert.assertNotNull(schemaNames);
-            Assert.assertNotNull(schemaTypes);
-
             Assert.assertEquals(1, schemaNames.size());
-            Assert.assertEquals(1, schemaTypes.size());
-
             Assert.assertEquals("n", schemaNames.get(0));
 
             Property nameProperty = new Property("name", "a");
@@ -592,17 +571,9 @@ public class RedisGraphAPITest {
 
 
             schemaNames = header.getSchemaNames();
-            schemaTypes = header.getSchemaTypes();
-
             Assert.assertNotNull(schemaNames);
-            Assert.assertNotNull(schemaTypes);
-
             Assert.assertEquals(1, schemaNames.size());
-            Assert.assertEquals(1, schemaTypes.size());
-
             Assert.assertEquals("label", schemaNames.get(0));
-
-            Assert.assertEquals(COLUMN_SCALAR, schemaTypes.get(0));
 
             Assert.assertEquals(1, resultSet.size());
             Assert.assertTrue(resultSet.hasNext());
@@ -802,16 +773,9 @@ public class RedisGraphAPITest {
 
 
         List<String> schemaNames = header.getSchemaNames();
-        List<Header.ResultSetColumnTypes> schemaTypes = header.getSchemaTypes();
-
         Assert.assertNotNull(schemaNames);
-        Assert.assertNotNull(schemaTypes);
-
         Assert.assertEquals(1, schemaNames.size());
-        Assert.assertEquals(1, schemaTypes.size());
-
         Assert.assertEquals("x", schemaNames.get(0));
-        Assert.assertEquals(COLUMN_SCALAR, schemaTypes.get(0));
 
         // check record
         Assert.assertEquals(1, resultSet.size());
@@ -832,16 +796,9 @@ public class RedisGraphAPITest {
 
 
         schemaNames = header.getSchemaNames();
-        schemaTypes = header.getSchemaTypes();
-
         Assert.assertNotNull(schemaNames);
-        Assert.assertNotNull(schemaTypes);
-
         Assert.assertEquals(1, schemaNames.size());
-        Assert.assertEquals(1, schemaTypes.size());
-
         Assert.assertEquals("x", schemaNames.get(0));
-        Assert.assertEquals(COLUMN_SCALAR, schemaTypes.get(0));
 
         // check record
         Assert.assertEquals(1, resultSet.size());
@@ -861,16 +818,9 @@ public class RedisGraphAPITest {
 
 
         schemaNames = header.getSchemaNames();
-        schemaTypes = header.getSchemaTypes();
-
         Assert.assertNotNull(schemaNames);
-        Assert.assertNotNull(schemaTypes);
-
         Assert.assertEquals(1, schemaNames.size());
-        Assert.assertEquals(1, schemaTypes.size());
-
         Assert.assertEquals("x", schemaNames.get(0));
-        Assert.assertEquals(COLUMN_SCALAR, schemaTypes.get(0));
 
         // check record
         Assert.assertEquals(3, resultSet.size());
