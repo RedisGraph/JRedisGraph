@@ -47,7 +47,7 @@ and
   </dependencies>
 ```
 
-# Example: Using the Java Client
+## Example: Using the Java Client
 ```java
 package com.redislabs.redisgraph;
 
