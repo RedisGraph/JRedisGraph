@@ -7,7 +7,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/RedisGraph/JRedisGraph/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/RedisGraph/JRedisGraph?targetFile=pom.xml)
 
 # JRedisGraph
-[![Mailing List](https://img.shields.io/badge/Mailing%20List-RedisGraph-blue)](https://groups.google.com/forum/#!forum/redisgraph)
+[![Forum](https://img.shields.io/badge/Forum-RedisGraph-blue)](https://forum.redislabs.com/c/modules/redisgraph)
 [![Gitter](https://badges.gitter.im/RedisLabs/RedisGraph.svg)](https://gitter.im/RedisLabs/RedisGraph?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 RedisGraph Java client
