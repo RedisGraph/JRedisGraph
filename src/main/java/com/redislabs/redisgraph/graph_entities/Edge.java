@@ -10,8 +10,8 @@ public class Edge extends GraphEntity {
 
     //members
     private  String relationshipType;
-    private int source;
-    private int destination;
+    private long source;
+    private long destination;
 
 
     //getters & setters
@@ -34,14 +34,14 @@ public class Edge extends GraphEntity {
     /**
      * @return The id of the source node
      */
-    public int getSource() {
+    public long getSource() {
         return source;
     }
 
     /**
      * @param source - The id of the source node to be set
      */
-    public void setSource(int source) {
+    public void setSource(long source) {
         this.source = source;
     }
 
@@ -49,7 +49,7 @@ public class Edge extends GraphEntity {
      *
      * @return the id of the destination node
      */
-    public int getDestination() {
+    public long getDestination() {
         return destination;
     }
 
@@ -57,7 +57,7 @@ public class Edge extends GraphEntity {
      *
      * @param destination - The id of the destination node to be set
      */
-    public void setDestination(int destination) {
+    public void setDestination(long destination) {
         this.destination = destination;
     }
 
