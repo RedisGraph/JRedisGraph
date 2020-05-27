@@ -161,7 +161,7 @@ public class ResultSetImpl implements ResultSet {
      * @param rawEntityId raw representation of entity id to be set to the graph entity
      */
     private void deserializeGraphEntityId(GraphEntity graphEntity, Object rawEntityId) {
-        int id = ((Long) rawEntityId).intValue();
+        long id = (Long) rawEntityId;
         graphEntity.setId(id);
     }
 
@@ -183,8 +183,8 @@ public class ResultSetImpl implements ResultSet {
                                                                         redisGraph);
         edge.setRelationshipType(relationshipType);
 
-        edge.setSource((int) (long) rawEdgeData.get(2));
-        edge.setDestination((int) (long) rawEdgeData.get(3));
+        edge.setSource( (long) rawEdgeData.get(2));
+        edge.setDestination( (long) rawEdgeData.get(3));
 
         deserializeGraphEntityProperties(edge, (List<List<Object>>) rawEdgeData.get(4));
 
@@ -233,7 +233,7 @@ public class ResultSetImpl implements ResultSet {
             case VALUE_DOUBLE:
                 return Double.parseDouble(SafeEncoder.encode((byte[]) obj));
             case VALUE_INTEGER:
-                return ((Long) obj).intValue();
+                return (Long) obj;
             case VALUE_STRING:
                 return SafeEncoder.encode((byte[]) obj);
             case VALUE_ARRAY:
