@@ -8,90 +8,78 @@ import java.util.*;
  * A graph entity has an id and a set of properties. The properties are mapped and accessed by their names.
  */
 public abstract class GraphEntity {
-
-
-
     //members
-
-    protected int id;
+    protected long id;
     protected final Map<String, Property> propertyMap = new HashMap<>();
 
 
     //setters & getters
 
     /**
-     *
      * @return entity id
      */
-    public int getId() {
+    public long getId() {
         return id;
     }
 
     /**
-     *
      * @param id - entity id to be set
      */
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
 
     /**
      * Adds a property to the entity, by composing name, type and value to a property object
+     *
      * @param name
      * @param value
      */
-    public void addProperty(String name, Object value){
-
+    public void addProperty(String name, Object value) {
         addProperty(new Property(name, value));
-
     }
 
     /**
-     *
      * @return Entity's property names, as a Set
      */
-    public Set<String> getEntityPropertyNames(){
+    public Set<String> getEntityPropertyNames() {
         return propertyMap.keySet();
     }
 
     /**
      * Add a property to the entity
+     *
      * @param property
      */
-    public void addProperty (Property property){
+    public void addProperty(Property property) {
 
 
         propertyMap.put(property.getName(), property);
     }
 
     /**
-     *
      * @return number of properties
      */
-    public int getNumberOfProperties(){
+    public int getNumberOfProperties() {
         return propertyMap.size();
     }
 
 
     /**
-     *
      * @param propertyName - property name as lookup key (String)
      * @return property object, or null if key is not found
      */
-    public Property getProperty(String propertyName){
+    public Property getProperty(String propertyName) {
         return propertyMap.get(propertyName);
     }
 
 
     /**
-     *
      * @param name - the name of the property to be removed
      */
-    public void removeProperty(String name){
-
+    public void removeProperty(String name) {
         propertyMap.remove(name);
-
     }
 
     @Override

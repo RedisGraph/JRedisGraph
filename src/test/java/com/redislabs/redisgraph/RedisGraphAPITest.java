@@ -298,8 +298,8 @@ public class RedisGraphAPITest {
                 "r.place", "r.since", "r.doubleValue", "r.boolValue", "r.nullValue"), record.keys());
 
         Assert.assertEquals(Arrays.asList(expectedNode, expectedEdge,
-                name, age, doubleValue, true, null,
-                place, since, doubleValue, false, null),
+                name, (long)age, doubleValue, true, null,
+                place, (long)since, doubleValue, false, null),
                 record.values());
 
         Node a = record.getValue("a");
@@ -309,8 +309,8 @@ public class RedisGraphAPITest {
 
         Assert.assertEquals( "roi", record.getString(2));
         Assert.assertEquals( "32", record.getString(3));
-        Assert.assertEquals( 32L, ((Integer)(record.getValue(3))).longValue());
-        Assert.assertEquals( 32L, ((Integer)record.getValue("a.age")).longValue());
+        Assert.assertEquals( 32L, ((Long)record.getValue(3)).longValue());
+        Assert.assertEquals( 32L, ((Long)record.getValue("a.age")).longValue());
         Assert.assertEquals( "roi", record.getString("a.name"));
         Assert.assertEquals( "32", record.getString("a.age"));
 
@@ -372,7 +372,7 @@ public class RedisGraphAPITest {
             Record record = resultSet.next();
             Assert.assertFalse(resultSet.hasNext());
             Assert.assertEquals(Arrays.asList("a", "r", "a.age"), record.keys());
-            Assert.assertEquals(Arrays.asList(expectedNode, expectedEdge, 32), record.values());
+            Assert.assertEquals(Arrays.asList(expectedNode, expectedEdge, 32L), record.values());
         }
 
         //test for update in local cache
@@ -530,7 +530,7 @@ public class RedisGraphAPITest {
 
             // Redis incr command
             Assert.assertEquals(Long.class, results.get(3).getClass());
-            Assert.assertEquals((long)2, results.get(3));
+            Assert.assertEquals(2L, results.get(3));
 
             // Redis get command
             Assert.assertEquals(String.class, results.get(4).getClass());
@@ -676,8 +676,8 @@ public class RedisGraphAPITest {
                     "r.place", "r.since", "r.doubleValue", "r.boolValue", "r.nullValue"), record.keys());
 
             Assert.assertEquals(Arrays.asList(expectedNode, expectedEdge,
-                    name, age, doubleValue, true, null,
-                    place, since, doubleValue, false, null),
+                    name, (long)age, doubleValue, true, null,
+                    place, (long)since, doubleValue, false, null),
                     record.values());
 
             Node a = record.getValue("a");
@@ -687,8 +687,8 @@ public class RedisGraphAPITest {
 
             Assert.assertEquals("roi", record.getString(2));
             Assert.assertEquals("32", record.getString(3));
-            Assert.assertEquals(32L, ((Integer) (record.getValue(3))).longValue());
-            Assert.assertEquals(32L, ((Integer) record.getValue("a.age")).longValue());
+            Assert.assertEquals(32L, ((Long) (record.getValue(3))).longValue());
+            Assert.assertEquals(32L, ((Long) record.getValue("a.age")).longValue());
             Assert.assertEquals("roi", record.getString("a.name"));
             Assert.assertEquals("32", record.getString("a.age"));
         }
@@ -741,7 +741,7 @@ public class RedisGraphAPITest {
         expectedANode.addLabel("person");
         Property aNameProperty = new Property("name", "a");
         Property aAgeProperty = new Property("age", 32);
-        Property aListProperty = new Property("array", Arrays.asList(0,1,2));
+        Property aListProperty = new Property("array", Arrays.asList(0L, 1L, 2L));
         expectedANode.addProperty(aNameProperty);
         expectedANode.addProperty(aAgeProperty);
         expectedANode.addProperty(aListProperty);
@@ -752,7 +752,7 @@ public class RedisGraphAPITest {
         expectedBNode.addLabel("person");
         Property bNameProperty = new Property("name", "b");
         Property bAgeProperty = new Property("age", 30);
-        Property bListProperty = new Property("array", Arrays.asList(3,4,5));
+        Property bListProperty = new Property("array", Arrays.asList(3L, 4L, 5L));
         expectedBNode.addProperty(bNameProperty);
         expectedBNode.addProperty(bAgeProperty);
         expectedBNode.addProperty(bListProperty);
@@ -786,7 +786,7 @@ public class RedisGraphAPITest {
 
 
         List x = record.getValue("x");
-        Assert.assertEquals(Arrays.asList(0,1,2), x);
+        Assert.assertEquals(Arrays.asList(0L, 1L, 2L), x);
 
         // test collect
         resultSet = api.query("social", "MATCH(n) return collect(n) as x");
@@ -825,11 +825,11 @@ public class RedisGraphAPITest {
         // check record
         Assert.assertEquals(3, resultSet.size());
 
-        for (int i = 0; i < 3; i++) {
+        for (long i = 0; i < 3; i++) {
             Assert.assertTrue(resultSet.hasNext());
             record = resultSet.next();
             Assert.assertEquals(Arrays.asList("x"), record.keys());
-            Assert.assertEquals(i, (int) record.getValue("x"));
+            Assert.assertEquals(i, (long)record.getValue("x"));
 
         }
 
@@ -881,14 +881,16 @@ public class RedisGraphAPITest {
     @Test
     public void testParameters(){
         Object[] parameters = {1, 2.3, true, false, null, "str", Arrays.asList(1,2,3), new Integer[]{1,2,3}};
-        Map<String, Object> param = new HashMap<>();
+        Object[] expected_anwsers = {1L, 2.3, true, false, null, "str", Arrays.asList(1L, 2L, 3L), new Long[]{1L, 2L, 3L}};
+        Map<String, Object> params = new HashMap<>();
         for (int i=0; i < parameters.length; i++) {
-            Object expected = parameters[i];
-            param.put("param", expected);
-            ResultSet resultSet = api.query("social", "RETURN $param", param);
+            Object param = parameters[i];
+            params.put("param", param);
+            ResultSet resultSet = api.query("social", "RETURN $param", params);
             Assert.assertEquals(1, resultSet.size());
             Record r = resultSet.next();
             Object o = r.getValue(0);
+            Object expected = expected_anwsers[i];
             if(i == parameters.length-1) {
                 expected = Arrays.asList((Object[])expected);
             }
@@ -940,5 +942,16 @@ public class RedisGraphAPITest {
         path = record.getValue(0);
         Assert.assertNull(record.getValue(0));
 
+    }
+
+    @Test
+    public void test64bitnumber(){
+        long value = 1 << 40;
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("val", value);
+        ResultSet resultSet = api.query("social","CREATE (n {val:$val}) RETURN n.val", params);
+        Assert.assertEquals(1, resultSet.size());
+        Record r = resultSet.next();
+        Assert.assertEquals(Long.valueOf(value), r.getValue(0));
     }
 }

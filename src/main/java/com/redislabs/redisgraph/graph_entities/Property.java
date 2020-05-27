@@ -11,7 +11,6 @@ public class Property <T> {
 
     //members
     private String name;
-
     private T value;
 
 
@@ -66,6 +65,11 @@ public class Property <T> {
         this.value = value;
     }
 
+    private boolean valueEquals(Object value1, Object value2) {
+        if(value1 instanceof Integer) value1 = Long.valueOf(((Integer) value1).longValue());
+        if(value2 instanceof Integer) value2 = Long.valueOf(((Integer) value2).longValue());
+        return Objects.equals(value1, value2);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -73,7 +77,7 @@ public class Property <T> {
         if (!(o instanceof Property)) return false;
         Property property = (Property) o;
         return Objects.equals(name, property.name) &&
-                Objects.equals(value, property.value);
+                valueEquals(value, property.value);
     }
 
     @Override
