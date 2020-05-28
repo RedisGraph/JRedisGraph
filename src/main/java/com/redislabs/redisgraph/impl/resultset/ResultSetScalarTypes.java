@@ -6,7 +6,7 @@ enum ResultSetScalarTypes {
     VALUE_UNKNOWN,
     VALUE_NULL,
     VALUE_STRING,
-    VALUE_INTEGER,
+    VALUE_INTEGER,  // 64 bit long.
     VALUE_BOOLEAN,
     VALUE_DOUBLE,
     VALUE_ARRAY,
