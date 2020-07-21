@@ -650,6 +650,8 @@ public class RedisGraphAPITest {
             Assert.assertEquals(0, resultSet.getStatistics().relationshipsCreated());
             Assert.assertEquals(0, resultSet.getStatistics().relationshipsDeleted());
             Assert.assertNotNull(resultSet.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME));
+Just to make sure, all of the changes we need from the enterprise were implemented?
+￼
 
 
             Assert.assertEquals(1, resultSet.size());
@@ -670,7 +672,9 @@ public class RedisGraphAPITest {
             Assert.assertEquals(expectedEdge, edge);
 
             edge = record.getValue("r");
-            Assert.assertEquals(expectedEdge, edge);
+            Assert.assertEquals(expectedEdge, edge);Just to make sure, all of the changes we need from the enterprise were implemented?
+￼
+
 
             Assert.assertEquals(Arrays.asList("a", "r", "a.name", "a.age", "a.doubleValue", "a.boolValue", "a.nullValue",
                     "r.place", "r.since", "r.doubleValue", "r.boolValue", "r.nullValue"), record.keys());
@@ -947,7 +951,7 @@ public class RedisGraphAPITest {
     @Test
     public void test64bitnumber(){
         long value = 1 << 40;
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("val", value);
         ResultSet resultSet = api.query("social","CREATE (n {val:$val}) RETURN n.val", params);
         Assert.assertEquals(1, resultSet.size());
@@ -958,13 +962,18 @@ public class RedisGraphAPITest {
     @Test
     public void testCachedExecution() {
         api.query("social", "CREATE (:N {val:1}), (:N {val:2})");
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("val", Long.valueOf(1));
+        
+        // First time should not be loaded from execution cache         
+        Map<String, Object> params = new HashMap<>();
+        params.put("val", 1L);
         ResultSet resultSet = api.query("social","MATCH (n:N {val:$val}) RETURN n.val", params);
         Assert.assertEquals(1, resultSet.size());
         Record r = resultSet.next();
         Assert.assertEquals(params.get("val"), r.getValue(0));
         Assert.assertFalse(resultSet.getStatistics().cachedExecution());
+        
+        // Run in loop many times to make sure the query will be loaded
+        // from cache at least once
         for (int i = 0 ; i < 64; i++){
             resultSet = api.query("social","MATCH (n:N {val:$val}) RETURN n.val", params);
         }
@@ -972,6 +981,5 @@ public class RedisGraphAPITest {
         r = resultSet.next();
         Assert.assertEquals(params.get("val"), r.getValue(0));
         Assert.assertTrue(resultSet.getStatistics().cachedExecution());
-
     }
 }
