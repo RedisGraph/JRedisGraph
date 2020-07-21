@@ -642,7 +642,6 @@ public class RedisGraphAPITest {
                     "r.place, r.since, r.doubleValue, r.boolValue, r.nullValue");
             Assert.assertNotNull(resultSet);
 
-
             Assert.assertEquals(0, resultSet.getStatistics().nodesCreated());
             Assert.assertEquals(0, resultSet.getStatistics().nodesDeleted());
             Assert.assertEquals(0, resultSet.getStatistics().labelsAdded());
@@ -650,9 +649,6 @@ public class RedisGraphAPITest {
             Assert.assertEquals(0, resultSet.getStatistics().relationshipsCreated());
             Assert.assertEquals(0, resultSet.getStatistics().relationshipsDeleted());
             Assert.assertNotNull(resultSet.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME));
-Just to make sure, all of the changes we need from the enterprise were implemented?
-￼
-
 
             Assert.assertEquals(1, resultSet.size());
             Assert.assertTrue(resultSet.hasNext());
@@ -672,9 +668,7 @@ Just to make sure, all of the changes we need from the enterprise were implement
             Assert.assertEquals(expectedEdge, edge);
 
             edge = record.getValue("r");
-            Assert.assertEquals(expectedEdge, edge);Just to make sure, all of the changes we need from the enterprise were implemented?
-￼
-
+            Assert.assertEquals(expectedEdge, edge);
 
             Assert.assertEquals(Arrays.asList("a", "r", "a.name", "a.age", "a.doubleValue", "a.boolValue", "a.nullValue",
                     "r.place", "r.since", "r.doubleValue", "r.boolValue", "r.nullValue"), record.keys());
