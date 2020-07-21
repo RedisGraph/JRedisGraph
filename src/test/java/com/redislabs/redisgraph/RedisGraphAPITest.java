@@ -954,4 +954,24 @@ public class RedisGraphAPITest {
         Record r = resultSet.next();
         Assert.assertEquals(Long.valueOf(value), r.getValue(0));
     }
+
+    @Test
+    public void testCachedExecution() {
+        api.query("social", "CREATE (:N {val:1}), (:N {val:2})");
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("val", Long.valueOf(1));
+        ResultSet resultSet = api.query("social","MATCH (n:N {val:$val}) RETURN n.val", params);
+        Assert.assertEquals(1, resultSet.size());
+        Record r = resultSet.next();
+        Assert.assertEquals(params.get("val"), r.getValue(0));
+        Assert.assertFalse(resultSet.getStatistics().cachedExecution());
+        for (int i = 0 ; i < 64; i++){
+            resultSet = api.query("social","MATCH (n:N {val:$val}) RETURN n.val", params);
+        }
+        Assert.assertEquals(1, resultSet.size());
+        r = resultSet.next();
+        Assert.assertEquals(params.get("val"), r.getValue(0));
+        Assert.assertTrue(resultSet.getStatistics().cachedExecution());
+
+    }
 }

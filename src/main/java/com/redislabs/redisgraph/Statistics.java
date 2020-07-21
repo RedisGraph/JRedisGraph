@@ -15,6 +15,7 @@ public interface Statistics {
 		RELATIONSHIPS_DELETED("Relationships deleted"),
 		PROPERTIES_SET("Properties set"),
 		RELATIONSHIPS_CREATED("Relationships created"),
+		CACHED_EXECUTION("Cached execution"),
 		QUERY_INTERNAL_EXECUTION_TIME("Query internal execution time");
 
 	    private final String text;
@@ -65,4 +66,6 @@ public interface Statistics {
 	int relationshipsCreated();
 	
 	int propertiesSet();
+
+	boolean cachedExecution();
 }
