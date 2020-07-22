@@ -132,6 +132,15 @@ public class StatisticsImpl implements Statistics  {
 		return getIntValue(Label.PROPERTIES_SET);
 	}
 
+	/**
+	 *
+	 * @return The execution plan was cached on RedisGraph.
+	 */
+	@Override
+	public boolean cachedExecution() {
+		return getIntValue(Label.CACHED_EXECUTION) == 1;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;

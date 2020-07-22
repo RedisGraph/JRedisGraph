@@ -642,7 +642,6 @@ public class RedisGraphAPITest {
                     "r.place, r.since, r.doubleValue, r.boolValue, r.nullValue");
             Assert.assertNotNull(resultSet);
 
-
             Assert.assertEquals(0, resultSet.getStatistics().nodesCreated());
             Assert.assertEquals(0, resultSet.getStatistics().nodesDeleted());
             Assert.assertEquals(0, resultSet.getStatistics().labelsAdded());
@@ -650,7 +649,6 @@ public class RedisGraphAPITest {
             Assert.assertEquals(0, resultSet.getStatistics().relationshipsCreated());
             Assert.assertEquals(0, resultSet.getStatistics().relationshipsDeleted());
             Assert.assertNotNull(resultSet.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME));
-
 
             Assert.assertEquals(1, resultSet.size());
             Assert.assertTrue(resultSet.hasNext());
@@ -947,11 +945,35 @@ public class RedisGraphAPITest {
     @Test
     public void test64bitnumber(){
         long value = 1 << 40;
-        Map<String, Object> params = new HashMap<String, Object>();
+        Map<String, Object> params = new HashMap<>();
         params.put("val", value);
         ResultSet resultSet = api.query("social","CREATE (n {val:$val}) RETURN n.val", params);
         Assert.assertEquals(1, resultSet.size());
         Record r = resultSet.next();
         Assert.assertEquals(Long.valueOf(value), r.getValue(0));
+    }
+
+    @Test
+    public void testCachedExecution() {
+        api.query("social", "CREATE (:N {val:1}), (:N {val:2})");
+        
+        // First time should not be loaded from execution cache         
+        Map<String, Object> params = new HashMap<>();
+        params.put("val", 1L);
+        ResultSet resultSet = api.query("social","MATCH (n:N {val:$val}) RETURN n.val", params);
+        Assert.assertEquals(1, resultSet.size());
+        Record r = resultSet.next();
+        Assert.assertEquals(params.get("val"), r.getValue(0));
+        Assert.assertFalse(resultSet.getStatistics().cachedExecution());
+        
+        // Run in loop many times to make sure the query will be loaded
+        // from cache at least once
+        for (int i = 0 ; i < 64; i++){
+            resultSet = api.query("social","MATCH (n:N {val:$val}) RETURN n.val", params);
+        }
+        Assert.assertEquals(1, resultSet.size());
+        r = resultSet.next();
+        Assert.assertEquals(params.get("val"), r.getValue(0));
+        Assert.assertTrue(resultSet.getStatistics().cachedExecution());
     }
 }
