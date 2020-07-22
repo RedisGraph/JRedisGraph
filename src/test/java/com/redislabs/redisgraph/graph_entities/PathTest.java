@@ -3,7 +3,6 @@ package com.redislabs.redisgraph.graph_entities;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -28,12 +27,10 @@ public class PathTest {
     }
 
     private List<Node> buildNodeArray(int size) {
-        List<Node> nodes = new ArrayList<>();
         return IntStream.range(0, size).mapToObj(i -> buildNode(i)).collect(Collectors.toList());
     }
 
     private List<Edge> buildEdgeArray(int size){
-        List<Node> nodes = new ArrayList<>();
         return IntStream.range(0, size).mapToObj(i -> buildEdge(i, i, i+1)).collect(Collectors.toList());
     }
 

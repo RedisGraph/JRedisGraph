@@ -29,13 +29,14 @@ public class ResultSetImpl implements ResultSet {
     /**
      * @param rawResponse the raw representation of response is at most 3 lists of objects.
      *                    The last list is the statistics list.
-     * @param redisGraph, the graph local cache
+     * @param redisGraph the graph connection
+     * @param cache the graph local cache
      */
     public ResultSetImpl(List<Object> rawResponse, RedisGraph redisGraph, GraphCache cache) {
         this.redisGraph = redisGraph;
         this.cache = cache;
 
-        // If a run-time error occured, the last member of the rawResponse will be a JedisDataException.
+        // If a run-time error occurred, the last member of the rawResponse will be a JedisDataException.
         if (rawResponse.get(rawResponse.size()-1) instanceof JedisDataException) {
 
             throw new JRedisGraphRunTimeException((Throwable) rawResponse.get(rawResponse.size() - 1));
@@ -45,8 +46,8 @@ public class ResultSetImpl implements ResultSet {
 
             header = parseHeader(new ArrayList<>());
             results = new ArrayList<>();
-            statistics = rawResponse.size()> 0 ? parseStatistics(rawResponse.get(rawResponse.size() - 1)) :
-                    parseStatistics(new ArrayList<Objects>());
+            statistics = rawResponse.isEmpty() ? parseStatistics(new ArrayList<Objects>()) : 
+              parseStatistics(rawResponse.get(rawResponse.size() - 1)) ; 
 
         } else {
 
@@ -85,15 +86,12 @@ public class ResultSetImpl implements ResultSet {
                         case COLUMN_RELATION:
                             parsedRow.add(deserializeEdge(obj));
                             break;
-                        case COLUMN_SCALAR: {
+                        case COLUMN_SCALAR: 
                             parsedRow.add(deserializeScalar(obj));
                             break;
-                        }
-                        default: {
+                        default: 
                             parsedRow.add(null);
                             break;
-                        }
-
                     }
 
                 }
@@ -203,7 +201,7 @@ public class ResultSetImpl implements ResultSet {
 
 
         for (List<Object> rawProperty : rawProperties) {
-            Property property = new Property();
+            Property<Object> property = new Property<>();
             property.setName(cache.getPropertyName(((Long) rawProperty.get(0)).intValue(),
                                                                 redisGraph));
 

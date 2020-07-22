@@ -10,7 +10,7 @@ import java.util.*;
 public abstract class GraphEntity {
     //members
     protected long id;
-    protected final Map<String, Property> propertyMap = new HashMap<>();
+    protected final Map<String, Property<?>> propertyMap = new HashMap<>();
 
 
     //setters & getters
