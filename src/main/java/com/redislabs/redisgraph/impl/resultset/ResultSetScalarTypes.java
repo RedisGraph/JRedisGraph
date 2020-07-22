@@ -17,10 +17,11 @@ enum ResultSetScalarTypes {
     private static final ResultSetScalarTypes[] values = values();
 
     public static ResultSetScalarTypes getValue(int index) {
-        if (index < 0 || index > values.length) { 
-          throw new JedisDataException("Unrecognized response type");
-        }
+      try {
         return values[index];
+      } catch(IndexOutOfBoundsException e) {
+        throw new JedisDataException("Unrecognized response type");
+      }
     }
 
 }
