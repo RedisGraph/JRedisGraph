@@ -203,17 +203,15 @@ public class RedisGraphAPITest {
         String place = "TLV";
         int since = 2000;
 
+        Property<String> nameProperty = new Property<>("name", name);
+        Property<Integer> ageProperty = new Property<>("age", age);
+        Property<Double> doubleProperty = new Property<>("doubleValue", doubleValue);
+        Property<Boolean> trueBooleanProperty = new Property<>("boolValue", true);
+        Property<Boolean> falseBooleanProperty = new Property<>("boolValue", false);
+        Property<?> nullProperty = new Property<>("nullValue", null);
 
-
-        Property nameProperty = new Property("name", name);
-        Property ageProperty = new Property("age", age);
-        Property doubleProperty = new Property("doubleValue", doubleValue);
-        Property trueBooleanProperty = new Property("boolValue", true);
-        Property falseBooleanProperty = new Property("boolValue", false);
-        Property nullProperty = new Property("nullValue", null);
-
-        Property placeProperty = new Property("place", place);
-        Property sinceProperty = new Property("since", since);
+        Property<String> placeProperty = new Property<>("place", place);
+        Property<Integer> sinceProperty = new Property<>("since", since);
 
         Node expectedNode = new Node();
         expectedNode.setId(0);
@@ -340,9 +338,9 @@ public class RedisGraphAPITest {
                 mapToObj(i-> api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, a.age")).
                 collect(Collectors.toList());
 
-        Property nameProperty = new Property("name", "roi");
-        Property ageProperty = new Property("age", 32);
-        Property lastNameProperty =new Property("lastName", "a");
+        Property<String> nameProperty = new Property<>("name", "roi");
+        Property<Integer> ageProperty = new Property<>("age", 32);
+        Property<String> lastNameProperty =new Property<>("lastName", "a");
 
         Node expectedNode = new Node();
         expectedNode.setId(0);
@@ -423,9 +421,9 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  CREATE (a)-[:knows]->(b)"));
 
         //expected objects init
-        Property nameProperty = new Property("name", "roi");
-        Property ageProperty = new Property("age", 32);
-        Property lastNameProperty =new Property("lastName", "a");
+        Property<String> nameProperty = new Property<>("name", "roi");
+        Property<Integer> ageProperty = new Property<>("age", 32);
+        Property<String> lastNameProperty =new Property<>("lastName", "a");
 
         Node expectedNode = new Node();
         expectedNode.setId(0);
@@ -549,7 +547,7 @@ public class RedisGraphAPITest {
             Assert.assertEquals(1, schemaNames.size());
             Assert.assertEquals("n", schemaNames.get(0));
 
-            Property nameProperty = new Property("name", "a");
+            Property<String> nameProperty = new Property<>("name", "a");
 
             Node expectedNode = new Node();
             expectedNode.setId(0);
@@ -596,15 +594,15 @@ public class RedisGraphAPITest {
         int since = 2000;
 
 
-        Property nameProperty = new Property("name", name);
-        Property ageProperty = new Property("age", age);
-        Property doubleProperty = new Property("doubleValue", doubleValue);
-        Property trueBooleanProperty = new Property("boolValue", true);
-        Property falseBooleanProperty = new Property("boolValue", false);
-        Property nullProperty = new Property("nullValue", null);
+        Property<String> nameProperty = new Property<>("name", name);
+        Property<Integer> ageProperty = new Property<>("age", age);
+        Property<Double> doubleProperty = new Property<>("doubleValue", doubleValue);
+        Property<Boolean> trueBooleanProperty = new Property<>("boolValue", true);
+        Property<Boolean> falseBooleanProperty = new Property<>("boolValue", false);
+        Property<?> nullProperty = new Property<>("nullValue", null);
 
-        Property placeProperty = new Property("place", place);
-        Property sinceProperty = new Property("since", since);
+        Property<String> placeProperty = new Property<>("place", place);
+        Property<Integer> sinceProperty = new Property<>("since", since);
 
         Node expectedNode = new Node();
         expectedNode.setId(0);
@@ -737,9 +735,9 @@ public class RedisGraphAPITest {
         Node expectedANode = new Node();
         expectedANode.setId(0);
         expectedANode.addLabel("person");
-        Property aNameProperty = new Property("name", "a");
-        Property aAgeProperty = new Property("age", 32);
-        Property aListProperty = new Property("array", Arrays.asList(0L, 1L, 2L));
+        Property<String> aNameProperty = new Property<>("name", "a");
+        Property<Integer> aAgeProperty = new Property<>("age", 32);
+        Property<List<Long>> aListProperty = new Property<>("array", Arrays.asList(0L, 1L, 2L));
         expectedANode.addProperty(aNameProperty);
         expectedANode.addProperty(aAgeProperty);
         expectedANode.addProperty(aListProperty);
@@ -748,9 +746,9 @@ public class RedisGraphAPITest {
         Node expectedBNode = new Node();
         expectedBNode.setId(1);
         expectedBNode.addLabel("person");
-        Property bNameProperty = new Property("name", "b");
-        Property bAgeProperty = new Property("age", 30);
-        Property bListProperty = new Property("array", Arrays.asList(3L, 4L, 5L));
+        Property<String> bNameProperty = new Property<>("name", "b");
+        Property<Integer> bAgeProperty = new Property<>("age", 30);
+        Property<List<Long>> bListProperty = new Property<>("array", Arrays.asList(3L, 4L, 5L));
         expectedBNode.addProperty(bNameProperty);
         expectedBNode.addProperty(bAgeProperty);
         expectedBNode.addProperty(bListProperty);
@@ -783,7 +781,7 @@ public class RedisGraphAPITest {
         Assert.assertEquals(Arrays.asList("x"), record.keys());
 
 
-        List x = record.getValue("x");
+        List<Long> x = record.getValue("x");
         Assert.assertEquals(Arrays.asList(0L, 1L, 2L), x);
 
         // test collect
@@ -928,18 +926,14 @@ public class RedisGraphAPITest {
         // Test a query that produces 2 records, the first containing a path and the second containing a null value.
         resultSet = api.query("social", "MATCH (a) OPTIONAL MATCH p = (a)-[e]->(b) RETURN p");
         Assert.assertEquals(2, resultSet.size());
+        
         record = resultSet.next();
         Assert.assertEquals(1, record.size());
-
-        Object path = record.getValue(0);
         Assert.assertNotNull(record.getValue(0));
 
         record = resultSet.next();
         Assert.assertEquals(1, record.size());
-
-        path = record.getValue(0);
         Assert.assertNull(record.getValue(0));
-
     }
 
     @Test

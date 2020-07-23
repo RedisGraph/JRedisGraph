@@ -1,6 +1,5 @@
 package com.redislabs.redisgraph.graph_entities;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
