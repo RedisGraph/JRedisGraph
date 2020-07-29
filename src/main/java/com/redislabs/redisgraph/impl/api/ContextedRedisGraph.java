@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGraphContext, RedisGraphCacheHolder {
 
-    private Jedis connectionContext;
+    private final Jedis connectionContext;
     private RedisGraphCaches caches;
 
     /**

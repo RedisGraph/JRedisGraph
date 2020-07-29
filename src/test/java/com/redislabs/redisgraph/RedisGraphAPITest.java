@@ -340,7 +340,7 @@ public class RedisGraphAPITest {
 
         Property<String> nameProperty = new Property<>("name", "roi");
         Property<Integer> ageProperty = new Property<>("age", 32);
-        Property<String> lastNameProperty =new Property<>("lastName", "a");
+        Property<String> lastNameProperty = new Property<>("lastName", "a");
 
         Node expectedNode = new Node();
         expectedNode.setId(0);

@@ -15,7 +15,7 @@ import redis.clients.jedis.util.SafeEncoder;
 public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextGenerator {
 
     private final Pool<Jedis> client;
-    private RedisGraphCaches caches = new RedisGraphCaches();
+    private final RedisGraphCaches caches = new RedisGraphCaches();
 
     /**
      * Creates a client running on the local machine
