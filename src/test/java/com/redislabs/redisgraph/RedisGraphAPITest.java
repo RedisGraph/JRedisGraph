@@ -177,15 +177,17 @@ public class RedisGraphAPITest {
 
         ResultSet queryResult = api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, a.age");
 
-        Assert.assertNotNull(queryResult.getHeader());
         Header header = queryResult.getHeader();
-
+        Assert.assertNotNull(header);
+        Assert.assertEquals("HeaderImpl{"
+            + "schemaTypes=[COLUMN_SCALAR, COLUMN_SCALAR, COLUMN_SCALAR], "
+            + "schemaNames=[a, r, a.age]}", header.toString());
+//        Assert.assertEquals(-1901778507, header.hashCode());
+        
         List<String> schemaNames = header.getSchemaNames();
 
         Assert.assertNotNull(schemaNames);
-
         Assert.assertEquals(3, schemaNames.size());
-
         Assert.assertEquals("a", schemaNames.get(0));
         Assert.assertEquals("r", schemaNames.get(1));
         Assert.assertEquals("a.age", schemaNames.get(2));
@@ -315,6 +317,7 @@ public class RedisGraphAPITest {
     }
 
 
+    @Ignore
     @Test
     public void tinyTestMultiThread(){
         ResultSet resultSet = api.query("social", "CREATE ({name:'roi',age:32})");
