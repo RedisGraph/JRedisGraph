@@ -13,8 +13,6 @@ import java.util.Map;
  */
 public abstract class AbstractRedisGraph implements RedisGraph {
 
-
-
     /**
      * Inherited classes should return a Jedis connection, with respect to their context
      * @return Jedis connection

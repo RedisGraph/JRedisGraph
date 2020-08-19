@@ -88,7 +88,7 @@ public class Utils {
 
     private static String arrayToString(Object[] arr) {
         StringBuilder sb = new StringBuilder().append('[');
-        sb.append(String.join(", ", Arrays.stream(arr).map(obj->valueToString(obj)).collect(Collectors.toList())));
+        sb.append(String.join(", ", Arrays.stream(arr).map(Utils::valueToString).collect(Collectors.toList())));
         sb.append(']');
         return sb.toString();
     }
@@ -119,22 +119,22 @@ public class Utils {
      * @return formatter procedure call
      */
     public static String prepareProcedure(String procedure, List<String> args  , Map<String, List<String>> kwargs){
-        args = args.stream().map( s -> Utils.quoteString(s)).collect(Collectors.toList());
+        args = args.stream().map( Utils::quoteString).collect(Collectors.toList());
         StringBuilder queryStringBuilder =  new StringBuilder();
-        queryStringBuilder.append("CALL ").append(procedure).append("(");
+        queryStringBuilder.append("CALL ").append(procedure).append('(');
         int i = 0;
         for (; i < args.size() - 1; i++) {
-            queryStringBuilder.append(args.get(i)).append(",");
+            queryStringBuilder.append(args.get(i)).append(',');
         }
         if (i == args.size()-1) {
             queryStringBuilder.append(args.get(i));
         }
-        queryStringBuilder.append(")");
+        queryStringBuilder.append(')');
         List<String> kwargsList = kwargs.getOrDefault("y", null);
         if(kwargsList != null){
             i = 0;
             for (; i < kwargsList.size() - 1; i++) {
-                queryStringBuilder.append(kwargsList.get(i)).append(",");
+                queryStringBuilder.append(kwargsList.get(i)).append(',');
 
             }
             queryStringBuilder.append(kwargsList.get(i));

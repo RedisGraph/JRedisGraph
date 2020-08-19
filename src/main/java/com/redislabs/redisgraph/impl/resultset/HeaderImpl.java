@@ -36,7 +36,7 @@ public class HeaderImpl implements Header {
      */
     @Override
     public List<String> getSchemaNames() {
-        if (schemaNames.size() == 0) {
+        if (schemaNames.isEmpty()) {
             buildSchema();
         }
         return schemaNames;
@@ -47,7 +47,7 @@ public class HeaderImpl implements Header {
      */
     @Override
     public List<ResultSetColumnTypes> getSchemaTypes() {
-        if (schemaTypes.size() == 0) {
+        if (schemaTypes.isEmpty()) {
             buildSchema();
         }
         return schemaTypes;

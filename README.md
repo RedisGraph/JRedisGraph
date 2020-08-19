@@ -64,12 +64,12 @@ public class RedisGraphExample {
         RedisGraph graph = new RedisGraph();
 
         Map<String, Object> params = new HashMap<>();
-           params.put("age", 30);
-           params.put("name", "amit");
+        params.put("age", 30);
+        params.put("name", "amit");
        
-           // send queries to a specific graph called "social"
-           graph.query("social","CREATE (:person{name:'roi',age:32})");
-           graph.query("social","CREATE (:person{name:$name,age:$age})", params);
+        // send queries to a specific graph called "social"
+        graph.query("social","CREATE (:person{name:'roi',age:32})");
+        graph.query("social","CREATE (:person{name:$name,age:$age})", params);
         graph.query("social","MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit') CREATE (a)-[:knows]->(b)");
 
         ResultSet resultSet = graph.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a, r, b");
