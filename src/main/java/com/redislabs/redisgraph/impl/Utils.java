@@ -92,6 +92,9 @@ public class Utils {
         if(value instanceof String){
             return quoteString((String) value);
         }
+        if(Character.class.isInstance((value))){
+            return quoteString(((Character)value).toString());
+        }
 
         if(value instanceof Object[]){
             return arrayToString((Object[]) value);
