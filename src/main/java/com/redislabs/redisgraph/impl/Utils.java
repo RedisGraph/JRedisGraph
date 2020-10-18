@@ -99,6 +99,9 @@ public class Utils {
         if(String.class.isInstance(value)){
             return quoteString((String) value);
         }
+        if(Character.class.isInstance((value))){
+            return quoteString(((Character)value).toString());
+        }
 
         if(value.getClass().isArray()){
             return arrayToString((Object[]) value);
