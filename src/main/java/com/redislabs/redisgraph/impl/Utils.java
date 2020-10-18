@@ -92,7 +92,7 @@ public class Utils {
         if(value instanceof String){
             return quoteString((String) value);
         }
-        if(Character.class.isInstance((value))){
+        if(value instanceof Character){
             return quoteString(((Character)value).toString());
         }
 
