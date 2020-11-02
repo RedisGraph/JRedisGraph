@@ -290,6 +290,9 @@ public class RedisGraphAPITest {
         Edge edge = record.getValue(1);
         Assert.assertNotNull(edge);
         Assert.assertEquals(expectedEdge, edge);
+        Assert.assertEquals(1, edge.getDestination());
+        Assert.assertEquals(0, edge.getSource());
+        Assert.assertEquals("knows", edge.getRelationshipType());
 
         edge = record.getValue("r");
         Assert.assertEquals(expectedEdge, edge);
