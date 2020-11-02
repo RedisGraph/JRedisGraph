@@ -319,6 +319,21 @@ public class RedisGraphAPITest {
         
         Assert.assertTrue( record.containsKey("a.name"));
         Assert.assertFalse( record.containsKey("a.addr"));
+        Assert.assertEquals("Record{"
+            + "values=[Node{labels=[person], id=0, propertyMap={"
+            + "name=Property{name='name', value=roi}, "
+            + "boolValue=Property{name='boolValue', value=true}, "
+            + "doubleValue=Property{name='doubleValue', value=3.14}, "
+            + "nullValue=Property{name='nullValue', value=null}, "
+            + "age=Property{name='age', value=32}}}, "
+            + "Edge{relationshipType='knows', source=0, destination=1, id=0, "
+            + "propertyMap={boolValue=Property{name='boolValue', value=false}, "
+            + "place=Property{name='place', value=TLV}, "
+            + "doubleValue=Property{name='doubleValue', value=3.14}, "
+            + "nullValue=Property{name='nullValue', value=null}, "
+            + "since=Property{name='since', value=2000}}}, "
+            + "roi, 32, 3.14, true, null, TLV, 2000, 3.14, false, null]"
+            + "}", record.toString());
     }
 
 
