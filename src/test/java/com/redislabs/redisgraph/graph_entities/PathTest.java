@@ -45,6 +45,8 @@ public class PathTest {
         assertEquals(0, path.nodeCount());
         assertThrows(IndexOutOfBoundsException.class, ()->path.getNode(0));
         assertThrows(IndexOutOfBoundsException.class, ()->path.getEdge(0));
+        
+        assertEquals("Path{nodes=[], edges=[]}", path.toString());
     }
 
     @Test
@@ -57,6 +59,8 @@ public class PathTest {
         assertEquals(n, path.firstNode());
         assertEquals(n, path.lastNode());
         assertEquals(n, path.getNode(0));
+        
+        assertEquals("Path{nodes=[Node{labels=[], id=0, propertyMap={}}], edges=[]}", path.toString());
     }
 
     @Test
@@ -65,7 +69,7 @@ public class PathTest {
         Path path = buildPath(nodeCount);
         assertEquals(buildNodeArray(nodeCount), path.getNodes());
         assertEquals(buildEdgeArray(nodeCount-1), path.getEdges());
-        assertDoesNotThrow(()->path.getEdge(0));
+        assertDoesNotThrow(()->path.getEdge(0));        
     }
 
     @Test
