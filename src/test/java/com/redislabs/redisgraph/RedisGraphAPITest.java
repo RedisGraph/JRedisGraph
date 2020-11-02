@@ -2,6 +2,7 @@ package com.redislabs.redisgraph;
 
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -272,8 +273,8 @@ public class RedisGraphAPITest {
         Assert.assertEquals(0, resultSet.getStatistics().relationshipsCreated());
         Assert.assertEquals(0, resultSet.getStatistics().relationshipsDeleted());
         Assert.assertNotNull(resultSet.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME));
-
-
+        Assert.assertTrue(Pattern.matches("StatisticsImpl\\{statistics=\\{Cached execution=0, Query internal execution time=[0-9]*\\.[0-9]* milliseconds\\}\\}", resultSet.getStatistics().toString()));
+        
         Assert.assertEquals(1, resultSet.size());
         Assert.assertTrue(resultSet.hasNext());
         Record record = resultSet.next();
