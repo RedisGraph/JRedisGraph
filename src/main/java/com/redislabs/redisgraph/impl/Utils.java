@@ -31,18 +31,10 @@ public class Utils {
      * @return the input string surrounded with quotation marks, if needed
      */
     private static String quoteString(String str){
-        if(str.startsWith("\"") && str.endsWith("\"")){
-            return str;
-        }
-
         StringBuilder sb = new StringBuilder(str.length()+2);
-        if(str.charAt(0)!='"'){
-            sb.append('"');
-        }
-        sb.append(str);
-        if (str.charAt(str.length()-1)!= '"'){
-            sb.append('"');
-        }
+        sb.append('"');
+        sb.append(str.replace("\"","\\\""));
+        sb.append('"');
         return sb.toString();
     }
 
@@ -96,18 +88,19 @@ public class Utils {
     private static String valueToString(Object value) {
         if(value == null)
             return "null";
-        if(String.class.isInstance(value)){
+        
+        if(value instanceof String){
             return quoteString((String) value);
         }
-        if(Character.class.isInstance((value))){
+        if(value instanceof Character){
             return quoteString(((Character)value).toString());
         }
 
-        if(value.getClass().isArray()){
+        if(value instanceof Object[]){
             return arrayToString((Object[]) value);
 
         }
-        if(List.class.isInstance(value)){
+        if(value instanceof List){
             List<Object> list = (List<Object>)value;
             return arrayToString(list.toArray());
         }
