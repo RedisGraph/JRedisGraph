@@ -879,8 +879,8 @@ public class RedisGraphAPITest {
 
     @Test
     public void testParameters(){
-        Object[] parameters = {1, 2.3, true, false, null, "str", Arrays.asList(1,2,3), new Integer[]{1,2,3}};
-        Object[] expected_anwsers = {1L, 2.3, true, false, null, "str", Arrays.asList(1L, 2L, 3L), new Long[]{1L, 2L, 3L}};
+        Object[] parameters = {1, 2.3, true, false, null, "str", 'a', "b" ,Arrays.asList(1,2,3), new Integer[]{1,2,3}};
+        Object[] expected_anwsers = {1L, 2.3, true, false, null, "str", "a", "b", Arrays.asList(1L, 2L, 3L), new Long[]{1L, 2L, 3L}};
         Map<String, Object> params = new HashMap<>();
         for (int i=0; i < parameters.length; i++) {
             Object param = parameters[i];

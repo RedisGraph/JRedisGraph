@@ -40,6 +40,12 @@ public class UtilsTest {
   @Test
   public void testParamsPrep(){
     Map<String, Object> params = new HashMap<>();
+    params.put("param", "");
+    Assert.assertEquals("CYPHER param=\"\" RETURN $param", Utils.prepareQuery("RETURN $param", params));
+    params.put("param", "\"");
+    Assert.assertEquals("CYPHER param=\"\\\"\" RETURN $param", Utils.prepareQuery("RETURN $param", params));
+    params.put("param", "\"st");
+    Assert.assertEquals("CYPHER param=\"\\\"st\" RETURN $param", Utils.prepareQuery("RETURN $param", params));
     params.put("param", 1);
     Assert.assertEquals("CYPHER param=1 RETURN $param", Utils.prepareQuery("RETURN $param", params));
     params.put("param", 2.3);
@@ -52,6 +58,8 @@ public class UtilsTest {
     Assert.assertEquals("CYPHER param=null RETURN $param", Utils.prepareQuery("RETURN $param", params));
     params.put("param", "str");
     Assert.assertEquals("CYPHER param=\"str\" RETURN $param", Utils.prepareQuery("RETURN $param", params));
+    params.put("param", "s\"tr");
+    Assert.assertEquals("CYPHER param=\"s\\\"tr\" RETURN $param", Utils.prepareQuery("RETURN $param", params));
     Integer arr[] = {1,2,3};
     params.put("param", arr);
     Assert.assertEquals("CYPHER param=[1, 2, 3] RETURN $param", Utils.prepareQuery("RETURN $param", params));

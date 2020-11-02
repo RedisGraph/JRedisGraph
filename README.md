@@ -4,11 +4,12 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.redislabs/jredisgraph/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.redislabs/jredisgraph)
 [![Javadocs](https://www.javadoc.io/badge/com.redislabs/jredisgraph.svg)](https://www.javadoc.io/doc/com.redislabs/jredisgraph)
 [![Codecov](https://codecov.io/gh/RedisGraph/JRedisGraph/branch/master/graph/badge.svg)](https://codecov.io/gh/RedisGraph/JRedisGraph)
+[![Language grade: Java](https://img.shields.io/lgtm/grade/java/g/RedisGraph/JRedisGraph.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/RedisGraph/JRedisGraph/context:java)
 [![Known Vulnerabilities](https://snyk.io/test/github/RedisGraph/JRedisGraph/badge.svg?targetFile=pom.xml)](https://snyk.io/test/github/RedisGraph/JRedisGraph?targetFile=pom.xml)
 
 # JRedisGraph
 [![Forum](https://img.shields.io/badge/Forum-RedisGraph-blue)](https://forum.redislabs.com/c/modules/redisgraph)
-[![Gitter](https://badges.gitter.im/RedisLabs/RedisGraph.svg)](https://gitter.im/RedisLabs/RedisGraph?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Discord](https://img.shields.io/discord/697882427875393627?style=flat-square)](https://discord.gg/gWBRT6P)
 
 RedisGraph Java client
 
