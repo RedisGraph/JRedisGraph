@@ -313,7 +313,9 @@ public class RedisGraphAPITest {
         Assert.assertEquals( 32L, ((Long)record.getValue("a.age")).longValue());
         Assert.assertEquals( "roi", record.getString("a.name"));
         Assert.assertEquals( "32", record.getString("a.age"));
-
+        
+        Assert.assertTrue( record.containsKey("a.name"));
+        Assert.assertFalse( record.containsKey("a.addr"));
     }
 
 
