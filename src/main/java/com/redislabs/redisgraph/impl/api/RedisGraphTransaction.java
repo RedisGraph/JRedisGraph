@@ -96,7 +96,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      * @return response with result set with the procedure data
      */
     public Response<ResultSet> callProcedure(String graphId, String procedure){
-        return callProcedure(graphId, procedure, Utils.DUMMY_LIST, Utils.DUMMY_MAP);
+        return callProcedure(graphId, procedure, Utils.DUMMY_LIST);
     }
 
     /**
@@ -106,7 +106,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      * @param args procedure arguments
      * @return response with result set with the procedure data
      */
-    public Response<ResultSet> callProcedure(String graphId, String procedure, List<String> args  ){
+    public Response<ResultSet> callProcedure(String graphId, String procedure, List<String> args){
         return callProcedure(graphId, procedure, args, Utils.DUMMY_MAP);
     }
 
