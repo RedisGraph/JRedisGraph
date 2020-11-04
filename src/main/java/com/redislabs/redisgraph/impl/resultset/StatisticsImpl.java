@@ -13,19 +13,20 @@ import redis.clients.jedis.util.SafeEncoder;
  * Query result statistics interface implementation
  */
 public class StatisticsImpl implements Statistics  {
-	//members
-	private final List<byte[]> raw;
-	private final Map<Statistics.Label, String> statistics;
+  
+	private List<byte[]> raw;
+	private final Map<Statistics.Label, String> statistics = new EnumMap<>(Statistics.Label.class); // lazy loaded
 
+	public StatisticsImpl(){}
+	
 	/**
 	 * A raw representation of query execution statistics is a list of strings
 	 * (byte arrays which need to be de-serialized).
 	 * Each string is built in the form of "K:V" where K is statistics label and V is its value.
 	 * @param raw a raw representation of the query execution statistics
 	 */
-	StatisticsImpl(List<byte[]> raw){
-		this.raw = raw;
-		this.statistics = new EnumMap<>(Statistics.Label.class); // lazy loaded
+	public StatisticsImpl(List<byte[]> raw){
+	    this.raw = raw;
 	}
 
 
@@ -39,8 +40,11 @@ public class StatisticsImpl implements Statistics  {
 		return getStatistics().get(label);
 	}
 	
+	/**
+	 * Lazy parse statistics on first call 
+	 */
 	private Map<Statistics.Label, String> getStatistics(){
-		if(statistics.size() == 0) {		
+		if(statistics.size() == 0 && this.raw != null) {		
 			for(byte[]  tuple :  this.raw) {
 			    String text = SafeEncoder.encode(tuple);
 				String[] rowTuple = text.split(":");
@@ -146,13 +150,13 @@ public class StatisticsImpl implements Statistics  {
 		if (this == o) return true;
 		if (!(o instanceof StatisticsImpl)) return false;
 		StatisticsImpl that = (StatisticsImpl) o;
-		return Objects.equals(raw, that.raw) &&
+		return Objects.equals(this.raw, that.raw) &&
 				Objects.equals(getStatistics(), that.getStatistics());
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(raw, getStatistics());
+		return Objects.hash(this.raw, getStatistics());
 	}
 
 	@Override
@@ -162,4 +166,18 @@ public class StatisticsImpl implements Statistics  {
 		sb.append('}');
 		return sb.toString();
 	}
+
+
+  public List<byte[]> getRaw() {
+    return raw;
+  }
+
+
+  public void setRaw(List<byte[]> raw) {
+    this.raw = raw;
+    // if statistics already holds parsed data from raw, it needs to be cleared
+    if(this.statistics.size() > 0) {
+      this.statistics.clear();
+    }
+  }
 }
