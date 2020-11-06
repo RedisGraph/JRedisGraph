@@ -7,13 +7,21 @@ import com.redislabs.redisgraph.Record;
 
 public class RecordImpl implements Record {
 
-  private final List<String> header;
-  private final List<Object> values;
+    private final List<String> header;
+    private final List<Object> values;
 
-  RecordImpl(List<String> header, List<Object> values){
+ public RecordImpl(List<String> header, List<Object> values){
     this.header=header;
     this.values = values;
   }
+
+    public List<String> getHeader() {
+        return header;
+    }
+
+    public List<Object> getValues() {
+        return values;
+    }
 
   @Override
   public <T> T getValue(int index) {

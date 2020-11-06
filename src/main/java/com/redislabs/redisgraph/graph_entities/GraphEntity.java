@@ -15,6 +15,10 @@ public abstract class GraphEntity {
 
     //setters & getters
 
+    public Map<String, Property<?>> getPropertyMap() {
+        return propertyMap;
+    }
+
     /**
      * @return entity id
      */
