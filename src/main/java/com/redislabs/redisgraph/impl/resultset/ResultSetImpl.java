@@ -132,6 +132,10 @@ public class ResultSetImpl implements ResultSet {
         return header;
     }
 
+    @Override
+    public List<Record> getResults() {
+        return results;
+    }
 
     /**
      * @param rawNodeData - raw node object in the form of list of object

@@ -26,7 +26,7 @@ public class StatisticsImpl implements Statistics  {
 	 * @param raw a raw representation of the query execution statistics
 	 */
 	public StatisticsImpl(List<byte[]> raw){
-	    this.raw = raw;
+		this.raw = raw;
 	}
 
 
@@ -43,10 +43,10 @@ public class StatisticsImpl implements Statistics  {
 	/**
 	 * Lazy parse statistics on first call 
 	 */
-	private Map<Statistics.Label, String> getStatistics(){
+	public Map<Statistics.Label, String> getStatistics(){
 		if(statistics.size() == 0 && this.raw != null) {		
 			for(byte[]  tuple :  this.raw) {
-			    String text = SafeEncoder.encode(tuple);
+				String text = SafeEncoder.encode(tuple);
 				String[] rowTuple = text.split(":");
 				if(rowTuple.length == 2) {
 				  Statistics.Label label = Statistics.Label.getEnum(rowTuple[0]);
@@ -143,6 +143,15 @@ public class StatisticsImpl implements Statistics  {
 	@Override
 	public boolean cachedExecution() {
 		return getIntValue(Label.CACHED_EXECUTION) == 1;
+	}
+
+	/**
+	 *
+	 * @return The execution time for the Query.
+	 */
+	@Override
+	public String queryExecutionTime() {
+		return getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME);
 	}
 
 	@Override

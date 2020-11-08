@@ -41,6 +41,10 @@ public interface Statistics {
 	        }
 	        return null;
 	    }
+
+		public String getText() {
+			return text;
+		}
 	}
 	
 	/**
@@ -66,6 +70,8 @@ public interface Statistics {
 	int relationshipsCreated();
 	
 	int propertiesSet();
+
+	String queryExecutionTime();
 
 	boolean cachedExecution();
 }
