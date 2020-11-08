@@ -4,13 +4,16 @@ package com.redislabs.redisgraph;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
-import com.redislabs.redisgraph.graph_entities.Edge;
-import com.redislabs.redisgraph.graph_entities.Node;
-import com.redislabs.redisgraph.graph_entities.Path;
-import com.redislabs.redisgraph.graph_entities.Property;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.redislabs.redisgraph.graph_entities.*;
 import com.redislabs.redisgraph.impl.api.RedisGraph;
+import com.redislabs.redisgraph.impl.resultset.RecordImpl;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
+import com.redislabs.redisgraph.impl.resultset.StatisticsImpl;
 import com.redislabs.redisgraph.test.utils.PathBuilder;
 import org.junit.*;
 
@@ -223,13 +226,6 @@ public class RedisGraphAPITest {
         expectedNode.addProperty(doubleProperty);
         expectedNode.addProperty(trueBooleanProperty);
         expectedNode.addProperty(nullProperty);
-        Assert.assertEquals(
-            "Node{labels=[person], id=0, "
-            + "propertyMap={name=Property{name='name', value=roi}, "
-            + "boolValue=Property{name='boolValue', value=true}, "
-            + "doubleValue=Property{name='doubleValue', value=3.14}, "
-            + "nullValue=Property{name='nullValue', value=null}, "
-            + "age=Property{name='age', value=32}}}", expectedNode.toString());
 
         Edge expectedEdge = new Edge();
         expectedEdge.setId(0);
@@ -241,6 +237,11 @@ public class RedisGraphAPITest {
         expectedEdge.addProperty(doubleProperty);
         expectedEdge.addProperty(falseBooleanProperty);
         expectedEdge.addProperty(nullProperty);
+        Assert.assertEquals("{boolValue=Property{name='boolValue', value=false}, "
+                        + "place=Property{name='place', value=TLV}, "
+                        + "doubleValue=Property{name='doubleValue', value=3.14}, "
+                        + "nullValue=Property{name='nullValue', value=null}, "
+                        + "since=Property{name='since', value=2000}}",expectedEdge.getPropertyMap().toString());
         Assert.assertEquals("Edge{relationshipType='knows', source=0, destination=1, id=0, "
             + "propertyMap={boolValue=Property{name='boolValue', value=false}, "
             + "place=Property{name='place', value=TLV}, "
@@ -272,6 +273,8 @@ public class RedisGraphAPITest {
         Assert.assertEquals(0, resultSet.getStatistics().relationshipsCreated());
         Assert.assertEquals(0, resultSet.getStatistics().relationshipsDeleted());
         Assert.assertNotNull(resultSet.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME));
+        //Added the getQueryExecutionTime method
+        Assert.assertNotNull(resultSet.getStatistics().queryExecutionTime());
 
 
         Assert.assertEquals(1, resultSet.size());
@@ -972,5 +975,142 @@ public class RedisGraphAPITest {
         r = resultSet.next();
         Assert.assertEquals(params.get("val"), r.getValue(0));
         Assert.assertTrue(resultSet.getStatistics().cachedExecution());
+    }
+
+    @Test
+    public void testResultSetImplSerializable(){
+
+
+        String name = "roi";
+        int age = 32;
+        double doubleValue = 3.14;
+        boolean boolValue  = true;
+
+        String place = "TLV";
+        int since = 2000;
+
+        Property<String> nameProperty = new Property<>("name", name);
+        Property<Integer> ageProperty = new Property<>("age", age);
+        Property<Double> doubleProperty = new Property<>("doubleValue", doubleValue);
+        Property<Boolean> trueBooleanProperty = new Property<>("boolValue", true);
+        Property<Boolean> falseBooleanProperty = new Property<>("boolValue", false);
+        Property<?> nullProperty = new Property<>("nullValue", null);
+
+        Property<String> placeProperty = new Property<>("place", place);
+        Property<Integer> sinceProperty = new Property<>("since", since);
+
+        Node expectedNode = new Node();
+        expectedNode.setId(0);
+        expectedNode.addLabel("person");
+        expectedNode.addProperty(nameProperty);
+        expectedNode.addProperty(ageProperty);
+        expectedNode.addProperty(doubleProperty);
+        expectedNode.addProperty(trueBooleanProperty);
+        expectedNode.addProperty(nullProperty);
+
+        Edge expectedEdge = new Edge();
+        expectedEdge.setId(0);
+        expectedEdge.setSource(0);
+        expectedEdge.setDestination(1);
+        expectedEdge.setRelationshipType("knows");
+        expectedEdge.addProperty(placeProperty);
+        expectedEdge.addProperty(sinceProperty);
+        expectedEdge.addProperty(doubleProperty);
+        expectedEdge.addProperty(falseBooleanProperty);
+        expectedEdge.addProperty(nullProperty);
+        // PropertyMap getter tests
+        Assert.assertEquals("{name=Property{name='name', value=roi}, "
+                + "boolValue=Property{name='boolValue', value=true}, "
+                + "doubleValue=Property{name='doubleValue', value=3.14}, "
+                + "nullValue=Property{name='nullValue', value=null}, "
+                + "age=Property{name='age', value=32}}",expectedNode.getPropertyMap().toString());
+
+        Assert.assertEquals(
+                "Node{labels=[person], id=0, "
+                        + "propertyMap={name=Property{name='name', value=roi}, "
+                        + "boolValue=Property{name='boolValue', value=true}, "
+                        + "doubleValue=Property{name='doubleValue', value=3.14}, "
+                        + "nullValue=Property{name='nullValue', value=null}, "
+                        + "age=Property{name='age', value=32}}}", expectedNode.toString());
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("age", age);
+        params.put("boolValue", boolValue);
+        params.put("doubleValue", doubleValue);
+
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:$name,age:$age, doubleValue:$doubleValue, boolValue:$boolValue, nullValue:null})", params));
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
+        Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  " +
+                "CREATE (a)-[:knows{place:'TLV', since:2000,doubleValue:3.14, boolValue:false, nullValue:null}]->(b)"));
+
+
+
+        ResultSet resultSet = api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, " +
+                "a.name, a.age, a.doubleValue, a.boolValue, a.nullValue, " +
+                "r.place, r.since, r.doubleValue, r.boolValue, r.nullValue");
+        Assert.assertNotNull(resultSet);
+        //New ResultSet.getResults() Method test
+        Assert.assertNotNull(resultSet.getResults());
+        Assert.assertEquals(1,resultSet.getResults().size());
+
+        Assert.assertFalse(resultSet.getResults().isEmpty());
+        Record record = resultSet.next();
+        Assert.assertFalse(resultSet.hasNext());
+
+
+
+        Node node = record.getValue(0);
+        Node node2 = resultSet.getResults().get(0).getValue(0);
+        Assert.assertNotNull(node);
+        Assert.assertNotNull(node2);
+        Assert.assertEquals(node,node2);
+
+        Assert.assertEquals(expectedNode, node2);
+
+        node = resultSet.getResults().get(0).getValue("a");
+        Assert.assertEquals(expectedNode, node);
+
+        Edge edge = resultSet.getResults().get(0).getValue(1);
+        Assert.assertNotNull(edge);
+        Assert.assertEquals(expectedEdge, edge);
+
+        edge = resultSet.getResults().get(0).getValue("r");
+        Assert.assertEquals(expectedEdge, edge);
+
+        Assert.assertEquals(Arrays.asList("a", "r", "a.name", "a.age", "a.doubleValue", "a.boolValue", "a.nullValue",
+                "r.place", "r.since", "r.doubleValue", "r.boolValue", "r.nullValue"), resultSet.getResults().get(0).keys());
+        //Serialization tests
+        ObjectMapper mapper = new ObjectMapper();
+
+
+            Assert.assertTrue((mapper.canSerialize(StatisticsImpl.class)));
+            Assert.assertTrue((mapper.canSerialize(RecordImpl.class)));
+            Assert.assertTrue((mapper.canSerialize(GraphEntity.class)));
+            Assert.assertTrue((mapper.canSerialize(ResultSetImpl.class)));
+            Assert.assertTrue((mapper.canSerialize(Property.class)));
+            Assert.assertTrue((mapper.canSerialize(Node.class)));
+            Assert.assertTrue((mapper.canSerialize(Edge.class)));
+            Assert.assertTrue((mapper.canSerialize(Path.class)));
+            Assert.assertTrue((mapper.canSerialize(ResultSet.class)));
+           // Assert.assertTrue((mapper.canSerialize(Statistics.class)));
+           // Assert.assertTrue((mapper.canSerialize(Record.class)));
+
+
+
+
+        Node a = record.getValue("a");
+        for (String propertyName : expectedNode.getEntityPropertyNames()){
+            Assert.assertEquals(expectedNode.getProperty(propertyName) ,a.getProperty(propertyName));
+        }
+
+        Assert.assertEquals( "roi", record.getString(2));
+        Assert.assertEquals( "32", record.getString(3));
+        Assert.assertEquals( 32L, ((Long)record.getValue(3)).longValue());
+        Assert.assertEquals( 32L, ((Long)record.getValue("a.age")).longValue());
+        Assert.assertEquals( "roi", record.getString("a.name"));
+        Assert.assertEquals( "32", record.getString("a.age"));
+
+
     }
 }
