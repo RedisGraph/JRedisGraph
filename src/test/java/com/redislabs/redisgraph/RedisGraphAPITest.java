@@ -4,11 +4,11 @@ package com.redislabs.redisgraph;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import com.fasterxml.jackson.databind.MapperFeature;
+import com.redislabs.redisgraph.graph_entities.Edge;
+import com.redislabs.redisgraph.graph_entities.Node;
+import com.redislabs.redisgraph.graph_entities.Path;
+import com.redislabs.redisgraph.graph_entities.Property;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.redislabs.redisgraph.graph_entities.*;
 import com.redislabs.redisgraph.impl.api.RedisGraph;
 import com.redislabs.redisgraph.impl.resultset.RecordImpl;
@@ -618,6 +618,13 @@ public class RedisGraphAPITest {
         expectedNode.addProperty(doubleProperty);
         expectedNode.addProperty(trueBooleanProperty);
         expectedNode.addProperty(nullProperty);
+        Assert.assertEquals(
+                "Node{labels=[person], id=0, "
+                        + "propertyMap={name=Property{name='name', value=roi}, "
+                        + "boolValue=Property{name='boolValue', value=true}, "
+                        + "doubleValue=Property{name='doubleValue', value=3.14}, "
+                        + "nullValue=Property{name='nullValue', value=null}, "
+                        + "age=Property{name='age', value=32}}}", expectedNode.toString());
 
         Edge expectedEdge = new Edge();
         expectedEdge.setId(0);
@@ -629,6 +636,12 @@ public class RedisGraphAPITest {
         expectedEdge.addProperty(doubleProperty);
         expectedEdge.addProperty(falseBooleanProperty);
         expectedEdge.addProperty(nullProperty);
+        Assert.assertEquals("Edge{relationshipType='knows', source=0, destination=1, id=0, "
+                + "propertyMap={boolValue=Property{name='boolValue', value=false}, "
+                + "place=Property{name='place', value=TLV}, "
+                + "doubleValue=Property{name='doubleValue', value=3.14}, "
+                + "nullValue=Property{name='nullValue', value=null}, "
+                + "since=Property{name='since', value=2000}}}", expectedEdge.toString());
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
@@ -1096,20 +1109,6 @@ public class RedisGraphAPITest {
            // Assert.assertTrue((mapper.canSerialize(Statistics.class)));
            // Assert.assertTrue((mapper.canSerialize(Record.class)));
 
-
-
-
-        Node a = record.getValue("a");
-        for (String propertyName : expectedNode.getEntityPropertyNames()){
-            Assert.assertEquals(expectedNode.getProperty(propertyName) ,a.getProperty(propertyName));
-        }
-
-        Assert.assertEquals( "roi", record.getString(2));
-        Assert.assertEquals( "32", record.getString(3));
-        Assert.assertEquals( 32L, ((Long)record.getValue(3)).longValue());
-        Assert.assertEquals( 32L, ((Long)record.getValue("a.age")).longValue());
-        Assert.assertEquals( "roi", record.getString("a.name"));
-        Assert.assertEquals( "32", record.getString("a.age"));
 
 
     }
