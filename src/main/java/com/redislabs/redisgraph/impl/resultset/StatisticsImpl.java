@@ -23,7 +23,7 @@ public class StatisticsImpl implements Statistics  {
 	 * Each string is built in the form of "K:V" where K is statistics label and V is its value.
 	 * @param raw a raw representation of the query execution statistics
 	 */
-	StatisticsImpl(List<byte[]> raw){
+	public StatisticsImpl(List<byte[]> raw){
 		this.raw = raw;
 		this.statistics = new EnumMap<>(Statistics.Label.class); // lazy loaded
 	}
