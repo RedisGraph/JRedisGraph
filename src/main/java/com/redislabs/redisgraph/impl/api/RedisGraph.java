@@ -69,6 +69,21 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
         }
     }
 
+    /**
+     * Overrides the abstract function.
+     * Sends the query from any Jedis connection received from the Jedis pool and closes it once done
+     * @param graphId graph to be queried
+     * @param preparedQuery prepared query
+     * @param timeout
+     * @return Result set with the query answer
+     */
+    @Override
+    protected ResultSet sendQuery(String graphId, String preparedQuery, long timeout){
+        try (ContextedRedisGraph contextedRedisGraph = new ContextedRedisGraph(getConnection())) {
+            contextedRedisGraph.setRedisGraphCaches(caches);
+            return contextedRedisGraph.sendQuery(graphId, preparedQuery, timeout);
+        }
+    }
 
     /**
      * Closes the Jedis pool

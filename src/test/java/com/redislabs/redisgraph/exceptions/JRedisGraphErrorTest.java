@@ -138,4 +138,12 @@ public class JRedisGraphErrorTest {
         }
 
     }
+
+    @Test
+    public void timeoutExcpetion() {
+        exceptionRule.expect(JRedisGraphRunTimeException.class);
+        exceptionRule.expectMessage("Query timed out");
+
+        api.query("social", "UNWIND range(0,100000) AS x WITH x AS x WHERE x = 10000 RETURN x", 1L);
+    }
 }
