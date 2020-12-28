@@ -211,7 +211,6 @@ public class RedisGraphAPITest {
         Property<Double> doubleProperty = new Property<>("doubleValue", doubleValue);
         Property<Boolean> trueBooleanProperty = new Property<>("boolValue", true);
         Property<Boolean> falseBooleanProperty = new Property<>("boolValue", false);
-        Property<?> nullProperty = new Property<>("nullValue", null);
 
         Property<String> placeProperty = new Property<>("place", place);
         Property<Integer> sinceProperty = new Property<>("since", since);
@@ -223,13 +222,11 @@ public class RedisGraphAPITest {
         expectedNode.addProperty(ageProperty);
         expectedNode.addProperty(doubleProperty);
         expectedNode.addProperty(trueBooleanProperty);
-        expectedNode.addProperty(nullProperty);
         Assert.assertEquals(
             "Node{labels=[person], id=0, "
             + "propertyMap={name=Property{name='name', value=roi}, "
             + "boolValue=Property{name='boolValue', value=true}, "
             + "doubleValue=Property{name='doubleValue', value=3.14}, "
-            + "nullValue=Property{name='nullValue', value=null}, "
             + "age=Property{name='age', value=32}}}", expectedNode.toString());
 
         Edge expectedEdge = new Edge();
@@ -241,12 +238,10 @@ public class RedisGraphAPITest {
         expectedEdge.addProperty(sinceProperty);
         expectedEdge.addProperty(doubleProperty);
         expectedEdge.addProperty(falseBooleanProperty);
-        expectedEdge.addProperty(nullProperty);
         Assert.assertEquals("Edge{relationshipType='knows', source=0, destination=1, id=0, "
             + "propertyMap={boolValue=Property{name='boolValue', value=false}, "
             + "place=Property{name='place', value=TLV}, "
             + "doubleValue=Property{name='doubleValue', value=3.14}, "
-            + "nullValue=Property{name='nullValue', value=null}, "
             + "since=Property{name='since', value=2000}}}", expectedEdge.toString());
 
         Map<String, Object> params = new HashMap<>();
@@ -255,14 +250,14 @@ public class RedisGraphAPITest {
         params.put("boolValue", boolValue);
         params.put("doubleValue", doubleValue);
 
-        Assert.assertNotNull(api.query("social", "CREATE (:person{name:$name,age:$age, doubleValue:$doubleValue, boolValue:$boolValue, nullValue:null})", params));
+        Assert.assertNotNull(api.query("social", "CREATE (:person{name:$name,age:$age, doubleValue:$doubleValue, boolValue:$boolValue})", params));
         Assert.assertNotNull(api.query("social", "CREATE (:person{name:'amit',age:30})"));
         Assert.assertNotNull(api.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  " +
-                "CREATE (a)-[:knows{place:'TLV', since:2000,doubleValue:3.14, boolValue:false, nullValue:null}]->(b)"));
+                "CREATE (a)-[:knows{place:'TLV', since:2000,doubleValue:3.14, boolValue:false}]->(b)"));
 
         ResultSet resultSet = api.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, " +
-                "a.name, a.age, a.doubleValue, a.boolValue, a.nullValue, " +
-                "r.place, r.since, r.doubleValue, r.boolValue, r.nullValue");
+                "a.name, a.age, a.doubleValue, a.boolValue, " +
+                "r.place, r.since, r.doubleValue, r.boolValue");
         Assert.assertNotNull(resultSet);
 
 
@@ -298,12 +293,12 @@ public class RedisGraphAPITest {
         edge = record.getValue("r");
         Assert.assertEquals(expectedEdge, edge);
 
-        Assert.assertEquals(Arrays.asList("a", "r", "a.name", "a.age", "a.doubleValue", "a.boolValue", "a.nullValue",
-                "r.place", "r.since", "r.doubleValue", "r.boolValue", "r.nullValue"), record.keys());
+        Assert.assertEquals(Arrays.asList("a", "r", "a.name", "a.age", "a.doubleValue", "a.boolValue",
+                "r.place", "r.since", "r.doubleValue", "r.boolValue"), record.keys());
 
         Assert.assertEquals(Arrays.asList(expectedNode, expectedEdge,
-                name, (long)age, doubleValue, true, null,
-                place, (long)since, doubleValue, false, null),
+                name, (long)age, doubleValue, true,
+                place, (long)since, doubleValue, false),
                 record.values());
 
         Node a = record.getValue("a");
@@ -623,7 +618,6 @@ public class RedisGraphAPITest {
         Property<Double> doubleProperty = new Property<>("doubleValue", doubleValue);
         Property<Boolean> trueBooleanProperty = new Property<>("boolValue", true);
         Property<Boolean> falseBooleanProperty = new Property<>("boolValue", false);
-        Property<?> nullProperty = new Property<>("nullValue", null);
 
         Property<String> placeProperty = new Property<>("place", place);
         Property<Integer> sinceProperty = new Property<>("since", since);
@@ -635,7 +629,6 @@ public class RedisGraphAPITest {
         expectedNode.addProperty(ageProperty);
         expectedNode.addProperty(doubleProperty);
         expectedNode.addProperty(trueBooleanProperty);
-        expectedNode.addProperty(nullProperty);
 
         Edge expectedEdge = new Edge();
         expectedEdge.setId(0);
@@ -646,7 +639,6 @@ public class RedisGraphAPITest {
         expectedEdge.addProperty(sinceProperty);
         expectedEdge.addProperty(doubleProperty);
         expectedEdge.addProperty(falseBooleanProperty);
-        expectedEdge.addProperty(nullProperty);
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
@@ -654,14 +646,14 @@ public class RedisGraphAPITest {
         params.put("boolValue", boolValue);
         params.put("doubleValue", doubleValue);
         try (RedisGraphContext c = api.getContext()) {
-            Assert.assertNotNull(c.query("social", "CREATE (:person{name:$name, age:$age, doubleValue:$doubleValue, boolValue:$boolValue, nullValue:null})", params));
+            Assert.assertNotNull(c.query("social", "CREATE (:person{name:$name, age:$age, doubleValue:$doubleValue, boolValue:$boolValue})", params));
             Assert.assertNotNull(c.query("social", "CREATE (:person{name:'amit',age:30})"));
             Assert.assertNotNull(c.query("social", "MATCH (a:person), (b:person) WHERE (a.name = 'roi' AND b.name='amit')  " +
-                    "CREATE (a)-[:knows{place:'TLV', since:2000,doubleValue:3.14, boolValue:false, nullValue:null}]->(b)"));
+                    "CREATE (a)-[:knows{place:'TLV', since:2000,doubleValue:3.14, boolValue:false}]->(b)"));
 
             ResultSet resultSet = c.query("social", "MATCH (a:person)-[r:knows]->(b:person) RETURN a,r, " +
-                    "a.name, a.age, a.doubleValue, a.boolValue, a.nullValue, " +
-                    "r.place, r.since, r.doubleValue, r.boolValue, r.nullValue");
+                    "a.name, a.age, a.doubleValue, a.boolValue, " +
+                    "r.place, r.since, r.doubleValue, r.boolValue");
             Assert.assertNotNull(resultSet);
 
             Assert.assertEquals(0, resultSet.getStatistics().nodesCreated());
@@ -692,12 +684,12 @@ public class RedisGraphAPITest {
             edge = record.getValue("r");
             Assert.assertEquals(expectedEdge, edge);
 
-            Assert.assertEquals(Arrays.asList("a", "r", "a.name", "a.age", "a.doubleValue", "a.boolValue", "a.nullValue",
-                    "r.place", "r.since", "r.doubleValue", "r.boolValue", "r.nullValue"), record.keys());
+            Assert.assertEquals(Arrays.asList("a", "r", "a.name", "a.age", "a.doubleValue", "a.boolValue",
+                    "r.place", "r.since", "r.doubleValue", "r.boolValue"), record.keys());
 
             Assert.assertEquals(Arrays.asList(expectedNode, expectedEdge,
-                    name, (long)age, doubleValue, true, null,
-                    place, (long)since, doubleValue, false, null),
+                    name, (long)age, doubleValue, true,
+                    place, (long)since, doubleValue, false),
                     record.values());
 
             Node a = record.getValue("a");
