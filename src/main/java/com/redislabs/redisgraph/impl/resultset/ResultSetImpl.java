@@ -12,11 +12,13 @@ import redis.clients.jedis.util.SafeEncoder;
 import redis.clients.jedis.exceptions.JedisDataException;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class ResultSetImpl implements ResultSet {
+    
 
     private final Header header;
     private final Statistics statistics;
@@ -275,11 +277,13 @@ public class ResultSetImpl implements ResultSet {
     }
 
     @Override
+    @Deprecated
     public boolean hasNext() {
         return position < results.size();
     }
 
     @Override
+    @Deprecated
     public Record next() {
         if (!hasNext())
             throw new NoSuchElementException();
@@ -316,4 +320,11 @@ public class ResultSetImpl implements ResultSet {
         sb.append('}');
         return sb.toString();
     }
+
+
+	@Override
+	public Iterator<Record> iterator() {
+		// TODO Auto-generated method stub
+		return results.iterator();
+	}
 }
