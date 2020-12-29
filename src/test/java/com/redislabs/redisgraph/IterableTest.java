@@ -8,7 +8,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-public class testIterable {
+public class IterableTest {
 
   private RedisGraphContextGenerator api;
 
