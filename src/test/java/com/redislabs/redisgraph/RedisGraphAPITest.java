@@ -2,6 +2,7 @@ package com.redislabs.redisgraph;
 
 
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -267,8 +268,8 @@ public class RedisGraphAPITest {
         Assert.assertEquals(0, resultSet.getStatistics().relationshipsCreated());
         Assert.assertEquals(0, resultSet.getStatistics().relationshipsDeleted());
         Assert.assertNotNull(resultSet.getStatistics().getStringValue(Label.QUERY_INTERNAL_EXECUTION_TIME));
-
-
+        Assert.assertTrue(Pattern.matches("StatisticsImpl\\{statistics=\\{Cached execution=0, Query internal execution time=[0-9]*\\.[0-9]* milliseconds\\}\\}", resultSet.getStatistics().toString()));
+        
         Assert.assertEquals(1, resultSet.size());
         Assert.assertTrue(resultSet.hasNext());
         Record record = resultSet.next();
@@ -285,6 +286,9 @@ public class RedisGraphAPITest {
         Edge edge = record.getValue(1);
         Assert.assertNotNull(edge);
         Assert.assertEquals(expectedEdge, edge);
+        Assert.assertEquals(1, edge.getDestination());
+        Assert.assertEquals(0, edge.getSource());
+        Assert.assertEquals("knows", edge.getRelationshipType());
 
         edge = record.getValue("r");
         Assert.assertEquals(expectedEdge, edge);
@@ -308,7 +312,24 @@ public class RedisGraphAPITest {
         Assert.assertEquals( 32L, ((Long)record.getValue("a.age")).longValue());
         Assert.assertEquals( "roi", record.getString("a.name"));
         Assert.assertEquals( "32", record.getString("a.age"));
-
+        
+        Assert.assertTrue( record.containsKey("a.name"));
+        Assert.assertFalse( record.containsKey("a.addr"));
+        Assert.assertEquals("Record{"
+            + "values=[Node{labels=[person], id=0, propertyMap={"
+            + "name=Property{name='name', value=roi}, "
+            + "boolValue=Property{name='boolValue', value=true}, "
+            + "doubleValue=Property{name='doubleValue', value=3.14}, "
+            + "nullValue=Property{name='nullValue', value=null}, "
+            + "age=Property{name='age', value=32}}}, "
+            + "Edge{relationshipType='knows', source=0, destination=1, id=0, "
+            + "propertyMap={boolValue=Property{name='boolValue', value=false}, "
+            + "place=Property{name='place', value=TLV}, "
+            + "doubleValue=Property{name='doubleValue', value=3.14}, "
+            + "nullValue=Property{name='nullValue', value=null}, "
+            + "since=Property{name='since', value=2000}}}, "
+            + "roi, 32, 3.14, true, null, TLV, 2000, 3.14, false, null]"
+            + "}", record.toString());
     }
 
 
