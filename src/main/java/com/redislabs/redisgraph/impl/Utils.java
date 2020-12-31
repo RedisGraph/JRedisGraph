@@ -115,7 +115,9 @@ public class Utils {
      * @return formatter procedure call
      */
     public static String prepareProcedure(String procedure, List<String> args  , Map<String, List<String>> kwargs){
-        args = args.stream().map( Utils::quoteString).collect(Collectors.toList());
+        for (int i = 0; i < args.size(); i++) {
+            args.set(i, quoteString(args.get(i)));
+        }
         StringBuilder queryStringBuilder =  new StringBuilder();
         queryStringBuilder.append("CALL ").append(procedure).append('(');
         int i = 0;
