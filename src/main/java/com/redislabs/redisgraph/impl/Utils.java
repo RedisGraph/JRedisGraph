@@ -14,6 +14,7 @@ public class Utils {
     public static final List<String> DUMMY_LIST = new ArrayList<>(0);
     public static final Map<String, List<String>> DUMMY_MAP = new HashMap<>(0);
     public static final String COMPACT_STRING = "--COMPACT";
+    public static final String TIMEOUT_STRING = "TIMEOUT";
 
     private static final CharSequenceTranslator ESCAPE_CHYPER;
     static {

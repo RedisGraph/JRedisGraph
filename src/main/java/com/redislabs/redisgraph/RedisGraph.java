@@ -14,6 +14,14 @@ public interface RedisGraph extends Closeable {
      */
     ResultSet query(String graphId, String query);
 
+    /**
+     * Execute a Cypher query with timeout.
+     * @param graphId a graph to perform the query on
+     * @param query Cypher query
+     * @param timeout
+     * @return a result set
+     */
+    ResultSet query(String graphId, String query, long timeout);
 
     /**
      * Execute a Cypher query with arguments
@@ -34,6 +42,16 @@ public interface RedisGraph extends Closeable {
      * @return a result set.
      */
     ResultSet query(String graphId, String query, Map<String, Object> params);
+
+    /**
+     * Executes a cypher query with parameters and timeout.
+     * @param graphId a graph to perform the query on.
+     * @param query Cypher query.
+     * @param params parameters map.
+     * @param timeout
+     * @return a result set.
+     */
+    ResultSet query(String graphId, String query, Map<String, Object> params, long timeout);
 
     /**
      * Invokes stored procedures without arguments
