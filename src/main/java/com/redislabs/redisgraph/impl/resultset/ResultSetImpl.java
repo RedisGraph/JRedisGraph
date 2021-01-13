@@ -11,11 +11,7 @@ import com.redislabs.redisgraph.impl.graph_cache.GraphCache;
 import redis.clients.jedis.util.SafeEncoder;
 import redis.clients.jedis.exceptions.JedisDataException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 
 public class ResultSetImpl implements ResultSet {
     
@@ -244,10 +240,23 @@ public class ResultSetImpl implements ResultSet {
                 return deserializeEdge((List<Object>) obj);
             case VALUE_PATH:
                 return deserializePath(obj);
+            case VALUE_MAP:
+                return deserializeMap(obj);
             case VALUE_UNKNOWN:
             default:
                 return obj;
         }
+    }
+
+    private Map<String, Object> deserializeMap(Object rawScalarData) {
+        List<List<Object>> keyTypeValueEntries = (List<List<Object>>) rawScalarData;
+        Map<String, Object> map = new HashMap<>();
+        for(List<Object> keyTypeValueEntry : keyTypeValueEntries) {
+            String key = SafeEncoder.encode((byte[])keyTypeValueEntry.get(0));
+            Object value = deserializeScalar((List<Object>)keyTypeValueEntry.get(1));
+            map.put(key, value);
+        }
+        return map;
     }
 
     private Path deserializePath(Object rawScalarData) {

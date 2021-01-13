@@ -965,4 +965,27 @@ public class RedisGraphAPITest {
         Assert.assertEquals(params.get("val"), r.getValue(0));
         Assert.assertTrue(resultSet.getStatistics().cachedExecution());
     }
+
+    @Test
+    public void testMapDataType() {
+        Map<String, Object> expexted = new HashMap<>();
+        expexted.put("a", (long)1);
+        expexted.put("b", "str");
+        expexted.put("c", null);
+        List<Object> d = new ArrayList<>();
+        d.add((long)1);
+        d.add((long)2);
+        d.add((long)3);
+        expexted.put("d", d);
+        expexted.put("e", true);
+        Map<String, Object>f = new HashMap<>();
+        f.put("x", (long)1);
+        f.put("y", (long)2);
+        expexted.put("f", f);
+        ResultSet res = api.query("social",  "RETURN {a:1, b:'str', c:NULL, d:[1,2,3], e:True, f:{x:1, y:2}}");
+        Assert.assertEquals(1, res.size());
+        Record r = res.next();
+        Map<String, Object> actual = r.getValue(0);
+        Assert.assertEquals(expexted, actual);
+    }
 }
