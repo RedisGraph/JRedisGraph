@@ -48,6 +48,26 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     }
 
     /**
+     * Execute a Cypher query with timeout.
+     *
+     * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
+     * @param graphId a graph to perform the query on
+     * @param query Cypher query
+     * @param timeout
+     * @return a response which builds the result set with the query answer.
+     */
+    @Override
+    public Response<ResultSet> query(String graphId, String query, long timeout) {
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, query, "--COMPACT", "TIMEOUT", Long.toString(timeout));
+        return getResponse(new Builder<ResultSet>() {
+            @Override
+            public ResultSet build(Object o) {
+                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+            }
+        });
+    }
+
+    /**
      * Execute a Cypher query with arguments
      *
      * @param graphId a graph to perform the query on
@@ -88,6 +108,28 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
         });
     }
 
+    /**
+     * Executes a cypher query with parameters and timeout.
+     *
+     * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
+     * timeout.
+     * @param graphId a graph to perform the query on.
+     * @param query Cypher query.
+     * @param params parameters map.
+     * @param timeout
+     * @return  a response which builds the result set with the query answer.
+     */
+    @Override
+    public Response<ResultSet> query(String graphId, String query, Map<String, Object> params, long timeout) {
+        String preparedQuery = Utils.prepareQuery(query, params);
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, "--COMPACT", "TIMEOUT", Long.toString(timeout));
+        return getResponse(new Builder<ResultSet>() {
+            @Override
+            public ResultSet build(Object o) {
+                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+            }
+        });
+    }
 
     /**
      * Invokes stored procedures without arguments, in multi/exec context
