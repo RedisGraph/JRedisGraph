@@ -15,6 +15,14 @@ public interface RedisGraph extends Closeable {
     ResultSet query(String graphId, String query);
 
     /**
+     * Execute a Cypher read-only query.
+     * @param graphId a graph to perform the query on
+     * @param query Cypher query
+     * @return a result set
+     */
+    ResultSet queryReadOnly(String graphId, String query);
+
+    /**
      * Execute a Cypher query with timeout.
      * @param graphId a graph to perform the query on
      * @param query Cypher query
@@ -22,6 +30,16 @@ public interface RedisGraph extends Closeable {
      * @return a result set
      */
     ResultSet query(String graphId, String query, long timeout);
+
+    /**
+     * Execute a Cypher read-only query with timeout.
+     * @param graphId a graph to perform the query on
+     * @param query Cypher query
+     * @param timeout
+     * @return a result set
+     */
+    ResultSet queryReadOnly(String graphId, String query, long timeout);
+
 
     /**
      * Execute a Cypher query with arguments
@@ -35,6 +53,17 @@ public interface RedisGraph extends Closeable {
     ResultSet query(String graphId, String query, Object ...args);
 
     /**
+     * Execute a Cypher read-only query with arguments
+     * @param graphId a graph to perform the query on
+     * @param query Cypher query
+     * @param args
+     * @return a result set
+     * @deprecated use {@link #query(String, String, Map)} instead.
+     */
+    @Deprecated
+    ResultSet queryReadOnly(String graphId, String query, Object ...args);
+
+    /**
      * Executes a cypher query with parameters.
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.
@@ -42,6 +71,15 @@ public interface RedisGraph extends Closeable {
      * @return a result set.
      */
     ResultSet query(String graphId, String query, Map<String, Object> params);
+
+    /**
+     * Executes a cypher read-only query with parameters.
+     * @param graphId a graph to perform the query on.
+     * @param query Cypher query.
+     * @param params parameters map.
+     * @return a result set.
+     */
+    ResultSet queryReadOnly(String graphId, String query, Map<String, Object> params);
 
     /**
      * Executes a cypher query with parameters and timeout.
@@ -52,6 +90,16 @@ public interface RedisGraph extends Closeable {
      * @return a result set.
      */
     ResultSet query(String graphId, String query, Map<String, Object> params, long timeout);
+
+    /**
+     * Executes a cypher read-only query with parameters and timeout.
+     * @param graphId a graph to perform the query on.
+     * @param query Cypher query.
+     * @param params parameters map.
+     * @param timeout
+     * @return a result set.
+     */
+    ResultSet queryReadOnly(String graphId, String query, Map<String, Object> params, long timeout);
 
     /**
      * Invokes stored procedures without arguments

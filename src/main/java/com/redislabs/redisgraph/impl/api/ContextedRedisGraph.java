@@ -61,6 +61,27 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
     }
 
     /**
+     * Sends the read-only query over the instance only connection
+     * @param graphId graph to be queried
+     * @param preparedQuery prepared query
+     * @return Result set with the query answer
+     */
+    @Override
+    protected ResultSet sendReadOnlyQuery(String graphId, String preparedQuery) {
+        Jedis conn = getConnection();
+        try {
+            List<Object> rawResponse = (List<Object>) conn.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
+            return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
+        }
+        catch (JRedisGraphRunTimeException rt) {
+            throw rt;
+        }
+        catch (JedisDataException j) {
+            throw new JRedisGraphCompileTimeException(j);
+        }
+    }
+
+    /**
      * Sends the query over the instance only connection
      * @param graphId graph to be queried
      * @param timeout
@@ -73,6 +94,29 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
         try {
             List<Object> rawResponse = (List<Object>) conn.sendBlockingCommand(RedisGraphCommand.QUERY,
                 graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
+            return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
+        }
+        catch (JRedisGraphRunTimeException rt) {
+            throw rt;
+        }
+        catch (JedisDataException j) {
+            throw new JRedisGraphCompileTimeException(j);
+        }
+    }
+
+    /**
+     * Sends the read-only query over the instance only connection
+     * @param graphId graph to be queried
+     * @param timeout
+     * @param preparedQuery prepared query
+     * @return Result set with the query answer
+     */
+    @Override
+    protected ResultSet sendReadOnlyQuery(String graphId, String preparedQuery, long timeout) {
+        Jedis conn = getConnection();
+        try {
+            List<Object> rawResponse = (List<Object>) conn.sendBlockingCommand(RedisGraphCommand.RO_QUERY,
+                    graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
             return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
         }
         catch (JRedisGraphRunTimeException rt) {

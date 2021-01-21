@@ -71,6 +71,21 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
 
     /**
      * Overrides the abstract function.
+     * Sends the read-only query from any Jedis connection received from the Jedis pool and closes it once done
+     * @param graphId graph to be queried
+     * @param preparedQuery prepared query
+     * @return Result set with the query answer
+     */
+    @Override
+    protected ResultSet sendReadOnlyQuery(String graphId, String preparedQuery){
+        try (ContextedRedisGraph contextedRedisGraph = new ContextedRedisGraph(getConnection())) {
+            contextedRedisGraph.setRedisGraphCaches(caches);
+            return contextedRedisGraph.sendReadOnlyQuery(graphId, preparedQuery);
+        }
+    }
+
+    /**
+     * Overrides the abstract function.
      * Sends the query from any Jedis connection received from the Jedis pool and closes it once done
      * @param graphId graph to be queried
      * @param preparedQuery prepared query
@@ -82,6 +97,22 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
         try (ContextedRedisGraph contextedRedisGraph = new ContextedRedisGraph(getConnection())) {
             contextedRedisGraph.setRedisGraphCaches(caches);
             return contextedRedisGraph.sendQuery(graphId, preparedQuery, timeout);
+        }
+    }
+
+    /**
+     * Overrides the abstract function.
+     * Sends the read-only query from any Jedis connection received from the Jedis pool and closes it once done
+     * @param graphId graph to be queried
+     * @param preparedQuery prepared query
+     * @param timeout
+     * @return Result set with the query answer
+     */
+    @Override
+    protected ResultSet sendReadOnlyQuery(String graphId, String preparedQuery, long timeout){
+        try (ContextedRedisGraph contextedRedisGraph = new ContextedRedisGraph(getConnection())) {
+            contextedRedisGraph.setRedisGraphCaches(caches);
+            return contextedRedisGraph.sendReadOnlyQuery(graphId, preparedQuery, timeout);
         }
     }
 

@@ -479,6 +479,8 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(api.query("social", "CREATE (:escaped{s1:%s,s2:%s})", "S\"'", "S'\""));
         Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1=%s and n.s2=%s RETURN n", "S\"'", "S'\""));
         Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1='S\"' RETURN n"));
+        Assert.assertNotNull(api.queryReadOnly("social", "MATCH (n) where n.s1='S\"' RETURN n"));
+
     }
 
     @Test
@@ -866,14 +868,19 @@ public class RedisGraphAPITest {
             Object param = parameters[i];
             params.put("param", param);
             ResultSet resultSet = api.query("social", "RETURN $param", params);
+            ResultSet resultSetRo = api.queryReadOnly("social", "RETURN $param", params);
             Assert.assertEquals(1, resultSet.size());
+            Assert.assertEquals(1, resultSetRo.size());
             Record r = resultSet.next();
+            Record rRo = resultSetRo.next();
             Object o = r.getValue(0);
+            Object oRo = rRo.getValue(0);
             Object expected = expected_anwsers[i];
             if(i == parameters.length-1) {
                 expected = Arrays.asList((Object[])expected);
             }
             Assert.assertEquals(expected, o);
+            Assert.assertEquals(expected, oRo);
         }
     }
 
@@ -955,10 +962,47 @@ public class RedisGraphAPITest {
     }
 
     @Test
+    public void testCachedExecutionReadOnly() {
+        api.query("social", "CREATE (:N {val:1}), (:N {val:2})");
+
+        // First time should not be loaded from execution cache
+        Map<String, Object> params = new HashMap<>();
+        params.put("val", 1L);
+        ResultSet resultSet = api.queryReadOnly("social","MATCH (n:N {val:$val}) RETURN n.val", params);
+        Assert.assertEquals(1, resultSet.size());
+        Record r = resultSet.next();
+        Assert.assertEquals(params.get("val"), r.getValue(0));
+        Assert.assertFalse(resultSet.getStatistics().cachedExecution());
+
+        // Run in loop many times to make sure the query will be loaded
+        // from cache at least once
+        for (int i = 0 ; i < 64; i++){
+            resultSet = api.queryReadOnly("social","MATCH (n:N {val:$val}) RETURN n.val", params);
+        }
+        Assert.assertEquals(1, resultSet.size());
+        r = resultSet.next();
+        Assert.assertEquals(params.get("val"), r.getValue(0));
+        Assert.assertTrue(resultSet.getStatistics().cachedExecution());
+    }
+
+    @Test
     public void timeoutArgument() {
         ResultSet rs = api.query("social", "UNWIND range(0,100) AS x WITH x AS x WHERE x = 100 RETURN x", 1L);
+        ResultSet rsRo = api.queryReadOnly("social", "UNWIND range(0,100) AS x WITH x AS x WHERE x = 100 RETURN x", 1L);
         Assert.assertEquals(1, rs.size());
+        Assert.assertEquals(1, rsRo.size());
         Record r = rs.next();
+        Record rRo = rsRo.next();
         Assert.assertEquals(Long.valueOf(100), r.getValue(0));
+        Assert.assertEquals(Long.valueOf(100), rRo.getValue(0));
+    }
+
+    @Test
+    public void testSimpleReadOnly() {
+        api.query("social","CREATE (:person{name:'filipe',age:30})");
+        ResultSet rsRo = api.queryReadOnly("social", "MATCH (a:person) WHERE (a.name = 'filipe') RETURN a.age");
+        Assert.assertEquals(1, rsRo.size());
+        Record r = rsRo.next();
+        Assert.assertEquals(Long.valueOf(30), r.getValue(0));
     }
 }
