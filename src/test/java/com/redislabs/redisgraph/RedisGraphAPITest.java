@@ -955,6 +955,29 @@ public class RedisGraphAPITest {
     }
 
     @Test
+    public void testMapDataType() {
+        Map<String, Object> expected = new HashMap<>();
+        expected.put("a", (long)1);
+        expected.put("b", "str");
+        expected.put("c", null);
+        List<Object> d = new ArrayList<>();
+        d.add((long)1);
+        d.add((long)2);
+        d.add((long)3);
+        expected.put("d", d);
+        expected.put("e", true);
+        Map<String, Object>f = new HashMap<>();
+        f.put("x", (long)1);
+        f.put("y", (long)2);
+        expected.put("f", f);
+        ResultSet res = api.query("social",  "RETURN {a:1, b:'str', c:NULL, d:[1,2,3], e:True, f:{x:1, y:2}}");
+        Assert.assertEquals(1, res.size());
+        Record r = res.next();
+        Map<String, Object> actual = r.getValue(0);
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
     public void timeoutArgument() {
         ResultSet rs = api.query("social", "UNWIND range(0,100) AS x WITH x AS x WHERE x = 100 RETURN x", 1L);
         Assert.assertEquals(1, rs.size());
