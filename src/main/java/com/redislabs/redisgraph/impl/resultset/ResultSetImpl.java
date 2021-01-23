@@ -14,11 +14,11 @@ import redis.clients.jedis.exceptions.JedisDataException;
 import java.util.*;
 
 public class ResultSetImpl implements ResultSet {
-    
+
 
     private final Header header;
     private final Statistics statistics;
-    private final List<Record> results ;
+    private final List<Record> results;
 
     private int position = 0;
     private final RedisGraph redisGraph;
@@ -27,15 +27,15 @@ public class ResultSetImpl implements ResultSet {
     /**
      * @param rawResponse the raw representation of response is at most 3 lists of objects.
      *                    The last list is the statistics list.
-     * @param redisGraph the graph connection
-     * @param cache the graph local cache
+     * @param redisGraph  the graph connection
+     * @param cache       the graph local cache
      */
     public ResultSetImpl(List<Object> rawResponse, RedisGraph redisGraph, GraphCache cache) {
         this.redisGraph = redisGraph;
         this.cache = cache;
 
         // If a run-time error occurred, the last member of the rawResponse will be a JedisDataException.
-        if (rawResponse.get(rawResponse.size()-1) instanceof JedisDataException) {
+        if (rawResponse.get(rawResponse.size() - 1) instanceof JedisDataException) {
 
             throw new JRedisGraphRunTimeException((Throwable) rawResponse.get(rawResponse.size() - 1));
         }
@@ -44,8 +44,8 @@ public class ResultSetImpl implements ResultSet {
 
             header = parseHeader(new ArrayList<>());
             results = new ArrayList<>();
-            statistics = rawResponse.isEmpty() ? parseStatistics(new ArrayList<Objects>()) : 
-              parseStatistics(rawResponse.get(rawResponse.size() - 1)) ; 
+            statistics = rawResponse.isEmpty() ? parseStatistics(new ArrayList<Objects>()) :
+                    parseStatistics(rawResponse.get(rawResponse.size() - 1));
 
         } else {
 
@@ -57,7 +57,6 @@ public class ResultSetImpl implements ResultSet {
 
 
     /**
-     *
      * @param rawResultSet - raw result set representation
      * @return parsed result set
      */
@@ -84,10 +83,10 @@ public class ResultSetImpl implements ResultSet {
                         case COLUMN_RELATION:
                             parsedRow.add(deserializeEdge(obj));
                             break;
-                        case COLUMN_SCALAR: 
+                        case COLUMN_SCALAR:
                             parsedRow.add(deserializeScalar(obj));
                             break;
-                        default: 
+                        default:
                             parsedRow.add(null);
                             break;
                     }
@@ -102,7 +101,6 @@ public class ResultSetImpl implements ResultSet {
     }
 
     /**
-     *
      * @param rawStatistics raw statistics representation
      * @return parsed statistics
      */
@@ -112,7 +110,6 @@ public class ResultSetImpl implements ResultSet {
 
 
     /**
-     *
      * @param rawHeader - raw header representation
      * @return parsed header
      */
@@ -176,11 +173,11 @@ public class ResultSetImpl implements ResultSet {
         deserializeGraphEntityId(edge, rawEdgeData.get(0));
 
         String relationshipType = cache.getRelationshipType(((Long) rawEdgeData.get(1)).intValue(),
-                                                                        redisGraph);
+                redisGraph);
         edge.setRelationshipType(relationshipType);
 
-        edge.setSource( (long) rawEdgeData.get(2));
-        edge.setDestination( (long) rawEdgeData.get(3));
+        edge.setSource((long) rawEdgeData.get(2));
+        edge.setDestination((long) rawEdgeData.get(3));
 
         deserializeGraphEntityProperties(edge, (List<List<Object>>) rawEdgeData.get(4));
 
@@ -201,7 +198,7 @@ public class ResultSetImpl implements ResultSet {
         for (List<Object> rawProperty : rawProperties) {
             Property<Object> property = new Property<>();
             property.setName(cache.getPropertyName(((Long) rawProperty.get(0)).intValue(),
-                                                                redisGraph));
+                    redisGraph));
 
             //trimmed for getting to value using deserializeScalar
             List<Object> propertyScalar = rawProperty.subList(1, rawProperty.size());
@@ -249,11 +246,11 @@ public class ResultSetImpl implements ResultSet {
     }
 
     private Map<String, Object> deserializeMap(Object rawScalarData) {
-        List<List<Object>> keyTypeValueEntries = (List<List<Object>>) rawScalarData;
+        List<Object> keyTypeValueEntries = (List<Object>) rawScalarData;
         Map<String, Object> map = new HashMap<>();
-        for(List<Object> keyTypeValueEntry : keyTypeValueEntries) {
-            String key = SafeEncoder.encode((byte[])keyTypeValueEntry.get(0));
-            Object value = deserializeScalar((List<Object>)keyTypeValueEntry.get(1));
+        for (int i = 0; i < keyTypeValueEntries.size(); i += 2) {
+            String key = SafeEncoder.encode((byte[]) keyTypeValueEntries.get(i));
+            Object value = deserializeScalar((List<Object>) keyTypeValueEntries.get(i + 1));
             map.put(key, value);
         }
         return map;
@@ -331,9 +328,9 @@ public class ResultSetImpl implements ResultSet {
     }
 
 
-	@Override
-	public Iterator<Record> iterator() {
-		// TODO Auto-generated method stub
-		return results.iterator();
-	}
+    @Override
+    public Iterator<Record> iterator() {
+        // TODO Auto-generated method stub
+        return results.iterator();
+    }
 }
