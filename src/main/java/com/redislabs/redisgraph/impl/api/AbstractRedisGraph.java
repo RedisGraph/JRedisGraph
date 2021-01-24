@@ -112,20 +112,6 @@ public abstract class AbstractRedisGraph implements RedisGraph {
     }
 
     /**
-     * Execute a Cypher read-only query with arguments
-     * @param graphId a graph to perform the query on
-     * @param query Cypher query
-     * @param args
-     * @return a result set
-     * @deprecated use {@link #query(String, String, Map)} instead.
-     */
-    @Deprecated
-    public ResultSet queryReadOnly(String graphId, String query, Object ...args) {
-        String preparedQuery = Utils.prepareQuery(query, args);
-        return sendReadOnlyQuery(graphId, preparedQuery);
-    }
-
-    /**
      * Executes a cypher query with parameters.
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.

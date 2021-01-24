@@ -52,16 +52,6 @@ public interface RedisGraph extends Closeable {
     @Deprecated
     ResultSet query(String graphId, String query, Object ...args);
 
-    /**
-     * Execute a Cypher read-only query with arguments
-     * @param graphId a graph to perform the query on
-     * @param query Cypher query
-     * @param args
-     * @return a result set
-     * @deprecated use {@link #query(String, String, Map)} instead.
-     */
-    @Deprecated
-    ResultSet queryReadOnly(String graphId, String query, Object ...args);
 
     /**
      * Executes a cypher query with parameters.
