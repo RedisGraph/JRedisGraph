@@ -1005,7 +1005,6 @@ public class RedisGraphAPITest {
     public void timeoutArgument() {
         ResultSet rs = api.query("social", "UNWIND range(0,100) AS x WITH x AS x WHERE x = 100 RETURN x", 1L);
         Assert.assertEquals(1, rs.size());
-        Assert.assertEquals(1, rsRo.size());
         Record r = rs.next();
         Assert.assertEquals(Long.valueOf(100), r.getValue(0));
     }
