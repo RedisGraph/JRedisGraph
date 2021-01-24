@@ -69,7 +69,7 @@ public abstract class AbstractRedisGraph implements RedisGraph {
      * @param query Cypher query
      * @return a result set
      */
-    public ResultSet queryReadOnly(String graphId, String query) {
+    public ResultSet readOnlyQuery(String graphId, String query) {
         return sendReadOnlyQuery(graphId, query);
     }
 
@@ -93,7 +93,7 @@ public abstract class AbstractRedisGraph implements RedisGraph {
      * @return a result set
      */
     @Override
-    public ResultSet queryReadOnly(String graphId, String query, long timeout) {
+    public ResultSet readOnlyQuery(String graphId, String query, long timeout) {
         return sendReadOnlyQuery(graphId, query, timeout);
     }
 
@@ -130,7 +130,7 @@ public abstract class AbstractRedisGraph implements RedisGraph {
      * @param params parameters map.
      * @return a result set.
      */
-    public ResultSet queryReadOnly(String graphId, String query, Map<String, Object> params) {
+    public ResultSet readOnlyQuery(String graphId, String query, Map<String, Object> params) {
         String preparedQuery = Utils.prepareQuery(query, params);
         return sendReadOnlyQuery(graphId, preparedQuery);
     }
@@ -158,7 +158,7 @@ public abstract class AbstractRedisGraph implements RedisGraph {
      * @return a result set.
      */
     @Override
-    public ResultSet queryReadOnly(String graphId, String query, Map<String, Object> params, long timeout) {
+    public ResultSet readOnlyQuery(String graphId, String query, Map<String, Object> params, long timeout) {
         String preparedQuery = Utils.prepareQuery(query, params);
         return sendReadOnlyQuery(graphId, preparedQuery, timeout);
     }
