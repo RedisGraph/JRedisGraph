@@ -9,7 +9,6 @@ import com.redislabs.redisgraph.impl.api.RedisGraph;
 import com.redislabs.redisgraph.impl.resultset.RecordImpl;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
 import com.redislabs.redisgraph.test.utils.PathBuilder;
-import redis.clients.jedis.exceptions.JedisDataException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1049,7 +1048,7 @@ public class RedisGraphAPITest {
             transaction.set("x", "1");
             transaction.query("social", "CREATE (:Person {name:'a'})");
             transaction.query("g", "CREATE (:Person {name:'a'})");
-            transaction.queryReadOnly("social", "MATCH (n:Person) RETURN n");
+            transaction.readOnlyQuery("social", "MATCH (n:Person) RETURN n");
             transaction.deleteGraph("g");
             transaction.callProcedure("social", "db.labels");
             List<Object> results = transaction.exec();
@@ -1072,7 +1071,7 @@ public class RedisGraphAPITest {
 
             // Graph read-only query result
             Assert.assertEquals(ResultSetImpl.class, results.get(5).getClass());
-            resultSet = (ResultSet) results.get(5);
+            resultSet = (ResultSet) results.get(3);
 
             Assert.assertNotNull(resultSet.getHeader());
             Header header = resultSet.getHeader();
@@ -1096,8 +1095,8 @@ public class RedisGraphAPITest {
             Assert.assertEquals(Arrays.asList("n"), record.keys());
             Assert.assertEquals(expectedNode, record.getValue("n"));
 
-            Assert.assertEquals(ResultSetImpl.class, results.get(7).getClass());
-            resultSet = (ResultSet) results.get(7);
+            Assert.assertEquals(ResultSetImpl.class, results.get(5).getClass());
+            resultSet = (ResultSet) results.get(5);
 
             Assert.assertNotNull(resultSet.getHeader());
             header = resultSet.getHeader();
