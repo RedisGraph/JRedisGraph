@@ -2,8 +2,7 @@ package com.redislabs.redisgraph.impl.api;
 
 import com.redislabs.redisgraph.RedisGraphContext;
 import com.redislabs.redisgraph.ResultSet;
-import com.redislabs.redisgraph.exceptions.JRedisGraphCompileTimeException;
-import com.redislabs.redisgraph.exceptions.JRedisGraphRunTimeException;
+import com.redislabs.redisgraph.exceptions.JRedisGraphException;
 import com.redislabs.redisgraph.impl.Utils;
 import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
@@ -60,11 +59,34 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
             System.out.println("result set parsing " + preparedQuery + " "  + (stopTime - startTime)/1000000);
             return rs;
         }
-        catch (JRedisGraphRunTimeException rt) {
+        catch (JRedisGraphException rt) {
             throw rt;
         }
         catch (JedisDataException j) {
-            throw new JRedisGraphCompileTimeException(j);
+            throw new JRedisGraphException(j);
+        }
+    }
+
+    /**
+     * Sends the query over the instance only connection
+     * @param graphId graph to be queried
+     * @param timeout
+     * @param preparedQuery prepared query
+     * @return Result set with the query answer
+     */
+    @Override
+    protected ResultSet sendQuery(String graphId, String preparedQuery, long timeout) {
+        Jedis conn = getConnection();
+        try {
+            List<Object> rawResponse = (List<Object>) conn.sendBlockingCommand(RedisGraphCommand.QUERY,
+                graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
+            return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
+        }
+        catch (JRedisGraphException rt) {
+            throw rt;
+        }
+        catch (JedisDataException j) {
+            throw new JRedisGraphException(j);
         }
     }
 

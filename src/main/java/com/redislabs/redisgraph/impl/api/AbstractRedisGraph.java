@@ -28,6 +28,15 @@ public abstract class AbstractRedisGraph implements RedisGraph {
     protected abstract ResultSet sendQuery(String graphId, String preparedQuery);
 
     /**
+     * Sends a query to the redis graph.Implementation and context dependent
+     * @param graphId graph to be queried
+     * @param preparedQuery prepared query
+     * @param timeout
+     * @return Result set
+     */
+    protected abstract ResultSet sendQuery(String graphId, String preparedQuery, long timeout);
+
+    /**
      * Execute a Cypher query.
      * @param graphId a graph to perform the query on
      * @param query Cypher query
@@ -35,6 +44,18 @@ public abstract class AbstractRedisGraph implements RedisGraph {
      */
     public ResultSet query(String graphId, String query) {
         return sendQuery(graphId, query);
+    }
+
+    /**
+     * Execute a Cypher query with timeout.
+     * @param graphId a graph to perform the query on
+     * @param timeout
+     * @param query Cypher query
+     * @return a result set
+     */
+    @Override
+    public ResultSet query(String graphId, String query, long timeout) {
+        return sendQuery(graphId, query, timeout);
     }
 
     /**
@@ -63,6 +84,19 @@ public abstract class AbstractRedisGraph implements RedisGraph {
         return sendQuery(graphId, preparedQuery);
     }
 
+    /**
+     * Executes a cypher query with parameters and timeout.
+     * @param graphId a graph to perform the query on.
+     * @param timeout
+     * @param query Cypher query.
+     * @param params parameters map.
+     * @return a result set.
+     */
+    @Override
+    public ResultSet query(String graphId, String query, Map<String, Object> params, long timeout) {
+        String preparedQuery = Utils.prepareQuery(query, params);
+        return sendQuery(graphId, preparedQuery, timeout);
+    }
 
     public ResultSet callProcedure(String graphId, String procedure){
         return callProcedure(graphId, procedure, Utils.DUMMY_LIST, Utils.DUMMY_MAP);

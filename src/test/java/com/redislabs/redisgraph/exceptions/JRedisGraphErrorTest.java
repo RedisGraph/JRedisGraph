@@ -34,7 +34,7 @@ public class JRedisGraphErrorTest {
 
     @Test
     public void testSyntaxErrorReporting() {
-        exceptionRule.expect(JRedisGraphCompileTimeException.class);
+        exceptionRule.expect(JRedisGraphException.class);
         exceptionRule.expectMessage("Type mismatch: expected String but was Integer");
 
         // Issue a query that causes a compile-time error
@@ -44,7 +44,7 @@ public class JRedisGraphErrorTest {
 
     @Test
     public void testRuntimeErrorReporting() {
-        exceptionRule.expect(JRedisGraphRunTimeException.class);
+        exceptionRule.expect(JRedisGraphException.class);
         exceptionRule.expectMessage("Type mismatch: expected String but was Integer");
 
         // Issue a query that causes a run-time error
@@ -59,7 +59,7 @@ public class JRedisGraphErrorTest {
             api.query("social", "RETURN toUpper(5)");
         }
         catch (Exception e) {
-            Assert.assertEquals(JRedisGraphCompileTimeException.class, e.getClass());
+            Assert.assertEquals(JRedisGraphException.class, e.getClass());
             Assert.assertTrue( e.getMessage().contains("Type mismatch: expected String but was Integer"));
         }
 
@@ -70,7 +70,7 @@ public class JRedisGraphErrorTest {
             api.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)");
         }
         catch (Exception e) {
-            Assert.assertEquals(JRedisGraphRunTimeException.class, e.getClass());
+            Assert.assertEquals(JRedisGraphException.class, e.getClass());
             Assert.assertTrue( e.getMessage().contains("Type mismatch: expected String but was Integer"));
         }
 
@@ -79,7 +79,7 @@ public class JRedisGraphErrorTest {
 
     @Test
     public void testContextSyntaxErrorReporting() {
-        exceptionRule.expect(JRedisGraphCompileTimeException.class);
+        exceptionRule.expect(JRedisGraphException.class);
         exceptionRule.expectMessage("Type mismatch: expected String but was Integer");
         RedisGraphContext c = api.getContext();
 
@@ -90,21 +90,21 @@ public class JRedisGraphErrorTest {
 
     @Test
     public void testMissingParametersSyntaxErrorReporting(){
-        exceptionRule.expect(JRedisGraphRunTimeException.class);
+        exceptionRule.expect(JRedisGraphException.class);
         exceptionRule.expectMessage("Missing parameters");
         api.query("social","RETURN $param");
     }
 
     @Test
     public void testMissingParametersSyntaxErrorReporting2(){
-        exceptionRule.expect(JRedisGraphRunTimeException.class);
+        exceptionRule.expect(JRedisGraphException.class);
         exceptionRule.expectMessage("Missing parameters");
         api.query("social","RETURN $param", new HashMap<>());
     }
 
     @Test
     public void testContextRuntimeErrorReporting() {
-        exceptionRule.expect(JRedisGraphRunTimeException.class);
+        exceptionRule.expect(JRedisGraphException.class);
         exceptionRule.expectMessage("Type mismatch: expected String but was Integer");
 
         RedisGraphContext c = api.getContext();
@@ -122,7 +122,7 @@ public class JRedisGraphErrorTest {
             c.query("social", "RETURN toUpper(5)");
         }
         catch (Exception e) {
-            Assert.assertEquals(JRedisGraphCompileTimeException.class, e.getClass());
+            Assert.assertEquals(JRedisGraphException.class, e.getClass());
             Assert.assertTrue( e.getMessage().contains("Type mismatch: expected String but was Integer"));
         }
 
@@ -133,9 +133,17 @@ public class JRedisGraphErrorTest {
             c.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)");
         }
         catch (Exception e) {
-            Assert.assertEquals(JRedisGraphRunTimeException.class, e.getClass());
+            Assert.assertEquals(JRedisGraphException.class, e.getClass());
             Assert.assertTrue( e.getMessage().contains("Type mismatch: expected String but was Integer"));
         }
 
+    }
+
+    @Test
+    public void timeoutExcpetion() {
+        exceptionRule.expect(JRedisGraphException.class);
+        exceptionRule.expectMessage("Query timed out");
+
+        api.query("social", "UNWIND range(0,100000) AS x WITH x AS x WHERE x = 10000 RETURN x", 1L);
     }
 }
