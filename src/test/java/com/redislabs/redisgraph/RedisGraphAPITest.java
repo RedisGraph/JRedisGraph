@@ -4,12 +4,11 @@ import com.redislabs.redisgraph.Statistics.Label;
 import com.redislabs.redisgraph.graph_entities.Edge;
 import com.redislabs.redisgraph.graph_entities.Node;
 import com.redislabs.redisgraph.graph_entities.Path;
+import com.redislabs.redisgraph.graph_entities.Point;
 import com.redislabs.redisgraph.graph_entities.Property;
 import com.redislabs.redisgraph.impl.api.RedisGraph;
-import com.redislabs.redisgraph.impl.resultset.RecordImpl;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
 import com.redislabs.redisgraph.test.utils.PathBuilder;
-import redis.clients.jedis.exceptions.JedisDataException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -975,6 +974,31 @@ public class RedisGraphAPITest {
         Record r = res.next();
         Map<String, Object> actual = r.getValue(0);
         Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testGeoPointLatLon() {
+        Assert.assertNotNull(api.query("social", "CREATE (:restaurant"
+                + " {location: point({latitude:30.27822306, longitude:-97.75134723})})"));
+        assertTestGeoPoint();
+    }
+
+    @Test
+    public void testGeoPointLonLat() {
+        Assert.assertNotNull(api.query("social", "CREATE (:restaurant"
+                + " {location: point({longitude:-97.75134723, latitude:30.27822306})})"));
+        assertTestGeoPoint();
+    }
+
+    private void assertTestGeoPoint() {
+        ResultSet results = api.query("social", "MATCH (restaurant) RETURN restaurant");
+        Assert.assertEquals(1, results.size());
+        Record record = results.next();
+        Assert.assertEquals(1, record.size());
+        Assert.assertEquals(Collections.singletonList("restaurant"), record.keys());
+        Node node = record.getValue(0);
+        Property property = node.getProperty("location");
+        Assert.assertEquals(new Point(30.27822306, -97.75134723), property.getValue());
     }
 
     @Test
