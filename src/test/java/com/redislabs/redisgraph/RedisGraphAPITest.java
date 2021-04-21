@@ -1031,6 +1031,14 @@ public class RedisGraphAPITest {
     }
 
     @Test
+    public void timeoutArgument() {
+        ResultSet rs = api.query("social", "UNWIND range(0,100) AS x WITH x AS x WHERE x = 100 RETURN x", 1L);
+        Assert.assertEquals(1, rs.size());
+        Record r = rs.next();
+        Assert.assertEquals(Long.valueOf(100), r.getValue(0));
+    }
+
+    @Test
     public void testCachedExecutionReadOnly() {
         api.query("social", "CREATE (:N {val:1}), (:N {val:2})");
 
@@ -1052,14 +1060,6 @@ public class RedisGraphAPITest {
         r = resultSet.next();
         Assert.assertEquals(params.get("val"), r.getValue(0));
         Assert.assertTrue(resultSet.getStatistics().cachedExecution());
-    }
-
-    @Test
-    public void timeoutArgument() {
-        ResultSet rs = api.query("social", "UNWIND range(0,100) AS x WITH x AS x WHERE x = 100 RETURN x", 1L);
-        Assert.assertEquals(1, rs.size());
-        Record r = rs.next();
-        Assert.assertEquals(Long.valueOf(100), r.getValue(0));
     }
 
     @Test
