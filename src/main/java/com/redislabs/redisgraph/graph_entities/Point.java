@@ -52,10 +52,6 @@ public final class Point {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Point{");
-        sb.append("latitude=").append(latitude);
-        sb.append(", longitude=").append(longitude);
-        sb.append('}');
-        return sb.toString();
+        return "Point{latitude=" + latitude + ", longitude=" + longitude + "}";
     }
 }
