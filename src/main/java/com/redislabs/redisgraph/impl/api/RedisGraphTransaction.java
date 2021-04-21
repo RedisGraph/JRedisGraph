@@ -48,6 +48,23 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     }
 
     /**
+     * Execute a Cypher read-oly query.
+     * @param graphId a graph to perform the query on
+     * @param query Cypher query
+     * @return a response which builds the result set with the query answer.
+     */
+    @Override
+    public Response<ResultSet> readOnlyQuery(String graphId, String query) {
+        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, query, "--COMPACT");
+        return getResponse(new Builder<ResultSet>() {
+            @Override
+            public ResultSet build(Object o) {
+                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+            }
+        });
+    }
+
+    /**
      * Execute a Cypher query with timeout.
      *
      * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
@@ -59,6 +76,26 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     @Override
     public Response<ResultSet> query(String graphId, String query, long timeout) {
         client.sendCommand(RedisGraphCommand.QUERY, graphId, query, "--COMPACT", "TIMEOUT", Long.toString(timeout));
+        return getResponse(new Builder<ResultSet>() {
+            @Override
+            public ResultSet build(Object o) {
+                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+            }
+        });
+    }
+
+    /**
+     * Execute a Cypher read-only query with timeout.
+     *
+     * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
+     * @param graphId a graph to perform the query on
+     * @param query Cypher query
+     * @param timeout
+     * @return a response which builds the result set with the query answer.
+     */
+    @Override
+    public Response<ResultSet> readOnlyQuery(String graphId, String query, long timeout) {
+        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, query, "--COMPACT", "TIMEOUT", Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
@@ -109,6 +146,25 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     }
 
     /**
+     * Executes a cypher read-only query with parameters.
+     * @param graphId a graph to perform the query on.
+     * @param query Cypher query.
+     * @param params parameters map.
+     * @return  a response which builds the result set with the query answer.
+     */
+    @Override
+    public Response<ResultSet> readOnlyQuery(String graphId, String query, Map<String, Object> params) {
+        String preparedQuery = Utils.prepareQuery(query, params);
+        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, "--COMPACT");
+        return getResponse(new Builder<ResultSet>() {
+            @Override
+            public ResultSet build(Object o) {
+                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+            }
+        });
+    }
+
+    /**
      * Executes a cypher query with parameters and timeout.
      *
      * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
@@ -123,6 +179,29 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     public Response<ResultSet> query(String graphId, String query, Map<String, Object> params, long timeout) {
         String preparedQuery = Utils.prepareQuery(query, params);
         client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, "--COMPACT", "TIMEOUT", Long.toString(timeout));
+        return getResponse(new Builder<ResultSet>() {
+            @Override
+            public ResultSet build(Object o) {
+                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+            }
+        });
+    }
+
+    /**
+     * Executes a cypher read-only query with parameters and timeout.
+     *
+     * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
+     * timeout.
+     * @param graphId a graph to perform the query on.
+     * @param query Cypher query.
+     * @param params parameters map.
+     * @param timeout
+     * @return  a response which builds the result set with the query answer.
+     */
+    @Override
+    public Response<ResultSet> readOnlyQuery(String graphId, String query, Map<String, Object> params, long timeout) {
+        String preparedQuery = Utils.prepareQuery(query, params);
+        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, "--COMPACT", "TIMEOUT", Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
