@@ -978,15 +978,21 @@ public class RedisGraphAPITest {
 
     @Test
     public void testGeoPointLatLon() {
-        Assert.assertNotNull(api.query("social", "CREATE (:restaurant"
-                + " {location: point({latitude:30.27822306, longitude:-97.75134723})})"));
+        ResultSet rs = api.query("social", "CREATE (:restaurant"
+                + " {location: point({latitude:30.27822306, longitude:-97.75134723})})");
+        Assert.assertEquals(1, rs.getStatistics().nodesCreated());
+        Assert.assertEquals(1, rs.getStatistics().propertiesSet());
+
         assertTestGeoPoint();
     }
 
     @Test
     public void testGeoPointLonLat() {
-        Assert.assertNotNull(api.query("social", "CREATE (:restaurant"
-                + " {location: point({longitude:-97.75134723, latitude:30.27822306})})"));
+        ResultSet rs = api.query("social", "CREATE (:restaurant"
+                + " {location: point({longitude:-97.75134723, latitude:30.27822306})})");
+        Assert.assertEquals(1, rs.getStatistics().nodesCreated());
+        Assert.assertEquals(1, rs.getStatistics().propertiesSet());
+
         assertTestGeoPoint();
     }
 
