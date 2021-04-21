@@ -51,6 +51,11 @@ public final class Point {
     }
 
     @Override
+    public int hashCode() {
+        return Objects.hash(latitude, longitude);
+    }
+
+    @Override
     public String toString() {
         return "Point{latitude=" + latitude + ", longitude=" + longitude + "}";
     }
