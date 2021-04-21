@@ -72,11 +72,11 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
             List<Object> rawResponse = (List<Object>) conn.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
             return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
         }
-        catch (JRedisGraphRunTimeException rt) {
-            throw rt;
+        catch (JRedisGraphException ge) {
+            throw ge;
         }
-        catch (JedisDataException j) {
-            throw new JRedisGraphCompileTimeException(j);
+        catch (JedisDataException de) {
+            throw new JRedisGraphException(de);
         }
     }
 
@@ -118,11 +118,11 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
                     graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
             return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
         }
-        catch (JRedisGraphRunTimeException rt) {
-            throw rt;
+        catch (JRedisGraphException ge) {
+            throw ge;
         }
-        catch (JedisDataException j) {
-            throw new JRedisGraphCompileTimeException(j);
+        catch (JedisDataException de) {
+            throw new JRedisGraphException(de);
         }
     }
 
