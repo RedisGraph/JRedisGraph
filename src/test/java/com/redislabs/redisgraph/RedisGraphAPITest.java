@@ -478,6 +478,7 @@ public class RedisGraphAPITest {
         Assert.assertNotNull(api.query("social", "CREATE (:escaped{s1:%s,s2:%s})", "S\"'", "S'\""));
         Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1=%s and n.s2=%s RETURN n", "S\"'", "S'\""));
         Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1='S\"' RETURN n"));
+
     }
 
     @Test
@@ -876,6 +877,28 @@ public class RedisGraphAPITest {
         }
     }
 
+
+    @Test
+    public void testParametersReadOnly(){
+        Object[] parameters = {1, 2.3, true, false, null, "str", 'a', "b" ,Arrays.asList(1,2,3), new Integer[]{1,2,3}};
+        Object[] expected_anwsers = {1L, 2.3, true, false, null, "str", "a", "b", Arrays.asList(1L, 2L, 3L), new Long[]{1L, 2L, 3L}};
+        Map<String, Object> params = new HashMap<>();
+        for (int i=0; i < parameters.length; i++) {
+            Object param = parameters[i];
+            params.put("param", param);
+            ResultSet resultSetRo = api.readOnlyQuery("social", "RETURN $param", params);
+            Assert.assertEquals(1, resultSetRo.size());
+            Record rRo = resultSetRo.next();
+            Object oRo = rRo.getValue(0);
+            Object expected = expected_anwsers[i];
+            if(i == parameters.length-1) {
+                expected = Arrays.asList((Object[])expected);
+            }
+            Assert.assertEquals(expected, oRo);
+        }
+    }
+
+
     @Test
     public void testNullGraphEntities() {
         // Create two nodes connected by a single outgoing edge.
@@ -1008,10 +1031,118 @@ public class RedisGraphAPITest {
     }
 
     @Test
+    public void testCachedExecutionReadOnly() {
+        api.query("social", "CREATE (:N {val:1}), (:N {val:2})");
+
+        // First time should not be loaded from execution cache
+        Map<String, Object> params = new HashMap<>();
+        params.put("val", 1L);
+        ResultSet resultSet = api.readOnlyQuery("social","MATCH (n:N {val:$val}) RETURN n.val", params);
+        Assert.assertEquals(1, resultSet.size());
+        Record r = resultSet.next();
+        Assert.assertEquals(params.get("val"), r.getValue(0));
+        Assert.assertFalse(resultSet.getStatistics().cachedExecution());
+
+        // Run in loop many times to make sure the query will be loaded
+        // from cache at least once
+        for (int i = 0 ; i < 64; i++){
+            resultSet = api.readOnlyQuery("social","MATCH (n:N {val:$val}) RETURN n.val", params);
+        }
+        Assert.assertEquals(1, resultSet.size());
+        r = resultSet.next();
+        Assert.assertEquals(params.get("val"), r.getValue(0));
+        Assert.assertTrue(resultSet.getStatistics().cachedExecution());
+    }
+
+    @Test
     public void timeoutArgument() {
         ResultSet rs = api.query("social", "UNWIND range(0,100) AS x WITH x AS x WHERE x = 100 RETURN x", 1L);
         Assert.assertEquals(1, rs.size());
         Record r = rs.next();
         Assert.assertEquals(Long.valueOf(100), r.getValue(0));
+    }
+
+    @Test
+    public void testSimpleReadOnly() {
+        api.query("social","CREATE (:person{name:'filipe',age:30})");
+        ResultSet rsRo = api.readOnlyQuery("social", "MATCH (a:person) WHERE (a.name = 'filipe') RETURN a.age");
+        Assert.assertEquals(1, rsRo.size());
+        Record r = rsRo.next();
+        Assert.assertEquals(Long.valueOf(30), r.getValue(0));
+    }
+
+    @Test
+    public void testMultiExecWithReadOnlyQueries(){
+        try (RedisGraphContext c = api.getContext()) {
+            RedisGraphTransaction transaction = api.getContext().multi();
+
+            transaction.set("x", "1");
+            transaction.query("social", "CREATE (:Person {name:'a'})");
+            transaction.query("g", "CREATE (:Person {name:'a'})");
+            transaction.readOnlyQuery("social", "MATCH (n:Person) RETURN n");
+            transaction.deleteGraph("g");
+            transaction.callProcedure("social", "db.labels");
+            List<Object> results = transaction.exec();
+
+            // Redis set command
+            Assert.assertEquals(String.class, results.get(0).getClass());
+            Assert.assertEquals("OK", results.get(0));
+
+            // Redis graph command
+            Assert.assertEquals(ResultSetImpl.class, results.get(1).getClass());
+            ResultSet resultSet = (ResultSet) results.get(1);
+            Assert.assertEquals(1, resultSet.getStatistics().nodesCreated());
+            Assert.assertEquals(1, resultSet.getStatistics().propertiesSet());
+
+
+            Assert.assertEquals(ResultSetImpl.class, results.get(2).getClass());
+            resultSet = (ResultSet) results.get(2);
+            Assert.assertEquals(1, resultSet.getStatistics().nodesCreated());
+            Assert.assertEquals(1, resultSet.getStatistics().propertiesSet());
+
+            // Graph read-only query result
+            Assert.assertEquals(ResultSetImpl.class, results.get(5).getClass());
+            resultSet = (ResultSet) results.get(3);
+
+            Assert.assertNotNull(resultSet.getHeader());
+            Header header = resultSet.getHeader();
+
+            List<String> schemaNames = header.getSchemaNames();
+            Assert.assertNotNull(schemaNames);
+            Assert.assertEquals(1, schemaNames.size());
+            Assert.assertEquals("n", schemaNames.get(0));
+
+            Property<String> nameProperty = new Property<>("name", "a");
+
+            Node expectedNode = new Node();
+            expectedNode.setId(0);
+            expectedNode.addLabel("Person");
+            expectedNode.addProperty(nameProperty);
+            // see that the result were pulled from the right graph
+            Assert.assertEquals(1, resultSet.size());
+            Assert.assertTrue(resultSet.hasNext());
+            Record record = resultSet.next();
+            Assert.assertFalse(resultSet.hasNext());
+            Assert.assertEquals(Arrays.asList("n"), record.keys());
+            Assert.assertEquals(expectedNode, record.getValue("n"));
+
+            Assert.assertEquals(ResultSetImpl.class, results.get(5).getClass());
+            resultSet = (ResultSet) results.get(5);
+
+            Assert.assertNotNull(resultSet.getHeader());
+            header = resultSet.getHeader();
+
+            schemaNames = header.getSchemaNames();
+            Assert.assertNotNull(schemaNames);
+            Assert.assertEquals(1, schemaNames.size());
+            Assert.assertEquals("label", schemaNames.get(0));
+
+            Assert.assertEquals(1, resultSet.size());
+            Assert.assertTrue(resultSet.hasNext());
+            record = resultSet.next();
+            Assert.assertFalse(resultSet.hasNext());
+            Assert.assertEquals(Arrays.asList("label"), record.keys());
+            Assert.assertEquals("Person", record.getValue("label"));
+        }
     }
 }
