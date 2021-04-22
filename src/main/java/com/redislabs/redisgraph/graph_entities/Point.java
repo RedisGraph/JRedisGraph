@@ -27,7 +27,7 @@ public final class Point {
      */
     public Point(List<Double> values) {
         if (values == null || values.size() != 2) {
-            throw new IllegalStateException("Point requires two doubles.");
+            throw new IllegalArgumentException("Point requires two doubles.");
         }
         this.latitude = values.get(0);
         this.longitude = values.get(1);
