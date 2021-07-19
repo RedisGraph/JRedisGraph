@@ -140,21 +140,19 @@ public interface RedisGraphPipeline extends
      */
     Response<String> deleteGraph(String graphId);
 
-
+    
     /**
-     * executes the transaction
-     * @return a list of the executed transaction commands answers, in case of successful transaction, null otherwise
+     * Synchronize pipeline by reading all responses. This operation close the pipeline. Whenever
+     * possible try to avoid using this version and use Pipeline.sync() as it won't go through all the
+     * responses and generate the right response type (usually it is a waste of time).
+     * @return A list of all the responses in the order you executed them.
      */
-    Response<List<Object>> exec();
-
+    List<Object> syncAndReturnAll();
+    
     /**
-     * If object is in transaction mode,
-     * flushes all previously queued commands in a transaction and restores the connection state to normal
+     * Synchronize pipeline by reading all responses. This operation close the pipeline. In order to
+     * get return values from pipelined commands, capture the different Response&lt;?&gt; of the
+     * commands you execute.
      */
-    void clear();
-
-    /**
-     * Flushes all previously queued commands in a transaction and restores the connection state to normal
-     */
-    Response<String> discard();
+    public void sync();
 }
