@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class is extending Jedis Transaction
+ * This class is extending Jedis Pipeline
  */
 public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisgraph.RedisGraphPipeline, RedisGraphCacheHolder {
 
@@ -209,7 +209,7 @@ public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisg
     }
 
     /**
-     * Invokes stored procedures without arguments, in multi/exec context
+     * Invokes stored procedures without arguments
      * @param graphId a graph to perform the query on
      * @param procedure procedure name to invoke
      * @return response with result set with the procedure data
@@ -219,7 +219,7 @@ public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisg
     }
 
     /**
-     * Invokes stored procedure with arguments, in multi/exec context
+     * Invokes stored procedure with arguments
      * @param graphId a graph to perform the query on
      * @param procedure procedure name to invoke
      * @param args procedure arguments
@@ -231,7 +231,7 @@ public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisg
 
 
     /**
-     * Invoke a stored procedure, in multi/exec context
+     * Invoke a stored procedure
      * @param graphId a graph to perform the query on
      * @param procedure - procedure to execute
      * @param args - procedure arguments
@@ -246,7 +246,7 @@ public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisg
 
 
     /**
-     * Deletes the entire graph, in multi/exec context
+     * Deletes the entire graph
      * @param graphId graph to delete
      * @return response with the deletion running time statistics
      */

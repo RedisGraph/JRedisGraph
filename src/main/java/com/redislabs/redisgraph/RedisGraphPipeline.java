@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * An interface which aligned to Jedis transactional interface
+ * An interface which aligned to Jedis Pipeline interface
  */
 public interface RedisGraphPipeline extends
         MultiKeyBinaryRedisPipeline,
