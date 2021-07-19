@@ -3,11 +3,20 @@ package com.redislabs.redisgraph.impl.api;
 import com.redislabs.redisgraph.RedisGraphContext;
 import com.redislabs.redisgraph.RedisGraphContextGenerator;
 import com.redislabs.redisgraph.ResultSet;
+import com.redislabs.redisgraph.exceptions.JRedisGraphException;
+import com.redislabs.redisgraph.impl.Utils;
 import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
+import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
+import redis.clients.jedis.Client;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.util.Pool;
 import redis.clients.jedis.util.SafeEncoder;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -117,13 +126,33 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
     }
 
     /**
+     * Executes a cypher query with parameters and redisgraph timeout.
+     * After that block the current client until all the previous cypher write queries
+     * are successfully transferred and acknowledged by at least 1 replica.
+     * If the replicationTimeout, specified in milliseconds, is reached,
+     * the method returns even if the specified number of replicas were not yet reached.
+     *
+     * @param graphId            graph to be queried
+     * @param preparedQuery      prepared query
+     * @param redisGraphTimeout
+     * @param replicationTimeout replication timeout, specified in milliseconds
+     * @return a result set
+     */
+    @Override
+    protected ResultSet sendReplicatedQuery(String graphId, String preparedQuery, long redisGraphTimeout, long replicationTimeout) {
+        try (ContextedRedisGraph contextedRedisGraph = new ContextedRedisGraph(getConnection())) {
+            contextedRedisGraph.setRedisGraphCaches(caches);
+            return contextedRedisGraph.sendReplicatedQuery(graphId, preparedQuery, redisGraphTimeout,replicationTimeout);
+        }
+    }
+
+    /**
      * Closes the Jedis pool
      */
     @Override
     public void close(){
         this.client.close();
     }
-
 
     /**
      * Deletes the entire graph

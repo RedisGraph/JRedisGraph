@@ -19,6 +19,7 @@ public class ResultSetImpl implements ResultSet {
     private final Header header;
     private final Statistics statistics;
     private final List<Record> results;
+    private long numberReplicasReached = 0;
 
     private int position = 0;
     private final RedisGraph redisGraph;
@@ -332,5 +333,13 @@ public class ResultSetImpl implements ResultSet {
     public Iterator<Record> iterator() {
         // TODO Auto-generated method stub
         return results.iterator();
+    }
+
+    public void setNumberReplicasReached(Long numberReplicasReached) {
+        this.numberReplicasReached = numberReplicasReached;
+    }
+
+    public long numberReplicasReached() {
+        return this.numberReplicasReached;
     }
 }

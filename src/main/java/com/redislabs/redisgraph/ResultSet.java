@@ -9,6 +9,8 @@ public interface ResultSet extends Iterable<Record>, Iterator<Record> {
 
     int size();
 
+    long numberReplicasReached();
+
     Statistics getStatistics();
 
     Header getHeader();

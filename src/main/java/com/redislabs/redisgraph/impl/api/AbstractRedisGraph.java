@@ -54,6 +54,19 @@ public abstract class AbstractRedisGraph implements RedisGraph {
     protected abstract ResultSet sendReadOnlyQuery(String graphId, String preparedQuery, long timeout);
 
     /**
+     * Executes a cypher query with parameters and redisgraph timeout.
+     * After that block the current client until all the previous cypher write queries
+     * are successfully transferred and acknowledged by at least 1 replica.
+     * If the replicationTimeout, specified in milliseconds, is reached,
+     * the method returns even if the specified number of replicas were not yet reached.
+     * @param graphId graph to be queried
+     * @param preparedQuery prepared query
+     * @param replicationTimeout replication timeout, specified in milliseconds
+     * @return a result set
+     */
+    protected abstract ResultSet sendReplicatedQuery(String graphId, String preparedQuery, long redisGraphTimeout, long replicationTimeout);
+
+    /**
      * Execute a Cypher query.
      * @param graphId a graph to perform the query on
      * @param query Cypher query
@@ -147,6 +160,25 @@ public abstract class AbstractRedisGraph implements RedisGraph {
     public ResultSet query(String graphId, String query, Map<String, Object> params, long timeout) {
         String preparedQuery = Utils.prepareQuery(query, params);
         return sendQuery(graphId, preparedQuery, timeout);
+    }
+
+
+    /**
+     * Executes a cypher query with parameters and redisgraph timeout.
+     * After that block the current client until all the previous cypher write queries
+     * are successfully transferred and acknowledged by at least 1 replica.
+     * If the replicationTimeout, specified in milliseconds, is reached,
+     * the method returns even if the specified number of replicas were not yet reached.
+     * @param graphId a graph to perform the query on.
+     * @param query Cypher query.
+     * @param params parameters map.
+     * @param redisGraphTimeout
+     * @param replicationTimeout replication timeout, specified in milliseconds
+     * @return a result set.
+     */
+    public ResultSet replicatedQuery(String graphId, String query, Map<String, Object> params, long redisGraphTimeout, long replicationTimeout){
+        String preparedQuery = Utils.prepareQuery(query, params);
+        return sendReplicatedQuery(graphId, preparedQuery, redisGraphTimeout,replicationTimeout);
     }
 
     /**

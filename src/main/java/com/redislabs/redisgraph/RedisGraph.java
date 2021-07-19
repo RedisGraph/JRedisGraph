@@ -127,4 +127,21 @@ public interface RedisGraph extends Closeable {
 
     @Override
     void close();
+
+
+    /**
+     * Executes a cypher query with parameters and redisgraph timeout.
+     * After that block the current client until all the previous cypher write queries
+     * are successfully transferred and acknowledged by at least 1 replica.
+     * If the replicationTimeout, specified in milliseconds, is reached,
+     * the method returns even if the specified number of replicas were not yet reached.
+     *
+     * @param graphId            graph to be queried
+     * @param query Cypher query.
+     * @param params parameters map.
+     * @param redisGraphTimeout
+     * @param replicationTimeout replication timeout, specified in milliseconds
+     * @return a result set
+     */
+    ResultSet replicatedQuery(String graphId, String query, Map<String, Object> params, long redisGraphTimeout, long replicationTimeout);
 }

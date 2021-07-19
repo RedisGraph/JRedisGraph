@@ -14,6 +14,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.*;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 public class RedisGraphAPITest {
 
@@ -972,6 +974,19 @@ public class RedisGraphAPITest {
         }
         Assert.assertEquals(1, resultSet.size());
         r = resultSet.next();
+        Assert.assertEquals(params.get("val"), r.getValue(0));
+        Assert.assertTrue(resultSet.getStatistics().cachedExecution());
+
+        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+        jedisPoolConfig.setMaxWaitMillis(10000);
+        JedisPool pool = new JedisPool(jedisPoolConfig, "localhost", 6379, 10000);
+        long connected_replicas = Long.parseLong(pool.getResource().info("replication").split("\n")[2].split(":")[1].trim());
+        RedisGraph apiT = new RedisGraph(pool);
+        // Assert hat replicatedQuery() produces the same results
+        resultSet = apiT.replicatedQuery("social","MATCH (n:N {val:$val}) RETURN n.val", params,10000,5000);
+        Assert.assertEquals(resultSet.numberReplicasReached(),(long)connected_replicas);
+        r = resultSet.next();
+        // Ensure that we have the same number of replicas reached, as the number of connected replicas on redis
         Assert.assertEquals(params.get("val"), r.getValue(0));
         Assert.assertTrue(resultSet.getStatistics().cachedExecution());
     }

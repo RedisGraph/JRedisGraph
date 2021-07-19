@@ -10,7 +10,8 @@ import redis.clients.jedis.commands.ProtocolCommand;
 public enum RedisGraphCommand implements ProtocolCommand {
     QUERY("graph.QUERY"),
     RO_QUERY("graph.RO_QUERY"),
-    DELETE("graph.DELETE");
+    DELETE("graph.DELETE"),
+    WAIT("WAIT");
 
     private final byte[] raw;
 

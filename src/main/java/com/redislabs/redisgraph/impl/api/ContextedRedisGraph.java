@@ -8,9 +8,12 @@ import com.redislabs.redisgraph.impl.graph_cache.RedisGraphCaches;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
 import redis.clients.jedis.Client;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.Pipeline;
+import redis.clients.jedis.Response;
 import redis.clients.jedis.util.SafeEncoder;
 import redis.clients.jedis.exceptions.JedisDataException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * An implementation of RedisGraphContext. Allows sending RedisGraph and some Redis commands,
@@ -117,6 +120,42 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
             List<Object> rawResponse = (List<Object>) conn.sendBlockingCommand(RedisGraphCommand.RO_QUERY,
                     graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
             return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
+        }
+        catch (JRedisGraphException ge) {
+            throw ge;
+        }
+        catch (JedisDataException de) {
+            throw new JRedisGraphException(de);
+        }
+    }
+
+    /**
+     * Executes a cypher query with parameters and redisgraph timeout.
+     * After that block the current client until all the previous cypher write queries
+     * are successfully transferred and acknowledged by at least 1 replica.
+     * If the replicationTimeout, specified in milliseconds, is reached,
+     * the method returns even if the specified number of replicas were not yet reached.
+     *
+     * @param graphId            graph to be queried
+     * @param preparedQuery      prepared query
+     * @param redisGraphTimeout
+     * @param replicationTimeout replication timeout, specified in milliseconds
+     * @return a result set
+     */
+    @Override
+    protected ResultSet sendReplicatedQuery(String graphId, String preparedQuery, long redisGraphTimeout, long replicationTimeout) {
+        Jedis conn = getConnection();
+        try {
+            Pipeline pipe = conn.pipelined();
+            pipe.setClient(conn.getClient());
+            Response<Object> rawResponse = pipe.sendCommand(RedisGraphCommand.QUERY,
+                    graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(redisGraphTimeout));
+            Response<Object> waitResponse = pipe.sendCommand(RedisGraphCommand.WAIT,"1", Long.toString(replicationTimeout));
+            pipe.sync();
+            ResultSetImpl resultSet = new ResultSetImpl((List<Object>) rawResponse.get(), this, caches.getGraphCache(graphId));
+            Long numberReplicasReached = (Long) waitResponse.get();
+            resultSet.setNumberReplicasReached(numberReplicasReached);
+            return resultSet;
         }
         catch (JRedisGraphException ge) {
             throw ge;
