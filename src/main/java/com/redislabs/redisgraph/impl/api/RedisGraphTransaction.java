@@ -38,7 +38,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      */
     @Override
     public Response<ResultSet> query(String graphId, String query) {
-        client.sendCommand(RedisGraphCommand.QUERY, graphId, query, "--COMPACT");
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, query, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
@@ -55,7 +55,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      */
     @Override
     public Response<ResultSet> readOnlyQuery(String graphId, String query) {
-        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, query, "--COMPACT");
+        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, query, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
@@ -75,7 +75,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      */
     @Override
     public Response<ResultSet> query(String graphId, String query, long timeout) {
-        client.sendCommand(RedisGraphCommand.QUERY, graphId, query, "--COMPACT", "TIMEOUT", Long.toString(timeout));
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, query, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
@@ -95,7 +95,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      */
     @Override
     public Response<ResultSet> readOnlyQuery(String graphId, String query, long timeout) {
-        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, query, "--COMPACT", "TIMEOUT", Long.toString(timeout));
+        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, query, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
@@ -117,7 +117,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     @Override
     public Response<ResultSet> query(String graphId, String query, Object ...args){
         String preparedQuery = Utils.prepareQuery(query, args);
-        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, "--COMPACT");
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
@@ -136,7 +136,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     @Override
     public Response<ResultSet> query(String graphId, String query, Map<String, Object> params) {
         String preparedQuery = Utils.prepareQuery(query, params);
-        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, "--COMPACT");
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
@@ -155,7 +155,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     @Override
     public Response<ResultSet> readOnlyQuery(String graphId, String query, Map<String, Object> params) {
         String preparedQuery = Utils.prepareQuery(query, params);
-        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, "--COMPACT");
+        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
@@ -178,7 +178,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     @Override
     public Response<ResultSet> query(String graphId, String query, Map<String, Object> params, long timeout) {
         String preparedQuery = Utils.prepareQuery(query, params);
-        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, "--COMPACT", "TIMEOUT", Long.toString(timeout));
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
@@ -201,7 +201,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     @Override
     public Response<ResultSet> readOnlyQuery(String graphId, String query, Map<String, Object> params, long timeout) {
         String preparedQuery = Utils.prepareQuery(query, params);
-        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, "--COMPACT", "TIMEOUT", Long.toString(timeout));
+        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
