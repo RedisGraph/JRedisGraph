@@ -118,7 +118,7 @@ public class PipelineTest {
     }
 
     @Test
-    public void testMultiExecWithReadOnlyQueries(){
+    public void testPipelineWithReadOnlyQueries(){
         try (RedisGraphContext c = api.getContext()) {
             RedisGraphPipeline pipeline = api.getContext().pipelined();
                 
