@@ -33,8 +33,7 @@ public class PipelineTest {
     @Test
     public void testPipelineExec(){
         try (RedisGraphContext c = api.getContext()) {
-            RedisGraphPipeline pipeline = api.getContext().pipelined();
-
+            RedisGraphPipeline pipeline = c.pipelined();
             pipeline.set("x", "1");
             pipeline.query("social", "CREATE (:Person {name:'a'})");
             pipeline.query("g", "CREATE (:Person {name:'a'})");
@@ -120,7 +119,7 @@ public class PipelineTest {
     @Test
     public void testPipelineWithReadOnlyQueries(){
         try (RedisGraphContext c = api.getContext()) {
-            RedisGraphPipeline pipeline = api.getContext().pipelined();
+            RedisGraphPipeline pipeline = c.pipelined();
                 
             pipeline.set("x", "1");
             pipeline.query("social", "CREATE (:Person {name:'a'})");
