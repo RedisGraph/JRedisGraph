@@ -37,6 +37,7 @@ public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisg
     @Override
     public Response<ResultSet> query(String graphId, String query) {
         client.sendCommand(RedisGraphCommand.QUERY, graphId, query, Utils.COMPACT_STRING);
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, query, "--COMPACT");
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
