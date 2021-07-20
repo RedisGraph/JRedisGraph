@@ -28,19 +28,6 @@ public class TransactionTest {
         api.close();
     }
 
-    @Ignore
-    @Test
-    public void tinyTestMultiThread(){
-        ResultSet resultSet = api.query("social", "CREATE ({name:'roi',age:32})");
-        api.query("social", "MATCH (a:person) RETURN a");
-        for (int i =0; i < 10000; i++){
-            List<ResultSet> resultSets = IntStream.range(0,16).parallel().
-                    mapToObj(
-                            j-> api.query("social", "MATCH (a:person) RETURN a")).
-                    collect(Collectors.toList());
-        }
-    }
-
     @Test
     public void testMultiExec(){
         try (RedisGraphContext c = api.getContext()) {
