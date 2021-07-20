@@ -15,6 +15,7 @@ import redis.clients.jedis.util.SafeEncoder;
 public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextGenerator {
 
     private final Pool<Jedis> client;
+    private Jedis jedis;
     private final RedisGraphCaches caches = new RedisGraphCaches();
 
     /**
@@ -43,7 +44,11 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
     public RedisGraph( Pool<Jedis> jedis) {
         this.client = jedis;
     }
-
+    
+    public RedisGraph(Jedis jedis) {
+        this.jedis = jedis;
+        this.client = null;
+    }
 
     /**
      * Overrides the abstract function. Gets and returns a Jedis connection from the Jedis pool
@@ -51,7 +56,7 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
      */
     @Override
     protected Jedis getConnection() {
-        return client.getResource();
+      return jedis != null ? jedis : client.getResource();
     }
 
     /**
