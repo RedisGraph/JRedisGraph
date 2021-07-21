@@ -58,17 +58,6 @@ public interface RedisGraphPipeline extends
     Response<ResultSet> readOnlyQuery(String graphId, String query, long timeout);
 
     /**
-     * Execute a Cypher query with arguments
-     * @param graphId a graph to perform the query on
-     * @param query Cypher query
-     * @param args
-     * @return a response which builds the result set with the query answer.
-     * @deprecated use {@link #query(String, String, Map)} instead.
-     */
-    @Deprecated
-    Response<ResultSet> query(String graphId, String query, Object ...args);
-
-    /**
      * Executes a cypher query with parameters.
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.
@@ -155,4 +144,17 @@ public interface RedisGraphPipeline extends
      * commands you execute.
      */
     public void sync();
+    
+    
+    /**
+     * Blocks until all the previous write commands are successfully transferred and acknowledged by
+     * at least the specified number of replicas. If the timeout, specified in milliseconds, is
+     * reached, the command returns even if the specified number of replicas were not yet reached.
+     * @param replicas successfully transferred and acknowledged by at least the specified number of
+     *          replicas
+     * @param timeout the time to block in milliseconds, a timeout of 0 means to block forever
+     * @return the number of replicas reached by all the writes performed in the context of the
+     *         current connection
+     */
+    public Response<Long> waitReplicas(int replicas, long timeout);
 }

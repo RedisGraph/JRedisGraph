@@ -31,10 +31,9 @@ public class PipelineTest {
     }
 
     @Test
-    public void testPipelineExec(){
+    public void testSync(){
         try (RedisGraphContext c = api.getContext()) {
-            RedisGraphPipeline pipeline = api.getContext().pipelined();
-
+            RedisGraphPipeline pipeline = c.pipelined();
             pipeline.set("x", "1");
             pipeline.query("social", "CREATE (:Person {name:'a'})");
             pipeline.query("g", "CREATE (:Person {name:'a'})");
@@ -118,9 +117,9 @@ public class PipelineTest {
     }
 
     @Test
-    public void testPipelineWithReadOnlyQueries(){
+    public void testReadOnlyQueries(){
         try (RedisGraphContext c = api.getContext()) {
-            RedisGraphPipeline pipeline = api.getContext().pipelined();
+            RedisGraphPipeline pipeline = c.pipelined();
                 
             pipeline.set("x", "1");
             pipeline.query("social", "CREATE (:Person {name:'a'})");
@@ -189,6 +188,19 @@ public class PipelineTest {
             Assert.assertFalse(resultSet.hasNext());
             Assert.assertEquals(Arrays.asList("label"), record.keys());
             Assert.assertEquals("Person", record.getValue("label"));
+        }
+    }
+    
+    @Test
+    public void testWaitReplicas(){
+        try (RedisGraphContext c = api.getContext()) {
+            RedisGraphPipeline pipeline = c.pipelined();
+            pipeline.set("x", "1");
+            pipeline.query("social", "CREATE (:Person {name:'a'})");
+            pipeline.query("g", "CREATE (:Person {name:'a'})");
+            pipeline.waitReplicas(0, 100L);
+            List<Object> results = pipeline.syncAndReturnAll();
+            Assert.assertEquals(0L, results.get(3));
         }
     }
 }
