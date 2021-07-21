@@ -58,17 +58,6 @@ public interface RedisGraphPipeline extends
     Response<ResultSet> readOnlyQuery(String graphId, String query, long timeout);
 
     /**
-     * Execute a Cypher query with arguments
-     * @param graphId a graph to perform the query on
-     * @param query Cypher query
-     * @param args
-     * @return a response which builds the result set with the query answer.
-     * @deprecated use {@link #query(String, String, Map)} instead.
-     */
-    @Deprecated
-    Response<ResultSet> query(String graphId, String query, Object ...args);
-
-    /**
      * Executes a cypher query with parameters.
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.
