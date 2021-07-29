@@ -8,25 +8,23 @@ import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
 import redis.clients.jedis.Builder;
 import redis.clients.jedis.BuilderFactory;
 import redis.clients.jedis.Client;
+import redis.clients.jedis.Pipeline;
 import redis.clients.jedis.Response;
-import redis.clients.jedis.Transaction;
 
 import java.util.List;
 import java.util.Map;
 
 /**
- * This class is extending Jedis Transaction
+ * This class is extending Jedis Pipeline
  */
-public class RedisGraphTransaction extends Transaction implements com.redislabs.redisgraph.RedisGraphTransaction, RedisGraphCacheHolder {
+public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisgraph.RedisGraphPipeline, RedisGraphCacheHolder {
 
     private final RedisGraph redisGraph;
     private RedisGraphCaches caches;
 
 
-    public RedisGraphTransaction(Client client, RedisGraph redisGraph){
-        // init as in Jedis
-        super(client);
-
+    public RedisGraphPipeline(Client client, RedisGraph redisGraph){
+        super.setClient(client);
         this.redisGraph = redisGraph;
     }
 
@@ -96,28 +94,6 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     @Override
     public Response<ResultSet> readOnlyQuery(String graphId, String query, long timeout) {
         client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, query, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
-        return getResponse(new Builder<ResultSet>() {
-            @Override
-            public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
-            }
-        });
-    }
-
-    /**
-     * Execute a Cypher query with arguments
-     *
-     * @param graphId a graph to perform the query on
-     * @param query Cypher query
-     * @param args
-     * @return response with a result set
-     * @deprecated use {@link #query(String, String, Map)} instead.
-     */
-    @Deprecated
-    @Override
-    public Response<ResultSet> query(String graphId, String query, Object ...args){
-        String preparedQuery = Utils.prepareQuery(query, args);
-        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
             @Override
             public ResultSet build(Object o) {
@@ -211,7 +187,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     }
 
     /**
-     * Invokes stored procedures without arguments, in multi/exec context
+     * Invokes stored procedures without arguments
      * @param graphId a graph to perform the query on
      * @param procedure procedure name to invoke
      * @return response with result set with the procedure data
@@ -221,7 +197,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     }
 
     /**
-     * Invokes stored procedure with arguments, in multi/exec context
+     * Invokes stored procedure with arguments
      * @param graphId a graph to perform the query on
      * @param procedure procedure name to invoke
      * @param args procedure arguments
@@ -233,7 +209,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
 
 
     /**
-     * Invoke a stored procedure, in multi/exec context
+     * Invoke a stored procedure
      * @param graphId a graph to perform the query on
      * @param procedure - procedure to execute
      * @param args - procedure arguments
@@ -248,7 +224,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
 
 
     /**
-     * Deletes the entire graph, in multi/exec context
+     * Deletes the entire graph
      * @param graphId graph to delete
      * @return response with the deletion running time statistics
      */
@@ -264,5 +240,4 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     public void setRedisGraphCaches(RedisGraphCaches caches) {
         this.caches = caches;
     }
-
 }
