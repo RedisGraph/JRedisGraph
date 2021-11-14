@@ -2,99 +2,95 @@ package com.redislabs.redisgraph.graph_entities;
 
 import java.util.*;
 
-
 /**
- * This is an abstract class for representing a graph entity.
- * A graph entity has an id and a set of properties. The properties are mapped and accessed by their names.
+ * This is an abstract class for representing a graph entity. A graph entity has
+ * an id and a set of properties. The properties are mapped and accessed by
+ * their names.
  */
 public abstract class GraphEntity {
-    //members
-    protected long id;
-    protected final Map<String, Property<?>> propertyMap = new HashMap<>();
+	// members
+	protected long id;
+	protected final Map<String, Property<?>> propertyMap = new HashMap<>();
 
+	// setters & getters
 
-    //setters & getters
+	/**
+	 * @return entity id
+	 */
+	public long getId() {
+		return id;
+	}
 
-    /**
-     * @return entity id
-     */
-    public long getId() {
-        return id;
-    }
+	/**
+	 * @param id - entity id to be set
+	 */
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    /**
-     * @param id - entity id to be set
-     */
-    public void setId(long id) {
-        this.id = id;
-    }
+	/**
+	 * Adds a property to the entity, by composing name, type and value to a
+	 * property object
+	 *
+	 * @param name
+	 * @param value
+	 */
+	public void addProperty(String name, Object value) {
+		addProperty(new Property<Object>(name, value));
+	}
 
+	/**
+	 * @return Entity's property names, as a Set
+	 */
+	public Set<String> getEntityPropertyNames() {
+		return propertyMap.keySet();
+	}
 
-    /**
-     * Adds a property to the entity, by composing name, type and value to a property object
-     *
-     * @param name
-     * @param value
-     */
-    public void addProperty(String name, Object value) {
-        addProperty(new Property(name, value));
-    }
+	/**
+	 * Add a property to the entity
+	 *
+	 * @param property
+	 */
+	public void addProperty(Property<?> property) {
+		propertyMap.put(property.getName(), property);
+	}
 
-    /**
-     * @return Entity's property names, as a Set
-     */
-    public Set<String> getEntityPropertyNames() {
-        return propertyMap.keySet();
-    }
+	/**
+	 * @return number of properties
+	 */
+	public int getNumberOfProperties() {
+		return propertyMap.size();
+	}
 
-    /**
-     * Add a property to the entity
-     *
-     * @param property
-     */
-    public void addProperty(Property property) {
+	/**
+	 * @param propertyName - property name as lookup key (String)
+	 * @return property object, or null if key is not found
+	 */
+	public Property<?> getProperty(String propertyName) {
+		return propertyMap.get(propertyName);
+	}
 
+	/**
+	 * @param name - the name of the property to be removed
+	 */
+	public void removeProperty(String name) {
+		propertyMap.remove(name);
+	}
 
-        propertyMap.put(property.getName(), property);
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (!(o instanceof GraphEntity))
+			return false;
+		GraphEntity that = (GraphEntity) o;
+		return id == that.id && Objects.equals(propertyMap, that.propertyMap);
+	}
 
-    /**
-     * @return number of properties
-     */
-    public int getNumberOfProperties() {
-        return propertyMap.size();
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(id, propertyMap);
+	}
 
-
-    /**
-     * @param propertyName - property name as lookup key (String)
-     * @return property object, or null if key is not found
-     */
-    public Property getProperty(String propertyName) {
-        return propertyMap.get(propertyName);
-    }
-
-
-    /**
-     * @param name - the name of the property to be removed
-     */
-    public void removeProperty(String name) {
-        propertyMap.remove(name);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof GraphEntity)) return false;
-        GraphEntity that = (GraphEntity) o;
-        return id == that.id &&
-                Objects.equals(propertyMap, that.propertyMap);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, propertyMap);
-    }
-
-    public abstract String toString();
+	public abstract String toString();
 }

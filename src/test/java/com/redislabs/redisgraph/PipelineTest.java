@@ -1,16 +1,17 @@
 package com.redislabs.redisgraph;
 
-import com.redislabs.redisgraph.Statistics.Label;
-import com.redislabs.redisgraph.graph_entities.Edge;
+import java.util.Arrays;
+import java.util.List;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.redislabs.redisgraph.graph_entities.Node;
 import com.redislabs.redisgraph.graph_entities.Property;
 import com.redislabs.redisgraph.impl.api.RedisGraph;
 import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import org.junit.*;
 
 public class PipelineTest {
 

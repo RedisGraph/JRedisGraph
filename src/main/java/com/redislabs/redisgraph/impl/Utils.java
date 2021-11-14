@@ -102,7 +102,8 @@ public class Utils {
 
         }
         if(value instanceof List){
-            List<Object> list = (List<Object>)value;
+            @SuppressWarnings("unchecked")
+			List<Object> list = (List<Object>)value;
             return arrayToString(list.toArray());
         }
         return value.toString();

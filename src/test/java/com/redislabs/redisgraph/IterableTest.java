@@ -2,11 +2,11 @@ package com.redislabs.redisgraph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import com.redislabs.redisgraph.impl.api.RedisGraph;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.redislabs.redisgraph.impl.api.RedisGraph;
 
 public class IterableTest {
 
@@ -14,7 +14,6 @@ public class IterableTest {
 
   @Before
   public void createApi() {
-    //        api = new RedisGraph();
     api = new RedisGraph();
   }
 
@@ -44,7 +43,7 @@ public class IterableTest {
 
     ResultSet rs = api.query("social", "MATCH(n) RETURN n");
     int count = 0;
-    for(Record row: rs) {
+    for(@SuppressWarnings("unused") Record row: rs) {
       count++;
     }
     assertEquals(rs.size(), count);
@@ -57,7 +56,7 @@ public class IterableTest {
     ResultSet rs = api.query("social", "MATCH(n) RETURN n");
     rs.next();
     int count = 0;
-    for(Record row: rs) {
+    for(@SuppressWarnings("unused") Record row: rs) {
       count++;
     }
     assertEquals(rs.size(), count);

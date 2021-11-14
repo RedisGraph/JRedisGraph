@@ -1,5 +1,22 @@
 package com.redislabs.redisgraph;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
 import com.redislabs.redisgraph.Statistics.Label;
 import com.redislabs.redisgraph.graph_entities.Edge;
 import com.redislabs.redisgraph.graph_entities.Node;
@@ -7,13 +24,7 @@ import com.redislabs.redisgraph.graph_entities.Path;
 import com.redislabs.redisgraph.graph_entities.Point;
 import com.redislabs.redisgraph.graph_entities.Property;
 import com.redislabs.redisgraph.impl.api.RedisGraph;
-import com.redislabs.redisgraph.impl.resultset.ResultSetImpl;
 import com.redislabs.redisgraph.test.utils.PathBuilder;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import org.junit.*;
 
 public class RedisGraphAPITest {
 
@@ -303,19 +314,6 @@ public class RedisGraphAPITest {
 
     }
 
-    @Ignore
-    @Test
-    public void tinyTestMultiThread(){
-        ResultSet resultSet = api.query("social", "CREATE ({name:'roi',age:32})");
-        api.query("social", "MATCH (a:person) RETURN a");
-        for (int i =0; i < 10000; i++){
-            List<ResultSet> resultSets = IntStream.range(0,16).parallel().
-                    mapToObj(
-                            j-> api.query("social", "MATCH (a:person) RETURN a")).
-                    collect(Collectors.toList());
-        }
-    }
-
     @Test
     public void testMultiThread(){
 
@@ -475,8 +473,16 @@ public class RedisGraphAPITest {
 
     @Test
     public void testEscapedQuery() {
-        Assert.assertNotNull(api.query("social", "CREATE (:escaped{s1:%s,s2:%s})", "S\"'", "S'\""));
-        Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1=%s and n.s2=%s RETURN n", "S\"'", "S'\""));
+    	Map<String,Object> params1 = new HashMap<String,Object>();
+    	params1.put("s1", "S\"'");
+    	params1.put("s2", "S'\"");
+        Assert.assertNotNull(api.query("social", "CREATE (:escaped{s1:$s1,s2:$s2})", params1));
+        
+    	Map<String,Object> params2 = new HashMap<String,Object>();
+    	params2.put("s1", "S\"'");
+    	params2.put("s2", "S'\"");        
+        Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1=$s1 and n.s2=$s2 RETURN n", params2));
+        
         Assert.assertNotNull(api.query("social", "MATCH (n) where n.s1='S\"' RETURN n"));
 
     }
@@ -901,7 +907,7 @@ public class RedisGraphAPITest {
         Assert.assertEquals(1, record.size());
         Assert.assertEquals(Collections.singletonList("restaurant"), record.keys());
         Node node = record.getValue(0);
-        Property property = node.getProperty("location");
+        Property<?> property = node.getProperty("location");
         Assert.assertEquals(new Point(30.27822306, -97.75134723), property.getValue());
     }
 
