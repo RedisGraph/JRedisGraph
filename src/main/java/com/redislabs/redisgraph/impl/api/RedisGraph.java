@@ -14,8 +14,8 @@ import redis.clients.jedis.util.SafeEncoder;
  */
 public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextGenerator {
 
-    private final Pool<Jedis> client;
-    private Jedis jedis;
+    private final Pool<Jedis> pool;
+    private final Jedis jedis;
     private final RedisGraphCaches caches = new RedisGraphCaches();
 
     /**
@@ -33,21 +33,22 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
      * @param port Redis port
      */
     public RedisGraph(String host, int port) {
-        this( new JedisPool(host, port));
+        this(new JedisPool(host, port));
     }
 
     /**
      * Creates a client using provided Jedis pool
      *
-     * @param jedis bring your own Jedis pool
+     * @param pool bring your own Jedis pool
      */
-    public RedisGraph( Pool<Jedis> jedis) {
-        this.client = jedis;
+    public RedisGraph(Pool<Jedis> pool) {
+        this.pool = pool;
+        this.jedis = null;
     }
     
     public RedisGraph(Jedis jedis) {
         this.jedis = jedis;
-        this.client = null;
+        this.pool = null;
     }
 
     /**
@@ -56,7 +57,7 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
      */
     @Override
     protected Jedis getConnection() {
-      return jedis != null ? jedis : client.getResource();
+      return jedis != null ? jedis : pool.getResource();
     }
 
     /**
@@ -125,9 +126,14 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
      * Closes the Jedis pool
      */
     @Override
-    public void close(){
-        this.client.close();
-    }
+	public void close() {
+		if (pool != null) {
+			pool.close();
+		}
+		if (jedis != null) {
+			jedis.close();
+		}
+	}
 
 
     /**
