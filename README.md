@@ -21,7 +21,7 @@ RedisGraph Java client
     <dependency>
       <groupId>com.redislabs</groupId>
       <artifactId>jredisgraph</artifactId>
-      <version>2.4.0</version>
+      <version>2.5.1</version>
     </dependency>
   </dependencies>
 ```
@@ -43,7 +43,7 @@ and
     <dependency>
       <groupId>com.redislabs</groupId>
       <artifactId>jredisgraph</artifactId>
-      <version>2.5.0-SNAPSHOT</version>
+      <version>2.6.0-SNAPSHOT</version>
     </dependency>
   </dependencies>
 ```

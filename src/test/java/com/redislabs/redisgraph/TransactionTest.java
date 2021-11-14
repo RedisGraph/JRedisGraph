@@ -31,7 +31,7 @@ public class TransactionTest {
     @Test
     public void testMultiExec(){
         try (RedisGraphContext c = api.getContext()) {
-            RedisGraphTransaction transaction = api.getContext().multi();
+            RedisGraphTransaction transaction = c.multi();
 
             transaction.set("x", "1");
             transaction.query("social", "CREATE (:Person {name:'a'})");
@@ -157,7 +157,7 @@ public class TransactionTest {
     @Test
     public void testMultiExecWithReadOnlyQueries(){
         try (RedisGraphContext c = api.getContext()) {
-            RedisGraphTransaction transaction = api.getContext().multi();
+            RedisGraphTransaction transaction = c.multi();
 
             transaction.set("x", "1");
             transaction.query("social", "CREATE (:Person {name:'a'})");
