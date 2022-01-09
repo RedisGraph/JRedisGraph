@@ -7,8 +7,6 @@ import java.util.Map;
 import redis.clients.jedis.Jedis;
 
 public interface RedisGraph extends Closeable {
-	
-    
     public static RedisGraph with(Jedis jedis) {
       return new com.redislabs.redisgraph.impl.api.RedisGraph(jedis);
     }

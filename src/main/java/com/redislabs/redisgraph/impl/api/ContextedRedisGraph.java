@@ -96,7 +96,7 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
         Jedis conn = getConnection();
         try {
             @SuppressWarnings("unchecked")
-			List<Object> rawResponse = (List<Object>) conn.sendBlockingCommand(RedisGraphCommand.QUERY,
+            List<Object> rawResponse = (List<Object>) conn.sendBlockingCommand(RedisGraphCommand.QUERY,
                 graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
             return new ResultSetImpl(rawResponse, this, caches.getGraphCache(graphId));
         }
@@ -154,7 +154,7 @@ public class ContextedRedisGraph extends AbstractRedisGraph implements RedisGrap
         transaction.setRedisGraphCaches(caches);
         return transaction;
     }
-    
+
     /**
      * Creates a new RedisGraphPipeline pipeline object
      * @return new RedisGraphPipeline

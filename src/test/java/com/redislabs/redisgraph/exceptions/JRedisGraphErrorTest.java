@@ -14,16 +14,16 @@ import com.redislabs.redisgraph.RedisGraphContext;
 import com.redislabs.redisgraph.RedisGraphContextGenerator;
 import com.redislabs.redisgraph.impl.api.RedisGraph;
 
-
 public class JRedisGraphErrorTest {
 
     private RedisGraphContextGenerator api;
 
     @Before
-    public void createApi(){
+    public void createApi() {
         api = new RedisGraph();
         Assert.assertNotNull(api.query("social", "CREATE (:person{mixed_prop: 'strval'}), (:person{mixed_prop: 50})"));
     }
+
     @After
     public void deleteGraph() {
 
@@ -33,16 +33,16 @@ public class JRedisGraphErrorTest {
 
     @Test
     public void testSyntaxErrorReporting() {
-    	JRedisGraphException exception = assertThrows(JRedisGraphException.class,
+        JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> api.query("social", "RETURN toUpper(5)"));
-            assertTrue(exception.getMessage().contains("Type mismatch: expected String but was Integer"));
+        assertTrue(exception.getMessage().contains("Type mismatch: expected String but was Integer"));
     }
 
     @Test
     public void testRuntimeErrorReporting() {
-    	JRedisGraphException exception = assertThrows(JRedisGraphException.class,
+        JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> api.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)"));
-            assertTrue(exception.getMessage().contains("Type mismatch: expected String but was Integer"));
+        assertTrue(exception.getMessage().contains("Type mismatch: expected String but was Integer"));
     }
 
     @Test
@@ -51,10 +51,9 @@ public class JRedisGraphErrorTest {
         try {
             // Issue a query that causes a compile-time error
             api.query("social", "RETURN toUpper(5)");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Assert.assertEquals(JRedisGraphException.class, e.getClass());
-            Assert.assertTrue( e.getMessage().contains("Type mismatch: expected String but was Integer"));
+            Assert.assertTrue(e.getMessage().contains("Type mismatch: expected String but was Integer"));
         }
 
         // On general api usage, user should get a new connection
@@ -62,47 +61,43 @@ public class JRedisGraphErrorTest {
         try {
             // Issue a query that causes a compile-time error
             api.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Assert.assertEquals(JRedisGraphException.class, e.getClass());
-            Assert.assertTrue( e.getMessage().contains("Type mismatch: expected String but was Integer"));
+            Assert.assertTrue(e.getMessage().contains("Type mismatch: expected String but was Integer"));
         }
-
     }
-
 
     @Test
     public void testContextSyntaxErrorReporting() {
         RedisGraphContext c = api.getContext();
 
-    	JRedisGraphException exception = assertThrows(JRedisGraphException.class,
+        JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> c.query("social", "RETURN toUpper(5)"));
-            assertTrue(exception.getMessage().contains("Type mismatch: expected String but was Integer"));
+        assertTrue(exception.getMessage().contains("Type mismatch: expected String but was Integer"));
     }
 
     @Test
-    public void testMissingParametersSyntaxErrorReporting(){
-    	JRedisGraphException exception = assertThrows(JRedisGraphException.class,
+    public void testMissingParametersSyntaxErrorReporting() {
+        JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> api.query("social", "RETURN $param"));
-            assertTrue(exception.getMessage().contains("Missing parameters"));
+        assertTrue(exception.getMessage().contains("Missing parameters"));
     }
 
     @Test
-    public void testMissingParametersSyntaxErrorReporting2(){
-    	JRedisGraphException exception = assertThrows(JRedisGraphException.class,
+    public void testMissingParametersSyntaxErrorReporting2() {
+        JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> api.query("social", "RETURN $param", new HashMap<>()));
-            assertTrue(exception.getMessage().contains("Missing parameters"));
+        assertTrue(exception.getMessage().contains("Missing parameters"));
     }
 
     @Test
     public void testContextRuntimeErrorReporting() {
         RedisGraphContext c = api.getContext();
 
-    	JRedisGraphException exception = assertThrows(JRedisGraphException.class,
+        JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> c.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)"));
-            assertTrue(exception.getMessage().contains("Type mismatch: expected String but was Integer"));
+        assertTrue(exception.getMessage().contains("Type mismatch: expected String but was Integer"));
     }
-
 
     @Test
     public void testContextExceptionFlow() {
@@ -111,29 +106,25 @@ public class JRedisGraphErrorTest {
         try {
             // Issue a query that causes a compile-time error
             c.query("social", "RETURN toUpper(5)");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Assert.assertEquals(JRedisGraphException.class, e.getClass());
-            Assert.assertTrue( e.getMessage().contains("Type mismatch: expected String but was Integer"));
+            Assert.assertTrue(e.getMessage().contains("Type mismatch: expected String but was Integer"));
         }
 
         // On contexted api usage, connection should stay open
-
         try {
             // Issue a query that causes a compile-time error
             c.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)");
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             Assert.assertEquals(JRedisGraphException.class, e.getClass());
-            Assert.assertTrue( e.getMessage().contains("Type mismatch: expected String but was Integer"));
+            Assert.assertTrue(e.getMessage().contains("Type mismatch: expected String but was Integer"));
         }
-
     }
 
     @Test
     public void timeoutException() {
-    	JRedisGraphException exception = assertThrows(JRedisGraphException.class,
+        JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> api.query("social", "UNWIND range(0,100000) AS x WITH x AS x WHERE x = 10000 RETURN x", 1L));
-            assertTrue(exception.getMessage().contains("Query timed out"));
+        assertTrue(exception.getMessage().contains("Query timed out"));
     }
 }

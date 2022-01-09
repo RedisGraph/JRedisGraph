@@ -21,7 +21,7 @@ public class PipelineTest {
     }
 
     @Before
-    public void createApi(){
+    public void createApi() {
         api = new RedisGraph();
     }
 
@@ -32,7 +32,7 @@ public class PipelineTest {
     }
 
     @Test
-    public void testSync(){
+    public void testSync() {
         try (RedisGraphContext c = api.getContext()) {
             RedisGraphPipeline pipeline = c.pipelined();
             pipeline.set("x", "1");
@@ -55,7 +55,6 @@ public class PipelineTest {
             Assert.assertEquals(1, resultSet.getStatistics().nodesCreated());
             Assert.assertEquals(1, resultSet.getStatistics().propertiesSet());
 
-
             Assert.assertEquals(ResultSetImpl.class, results.get(2).getClass());
             resultSet = (ResultSet) results.get(2);
             Assert.assertEquals(1, resultSet.getStatistics().nodesCreated());
@@ -75,7 +74,6 @@ public class PipelineTest {
 
             Assert.assertNotNull(resultSet.getHeader());
             Header header = resultSet.getHeader();
-
 
             List<String> schemaNames = header.getSchemaNames();
             Assert.assertNotNull(schemaNames);
@@ -102,7 +100,6 @@ public class PipelineTest {
             Assert.assertNotNull(resultSet.getHeader());
             header = resultSet.getHeader();
 
-
             schemaNames = header.getSchemaNames();
             Assert.assertNotNull(schemaNames);
             Assert.assertEquals(1, schemaNames.size());
@@ -118,10 +115,10 @@ public class PipelineTest {
     }
 
     @Test
-    public void testReadOnlyQueries(){
+    public void testReadOnlyQueries() {
         try (RedisGraphContext c = api.getContext()) {
             RedisGraphPipeline pipeline = c.pipelined();
-                
+
             pipeline.set("x", "1");
             pipeline.query("social", "CREATE (:Person {name:'a'})");
             pipeline.query("g", "CREATE (:Person {name:'a'})");
@@ -139,7 +136,6 @@ public class PipelineTest {
             ResultSet resultSet = (ResultSet) results.get(1);
             Assert.assertEquals(1, resultSet.getStatistics().nodesCreated());
             Assert.assertEquals(1, resultSet.getStatistics().propertiesSet());
-
 
             Assert.assertEquals(ResultSetImpl.class, results.get(2).getClass());
             resultSet = (ResultSet) results.get(2);
@@ -191,9 +187,9 @@ public class PipelineTest {
             Assert.assertEquals("Person", record.getValue("label"));
         }
     }
-    
+
     @Test
-    public void testWaitReplicas(){
+    public void testWaitReplicas() {
         try (RedisGraphContext c = api.getContext()) {
             RedisGraphPipeline pipeline = c.pipelined();
             pipeline.set("x", "1");

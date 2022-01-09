@@ -45,7 +45,7 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
         this.pool = pool;
         this.jedis = null;
     }
-    
+
     public RedisGraph(Jedis jedis) {
         this.jedis = jedis;
         this.pool = null;
@@ -126,14 +126,14 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
      * Closes the Jedis pool
      */
     @Override
-	public void close() {
-		if (pool != null) {
-			pool.close();
-		}
-		if (jedis != null) {
-			jedis.close();
-		}
-	}
+    public void close() {
+      if (pool != null) {
+        pool.close();
+      }
+      if (jedis != null) {
+        jedis.close();
+      }
+    }
 
 
     /**

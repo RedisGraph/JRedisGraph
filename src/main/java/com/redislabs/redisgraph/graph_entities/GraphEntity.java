@@ -8,89 +8,89 @@ import java.util.*;
  * their names.
  */
 public abstract class GraphEntity {
-	// members
-	protected long id;
-	protected final Map<String, Property<?>> propertyMap = new HashMap<>();
+  // members
+  protected long id;
+  protected final Map<String, Property<?>> propertyMap = new HashMap<>();
 
-	// setters & getters
+  // setters & getters
 
-	/**
-	 * @return entity id
-	 */
-	public long getId() {
-		return id;
-	}
+  /**
+   * @return entity id
+   */
+  public long getId() {
+    return id;
+  }
 
-	/**
-	 * @param id - entity id to be set
-	 */
-	public void setId(long id) {
-		this.id = id;
-	}
+  /**
+   * @param id - entity id to be set
+   */
+  public void setId(long id) {
+    this.id = id;
+  }
 
-	/**
-	 * Adds a property to the entity, by composing name, type and value to a
-	 * property object
-	 *
-	 * @param name
-	 * @param value
-	 */
-	public void addProperty(String name, Object value) {
-		addProperty(new Property<Object>(name, value));
-	}
+  /**
+   * Adds a property to the entity, by composing name, type and value to a
+   * property object
+   *
+   * @param name
+   * @param value
+   */
+  public void addProperty(String name, Object value) {
+    addProperty(new Property<Object>(name, value));
+  }
 
-	/**
-	 * @return Entity's property names, as a Set
-	 */
-	public Set<String> getEntityPropertyNames() {
-		return propertyMap.keySet();
-	}
+  /**
+   * @return Entity's property names, as a Set
+   */
+  public Set<String> getEntityPropertyNames() {
+    return propertyMap.keySet();
+  }
 
-	/**
-	 * Add a property to the entity
-	 *
-	 * @param property
-	 */
-	public void addProperty(Property<?> property) {
-		propertyMap.put(property.getName(), property);
-	}
+  /**
+   * Add a property to the entity
+   *
+   * @param property
+   */
+  public void addProperty(Property<?> property) {
+    propertyMap.put(property.getName(), property);
+  }
 
-	/**
-	 * @return number of properties
-	 */
-	public int getNumberOfProperties() {
-		return propertyMap.size();
-	}
+  /**
+   * @return number of properties
+   */
+  public int getNumberOfProperties() {
+    return propertyMap.size();
+  }
 
-	/**
-	 * @param propertyName - property name as lookup key (String)
-	 * @return property object, or null if key is not found
-	 */
-	public Property<?> getProperty(String propertyName) {
-		return propertyMap.get(propertyName);
-	}
+  /**
+   * @param propertyName - property name as lookup key (String)
+   * @return property object, or null if key is not found
+   */
+  public Property<?> getProperty(String propertyName) {
+    return propertyMap.get(propertyName);
+  }
 
-	/**
-	 * @param name - the name of the property to be removed
-	 */
-	public void removeProperty(String name) {
-		propertyMap.remove(name);
-	}
+  /**
+   * @param name - the name of the property to be removed
+   */
+  public void removeProperty(String name) {
+    propertyMap.remove(name);
+  }
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
-		if (!(o instanceof GraphEntity))
-			return false;
-		GraphEntity that = (GraphEntity) o;
-		return id == that.id && Objects.equals(propertyMap, that.propertyMap);
-	}
+  @Override
+  public boolean equals(Object o) {
+    if (this == o)
+      return true;
+    if (!(o instanceof GraphEntity))
+      return false;
+    GraphEntity that = (GraphEntity) o;
+    return id == that.id && Objects.equals(propertyMap, that.propertyMap);
+  }
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(id, propertyMap);
-	}
+  @Override
+  public int hashCode() {
+    return Objects.hash(id, propertyMap);
+  }
 
-	public abstract String toString();
+  public abstract String toString();
 }

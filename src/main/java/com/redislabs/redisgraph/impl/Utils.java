@@ -23,7 +23,7 @@ public class Utils {
         escapeJavaMap.put("\"", "\\\"");
         ESCAPE_CHYPER = new AggregateTranslator(new LookupTranslator(Collections.unmodifiableMap(escapeJavaMap)));
     }
-    
+
     private Utils() {}
 
     /**
@@ -87,9 +87,8 @@ public class Utils {
     }
 
     private static String valueToString(Object value) {
-        if(value == null)
-            return "null";
-        
+        if(value == null) return "null";
+
         if(value instanceof String){
             return quoteString((String) value);
         }
@@ -103,7 +102,7 @@ public class Utils {
         }
         if(value instanceof List){
             @SuppressWarnings("unchecked")
-			List<Object> list = (List<Object>)value;
+            List<Object> list = (List<Object>) value;
             return arrayToString(list.toArray());
         }
         return value.toString();
