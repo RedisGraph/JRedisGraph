@@ -32,7 +32,6 @@ public class RedisGraphTransaction extends Transaction
 
     /**
      * Execute a Cypher query.
-     *
      * @param graphId a graph to perform the query on
      * @param query Cypher query
      * @return a response which builds the result set with the query answer.
@@ -51,7 +50,6 @@ public class RedisGraphTransaction extends Transaction
 
     /**
      * Execute a Cypher read-oly query.
-     *
      * @param graphId a graph to perform the query on
      * @param query Cypher query
      * @return a response which builds the result set with the query answer.
@@ -72,7 +70,6 @@ public class RedisGraphTransaction extends Transaction
      * Execute a Cypher query with timeout.
      *
      * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
-     *
      * @param graphId a graph to perform the query on
      * @param query Cypher query
      * @param timeout
@@ -95,7 +92,6 @@ public class RedisGraphTransaction extends Transaction
      * Execute a Cypher read-only query with timeout.
      *
      * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
-     *
      * @param graphId a graph to perform the query on
      * @param query Cypher query
      * @param timeout
@@ -139,7 +135,6 @@ public class RedisGraphTransaction extends Transaction
 
     /**
      * Executes a cypher query with parameters.
-     *
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.
      * @param params parameters map.
@@ -160,7 +155,6 @@ public class RedisGraphTransaction extends Transaction
 
     /**
      * Executes a cypher read-only query with parameters.
-     *
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.
      * @param params parameters map.
@@ -182,8 +176,7 @@ public class RedisGraphTransaction extends Transaction
     /**
      * Executes a cypher query with parameters and timeout.
      *
-     * NOTE: timeout is simply sent to DB. Socket timeout will not be changed. timeout.
-     *
+     * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.
      * @param params parameters map.
@@ -207,8 +200,7 @@ public class RedisGraphTransaction extends Transaction
     /**
      * Executes a cypher read-only query with parameters and timeout.
      *
-     * NOTE: timeout is simply sent to DB. Socket timeout will not be changed. timeout.
-     *
+     * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.
      * @param params parameters map.
@@ -231,7 +223,6 @@ public class RedisGraphTransaction extends Transaction
 
     /**
      * Invokes stored procedures without arguments, in multi/exec context
-     *
      * @param graphId a graph to perform the query on
      * @param procedure procedure name to invoke
      * @return response with result set with the procedure data
@@ -242,7 +233,6 @@ public class RedisGraphTransaction extends Transaction
 
     /**
      * Invokes stored procedure with arguments, in multi/exec context
-     *
      * @param graphId a graph to perform the query on
      * @param procedure procedure name to invoke
      * @param args procedure arguments
@@ -254,7 +244,6 @@ public class RedisGraphTransaction extends Transaction
 
     /**
      * Invoke a stored procedure, in multi/exec context
-     *
      * @param graphId a graph to perform the query on
      * @param procedure - procedure to execute
      * @param args - procedure arguments
@@ -269,12 +258,10 @@ public class RedisGraphTransaction extends Transaction
 
     /**
      * Deletes the entire graph, in multi/exec context
-     *
      * @param graphId graph to delete
      * @return response with the deletion running time statistics
      */
     public Response<String> deleteGraph(String graphId) {
-
         client.sendCommand(RedisGraphCommand.DELETE, graphId);
         Response<String> response = getResponse(BuilderFactory.STRING);
         caches.removeGraphCache(graphId);
