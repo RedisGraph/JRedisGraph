@@ -34,7 +34,7 @@ public class RedisGraphTransaction extends Transaction
      * Execute a Cypher query.
      *
      * @param graphId a graph to perform the query on
-     * @param query   Cypher query
+     * @param query Cypher query
      * @return a response which builds the result set with the query answer.
      */
     @Override
@@ -53,7 +53,7 @@ public class RedisGraphTransaction extends Transaction
      * Execute a Cypher read-oly query.
      *
      * @param graphId a graph to perform the query on
-     * @param query   Cypher query
+     * @param query Cypher query
      * @return a response which builds the result set with the query answer.
      */
     @Override
@@ -74,7 +74,7 @@ public class RedisGraphTransaction extends Transaction
      * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
      *
      * @param graphId a graph to perform the query on
-     * @param query   Cypher query
+     * @param query Cypher query
      * @param timeout
      * @return a response which builds the result set with the query answer.
      */
@@ -97,7 +97,7 @@ public class RedisGraphTransaction extends Transaction
      * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
      *
      * @param graphId a graph to perform the query on
-     * @param query   Cypher query
+     * @param query Cypher query
      * @param timeout
      * @return a response which builds the result set with the query answer.
      */
@@ -118,7 +118,7 @@ public class RedisGraphTransaction extends Transaction
      * Execute a Cypher query with arguments
      *
      * @param graphId a graph to perform the query on
-     * @param query   Cypher query
+     * @param query Cypher query
      * @param args
      * @return response with a result set
      * @deprecated use {@link #query(String, String, Map)} instead.
@@ -141,8 +141,8 @@ public class RedisGraphTransaction extends Transaction
      * Executes a cypher query with parameters.
      *
      * @param graphId a graph to perform the query on.
-     * @param query   Cypher query.
-     * @param params  parameters map.
+     * @param query Cypher query.
+     * @param params parameters map.
      * @return a response which builds the result set with the query answer.
      */
     @Override
@@ -162,8 +162,8 @@ public class RedisGraphTransaction extends Transaction
      * Executes a cypher read-only query with parameters.
      *
      * @param graphId a graph to perform the query on.
-     * @param query   Cypher query.
-     * @param params  parameters map.
+     * @param query Cypher query.
+     * @param params parameters map.
      * @return a response which builds the result set with the query answer.
      */
     @Override
@@ -182,12 +182,11 @@ public class RedisGraphTransaction extends Transaction
     /**
      * Executes a cypher query with parameters and timeout.
      *
-     * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
-     * timeout.
+     * NOTE: timeout is simply sent to DB. Socket timeout will not be changed. timeout.
      *
      * @param graphId a graph to perform the query on.
-     * @param query   Cypher query.
-     * @param params  parameters map.
+     * @param query Cypher query.
+     * @param params parameters map.
      * @param timeout
      * @return a response which builds the result set with the query answer.
      */
@@ -208,12 +207,11 @@ public class RedisGraphTransaction extends Transaction
     /**
      * Executes a cypher read-only query with parameters and timeout.
      *
-     * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
-     * timeout.
+     * NOTE: timeout is simply sent to DB. Socket timeout will not be changed. timeout.
      *
      * @param graphId a graph to perform the query on.
-     * @param query   Cypher query.
-     * @param params  parameters map.
+     * @param query Cypher query.
+     * @param params parameters map.
      * @param timeout
      * @return a response which builds the result set with the query answer.
      */
@@ -234,7 +232,7 @@ public class RedisGraphTransaction extends Transaction
     /**
      * Invokes stored procedures without arguments, in multi/exec context
      *
-     * @param graphId   a graph to perform the query on
+     * @param graphId a graph to perform the query on
      * @param procedure procedure name to invoke
      * @return response with result set with the procedure data
      */
@@ -245,9 +243,9 @@ public class RedisGraphTransaction extends Transaction
     /**
      * Invokes stored procedure with arguments, in multi/exec context
      *
-     * @param graphId   a graph to perform the query on
+     * @param graphId a graph to perform the query on
      * @param procedure procedure name to invoke
-     * @param args      procedure arguments
+     * @param args procedure arguments
      * @return response with result set with the procedure data
      */
     public Response<ResultSet> callProcedure(String graphId, String procedure, List<String> args) {
@@ -257,10 +255,10 @@ public class RedisGraphTransaction extends Transaction
     /**
      * Invoke a stored procedure, in multi/exec context
      *
-     * @param graphId   a graph to perform the query on
+     * @param graphId a graph to perform the query on
      * @param procedure - procedure to execute
-     * @param args      - procedure arguments
-     * @param kwargs    - procedure output arguments
+     * @param args - procedure arguments
+     * @param kwargs - procedure output arguments
      * @return response with result set with the procedure data
      */
     public Response<ResultSet> callProcedure(String graphId, String procedure, List<String> args,

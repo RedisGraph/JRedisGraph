@@ -57,7 +57,7 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
      */
     @Override
     protected Jedis getConnection() {
-      return jedis != null ? jedis : pool.getResource();
+        return jedis != null ? jedis : pool.getResource();
     }
 
     /**
@@ -127,14 +127,13 @@ public class RedisGraph extends AbstractRedisGraph implements RedisGraphContextG
      */
     @Override
     public void close() {
-      if (pool != null) {
-        pool.close();
-      }
-      if (jedis != null) {
-        jedis.close();
-      }
+        if (pool != null) {
+            pool.close();
+        }
+        if (jedis != null) {
+            jedis.close();
+        }
     }
-
 
     /**
      * Deletes the entire graph

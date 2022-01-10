@@ -8,9 +8,9 @@ import org.junit.Test;
 import com.redislabs.redisgraph.graph_entities.Edge;
 
 public class PathBuilderTest {
+
     @Test
     public void testPathBuilderSizeException() {
-
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             PathBuilder builder = new PathBuilder(0);
             builder.build();
