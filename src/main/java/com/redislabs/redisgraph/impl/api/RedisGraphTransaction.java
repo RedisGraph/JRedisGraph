@@ -17,13 +17,13 @@ import java.util.Map;
 /**
  * This class is extending Jedis Transaction
  */
-public class RedisGraphTransaction extends Transaction implements com.redislabs.redisgraph.RedisGraphTransaction, RedisGraphCacheHolder {
+public class RedisGraphTransaction extends Transaction
+        implements com.redislabs.redisgraph.RedisGraphTransaction, RedisGraphCacheHolder {
 
     private final RedisGraph redisGraph;
     private RedisGraphCaches caches;
 
-
-    public RedisGraphTransaction(Client client, RedisGraph redisGraph){
+    public RedisGraphTransaction(Client client, RedisGraph redisGraph) {
         // init as in Jedis
         super(client);
 
@@ -40,9 +40,10 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     public Response<ResultSet> query(String graphId, String query) {
         client.sendCommand(RedisGraphCommand.QUERY, graphId, query, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -57,9 +58,10 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
     public Response<ResultSet> readOnlyQuery(String graphId, String query) {
         client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, query, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -75,11 +77,13 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      */
     @Override
     public Response<ResultSet> query(String graphId, String query, long timeout) {
-        client.sendCommand(RedisGraphCommand.QUERY, graphId, query, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, query, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING,
+                Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -95,11 +99,13 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      */
     @Override
     public Response<ResultSet> readOnlyQuery(String graphId, String query, long timeout) {
-        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, query, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
+        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, query, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING,
+                Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -115,13 +121,14 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      */
     @Deprecated
     @Override
-    public Response<ResultSet> query(String graphId, String query, Object ...args){
+    public Response<ResultSet> query(String graphId, String query, Object... args) {
         String preparedQuery = Utils.prepareQuery(query, args);
         client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -131,16 +138,17 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.
      * @param params parameters map.
-     * @return  a response which builds the result set with the query answer.
+     * @return a response which builds the result set with the query answer.
      */
     @Override
     public Response<ResultSet> query(String graphId, String query, Map<String, Object> params) {
         String preparedQuery = Utils.prepareQuery(query, params);
         client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -150,16 +158,17 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.
      * @param params parameters map.
-     * @return  a response which builds the result set with the query answer.
+     * @return a response which builds the result set with the query answer.
      */
     @Override
     public Response<ResultSet> readOnlyQuery(String graphId, String query, Map<String, Object> params) {
         String preparedQuery = Utils.prepareQuery(query, params);
         client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -168,21 +177,22 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      * Executes a cypher query with parameters and timeout.
      *
      * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
-     * timeout.
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.
      * @param params parameters map.
      * @param timeout
-     * @return  a response which builds the result set with the query answer.
+     * @return a response which builds the result set with the query answer.
      */
     @Override
     public Response<ResultSet> query(String graphId, String query, Map<String, Object> params, long timeout) {
         String preparedQuery = Utils.prepareQuery(query, params);
-        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING,
+                Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -191,21 +201,22 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      * Executes a cypher read-only query with parameters and timeout.
      *
      * NOTE: timeout is simply sent to DB. Socket timeout will not be changed.
-     * timeout.
      * @param graphId a graph to perform the query on.
      * @param query Cypher query.
      * @param params parameters map.
      * @param timeout
-     * @return  a response which builds the result set with the query answer.
+     * @return a response which builds the result set with the query answer.
      */
     @Override
     public Response<ResultSet> readOnlyQuery(String graphId, String query, Map<String, Object> params, long timeout) {
         String preparedQuery = Utils.prepareQuery(query, params);
-        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
+        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, Utils.COMPACT_STRING,
+                Utils.TIMEOUT_STRING, Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -216,7 +227,7 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      * @param procedure procedure name to invoke
      * @return response with result set with the procedure data
      */
-    public Response<ResultSet> callProcedure(String graphId, String procedure){
+    public Response<ResultSet> callProcedure(String graphId, String procedure) {
         return callProcedure(graphId, procedure, Utils.DUMMY_LIST, Utils.DUMMY_MAP);
     }
 
@@ -227,10 +238,9 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      * @param args procedure arguments
      * @return response with result set with the procedure data
      */
-    public Response<ResultSet> callProcedure(String graphId, String procedure, List<String> args  ){
+    public Response<ResultSet> callProcedure(String graphId, String procedure, List<String> args) {
         return callProcedure(graphId, procedure, args, Utils.DUMMY_MAP);
     }
-
 
     /**
      * Invoke a stored procedure, in multi/exec context
@@ -241,21 +251,19 @@ public class RedisGraphTransaction extends Transaction implements com.redislabs.
      * @return response with result set with the procedure data
      */
     public Response<ResultSet> callProcedure(String graphId, String procedure, List<String> args,
-                                                  Map<String, List<String>> kwargs) {
+            Map<String, List<String>> kwargs) {
         String preparedProcedure = Utils.prepareProcedure(procedure, args, kwargs);
         return query(graphId, preparedProcedure);
     }
-
 
     /**
      * Deletes the entire graph, in multi/exec context
      * @param graphId graph to delete
      * @return response with the deletion running time statistics
      */
-    public Response<String> deleteGraph(String graphId){
-
+    public Response<String> deleteGraph(String graphId) {
         client.sendCommand(RedisGraphCommand.DELETE, graphId);
-        Response<String> response =  getResponse(BuilderFactory.STRING);
+        Response<String> response = getResponse(BuilderFactory.STRING);
         caches.removeGraphCache(graphId);
         return response;
     }

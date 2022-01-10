@@ -10,7 +10,7 @@ import java.util.List;
 public final class PathBuilder{
     private final List<Node> nodes;
     private final List<Edge> edges;
-    private Class currentAppendClass;
+    private Class<?> currentAppendClass;
 
     public PathBuilder() {
         this.nodes = new ArrayList<>(0);
@@ -25,7 +25,7 @@ public final class PathBuilder{
     }
 
     public PathBuilder append(Object object){
-        Class c = object.getClass();
+        Class<? extends Object> c = object.getClass();
         if(!currentAppendClass.equals(c)) throw new IllegalArgumentException("Path Builder expected " + currentAppendClass.getSimpleName() + " but was " + c.getSimpleName());
         if(c.equals(Node.class)) return appendNode((Node)object);
         else return appendEdge((Edge)object);

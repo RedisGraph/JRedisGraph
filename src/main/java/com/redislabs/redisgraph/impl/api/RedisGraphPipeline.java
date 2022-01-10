@@ -38,9 +38,10 @@ public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisg
     public Response<ResultSet> query(String graphId, String query) {
         client.sendCommand(RedisGraphCommand.QUERY, graphId, query, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -55,9 +56,10 @@ public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisg
     public Response<ResultSet> readOnlyQuery(String graphId, String query) {
         client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, query, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -73,11 +75,13 @@ public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisg
      */
     @Override
     public Response<ResultSet> query(String graphId, String query, long timeout) {
-        client.sendCommand(RedisGraphCommand.QUERY, graphId, query, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, query, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING,
+                Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -93,11 +97,13 @@ public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisg
      */
     @Override
     public Response<ResultSet> readOnlyQuery(String graphId, String query, long timeout) {
-        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, query, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
+        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, query, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING,
+                Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -114,9 +120,10 @@ public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisg
         String preparedQuery = Utils.prepareQuery(query, params);
         client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -133,9 +140,10 @@ public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisg
         String preparedQuery = Utils.prepareQuery(query, params);
         client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, Utils.COMPACT_STRING);
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -154,11 +162,13 @@ public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisg
     @Override
     public Response<ResultSet> query(String graphId, String query, Map<String, Object> params, long timeout) {
         String preparedQuery = Utils.prepareQuery(query, params);
-        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
+        client.sendCommand(RedisGraphCommand.QUERY, graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING,
+                Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -177,11 +187,14 @@ public class RedisGraphPipeline extends Pipeline implements com.redislabs.redisg
     @Override
     public Response<ResultSet> readOnlyQuery(String graphId, String query, Map<String, Object> params, long timeout) {
         String preparedQuery = Utils.prepareQuery(query, params);
-        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, Utils.COMPACT_STRING, Utils.TIMEOUT_STRING, Long.toString(timeout));
+        client.sendCommand(RedisGraphCommand.RO_QUERY, graphId, preparedQuery, Utils.COMPACT_STRING,
+                Utils.TIMEOUT_STRING,
+                Long.toString(timeout));
         return getResponse(new Builder<ResultSet>() {
+            @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>)o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
             }
         });
     }

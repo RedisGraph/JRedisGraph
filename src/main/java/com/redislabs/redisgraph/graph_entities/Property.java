@@ -73,7 +73,7 @@ public class Property <T> {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Property)) return false;
-        Property property = (Property) o;
+        Property<?> property = (Property<?>) o;
         return Objects.equals(name, property.name) &&
                 valueEquals(value, property.value);
     }
