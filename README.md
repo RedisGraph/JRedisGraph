@@ -13,6 +13,9 @@
 
 RedisGraph Java client
 
+## Deprecation notice
+
+As of [Jedis](https://github.com/redis/jedis) version 4.2.0, this library is deprecated. Its features have been merged into Jedis. Please either install it from [maven](https://mvnrepository.com/artifact/redis.clients/jedis) or [the repo](https://github.com/redis/jedis).
 
 ### Official Releases
 
