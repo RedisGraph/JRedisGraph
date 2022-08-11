@@ -148,8 +148,8 @@ public class ResultSetImpl implements ResultSet {
         deserializeGraphEntityId(node, (Long) rawNodeData.get(0));
 
         for (Long labelIndex : labelsIndices) {
-          String label = cache.getLabel(labelIndex.intValue(), redisGraph);
-          node.addLabel(label);
+            String label = cache.getLabel(labelIndex.intValue(), redisGraph);
+            node.addLabel(label);
         }
 
         deserializeGraphEntityProperties(node, rawProperties);
@@ -266,9 +266,9 @@ public class ResultSetImpl implements ResultSet {
         Map<String, Object> map = new HashMap<>(size >> 1); // set the capacity to half of the list
 
         for (int i = 0; i < size; i += 2) {
-          String key = SafeEncoder.encode((byte[]) keyTypeValueEntries.get(i));
-          Object value = deserializeScalar((List<Object>) keyTypeValueEntries.get(i + 1));
-          map.put(key, value);
+            String key = SafeEncoder.encode((byte[]) keyTypeValueEntries.get(i));
+            Object value = deserializeScalar((List<Object>) keyTypeValueEntries.get(i + 1));
+            map.put(key, value);
         }
         return map;
     }
