@@ -63,42 +63,43 @@ public class ResultSetImpl implements ResultSet {
      */
     @SuppressWarnings("unchecked")
     private List<Record> parseResult(List<List<Object>> rawResultSet) {
-        List<Record> results = new ArrayList<>();
         if (rawResultSet == null || rawResultSet.isEmpty()) {
-            return results;
-        } else {
-            // go over each raw result
-            for (List<Object> row : rawResultSet) {
-
-                List<Object> parsedRow = new ArrayList<>(row.size());
-                // go over each object in the result
-                for (int i = 0; i < row.size(); i++) {
-                    // get raw representation of the object
-                    List<Object> obj = (List<Object>) row.get(i);
-                    // get object type
-                    Header.ResultSetColumnTypes objType = header.getSchemaTypes().get(i);
-                    // deserialize according to type and
-                    switch (objType) {
-                        case COLUMN_NODE:
-                            parsedRow.add(deserializeNode(obj));
-                            break;
-                        case COLUMN_RELATION:
-                            parsedRow.add(deserializeEdge(obj));
-                            break;
-                        case COLUMN_SCALAR:
-                            parsedRow.add(deserializeScalar(obj));
-                            break;
-                        default:
-                            parsedRow.add(null);
-                            break;
-                    }
-
-                }
-                // create new record from deserialized objects
-                Record record = new RecordImpl(header.getSchemaNames(), parsedRow);
-                results.add(record);
-            }
+            return new ArrayList<>(0);
         }
+
+        List<Record> results = new ArrayList<>(rawResultSet.size());
+        // go over each raw result
+        for (List<Object> row : rawResultSet) {
+
+            List<Object> parsedRow = new ArrayList<>(row.size());
+            // go over each object in the result
+            for (int i = 0; i < row.size(); i++) {
+                // get raw representation of the object
+                List<Object> obj = (List<Object>) row.get(i);
+                // get object type
+                Header.ResultSetColumnTypes objType = header.getSchemaTypes().get(i);
+                // deserialize according to type and
+                switch (objType) {
+                    case COLUMN_NODE:
+                        parsedRow.add(deserializeNode(obj));
+                        break;
+                    case COLUMN_RELATION:
+                        parsedRow.add(deserializeEdge(obj));
+                        break;
+                    case COLUMN_SCALAR:
+                        parsedRow.add(deserializeScalar(obj));
+                        break;
+                    default:
+                        parsedRow.add(null);
+                        break;
+                }
+            }
+
+            // create new record from deserialized objects
+            Record record = new RecordImpl(header.getSchemaNames(), parsedRow);
+            results.add(record);
+        }
+
         return results;
     }
 
