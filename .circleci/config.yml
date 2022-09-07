@@ -20,7 +20,7 @@ jobs:
   build:
     docker:
       - image: circleci/openjdk:8u171-jdk
-      - image: redislabs/redisgraph:edge
+      - image: redislabs/redismod:edge
     working_directory: ~/repo
 
     environment:
