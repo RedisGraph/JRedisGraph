@@ -35,14 +35,14 @@ public class JRedisGraphErrorTest {
     public void testSyntaxErrorReporting() {
         JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> api.query("social", "RETURN toUpper(5)"));
-        assertTrue(exception.getMessage().contains("Type mismatch: expected String but was Integer"));
+        assertTrue(exception.getMessage().contains("Type mismatch: expected String or Null but was Integer"));
     }
 
     @Test
     public void testRuntimeErrorReporting() {
         JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> api.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)"));
-        assertTrue(exception.getMessage().contains("Type mismatch: expected String but was Integer"));
+        assertTrue(exception.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
     }
 
     @Test
@@ -53,7 +53,7 @@ public class JRedisGraphErrorTest {
             api.query("social", "RETURN toUpper(5)");
         } catch (Exception e) {
             Assert.assertEquals(JRedisGraphException.class, e.getClass());
-            Assert.assertTrue(e.getMessage().contains("Type mismatch: expected String but was Integer"));
+            Assert.assertTrue(e.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
         }
 
         // On general api usage, user should get a new connection
@@ -63,7 +63,7 @@ public class JRedisGraphErrorTest {
             api.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)");
         } catch (Exception e) {
             Assert.assertEquals(JRedisGraphException.class, e.getClass());
-            Assert.assertTrue(e.getMessage().contains("Type mismatch: expected String but was Integer"));
+            Assert.assertTrue(e.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
         }
     }
 
@@ -73,7 +73,7 @@ public class JRedisGraphErrorTest {
 
         JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> c.query("social", "RETURN toUpper(5)"));
-        assertTrue(exception.getMessage().contains("Type mismatch: expected String but was Integer"));
+        assertTrue(exception.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
     }
 
     @Test
@@ -96,7 +96,7 @@ public class JRedisGraphErrorTest {
 
         JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> c.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)"));
-        assertTrue(exception.getMessage().contains("Type mismatch: expected String but was Integer"));
+        assertTrue(exception.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
     }
 
     @Test
@@ -108,7 +108,7 @@ public class JRedisGraphErrorTest {
             c.query("social", "RETURN toUpper(5)");
         } catch (Exception e) {
             Assert.assertEquals(JRedisGraphException.class, e.getClass());
-            Assert.assertTrue(e.getMessage().contains("Type mismatch: expected String but was Integer"));
+            Assert.assertTrue(e.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
         }
 
         // On contexted api usage, connection should stay open
@@ -117,7 +117,7 @@ public class JRedisGraphErrorTest {
             c.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)");
         } catch (Exception e) {
             Assert.assertEquals(JRedisGraphException.class, e.getClass());
-            Assert.assertTrue(e.getMessage().contains("Type mismatch: expected String but was Integer"));
+            Assert.assertTrue(e.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
         }
     }
 
