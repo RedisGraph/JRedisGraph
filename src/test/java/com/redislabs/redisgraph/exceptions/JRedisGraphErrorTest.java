@@ -42,7 +42,7 @@ public class JRedisGraphErrorTest {
     public void testRuntimeErrorReporting() {
         JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> api.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)"));
-        System.out.println(e.getMessage());
+        System.out.println(exception.getMessage());
         assertTrue(exception.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
     }
 
@@ -99,7 +99,7 @@ public class JRedisGraphErrorTest {
 
         JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> c.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)"));
-        System.out.println(e.getMessage());
+        System.out.println(exception.getMessage());
         assertTrue(exception.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
     }
 
