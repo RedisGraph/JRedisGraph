@@ -42,6 +42,7 @@ public class JRedisGraphErrorTest {
     public void testRuntimeErrorReporting() {
         JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> api.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)"));
+        System.out.println(e.getMessage());
         assertTrue(exception.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
     }
 
@@ -52,6 +53,7 @@ public class JRedisGraphErrorTest {
             // Issue a query that causes a compile-time error
             api.query("social", "RETURN toUpper(5)");
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             Assert.assertEquals(JRedisGraphException.class, e.getClass());
             Assert.assertTrue(e.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
         }
@@ -73,6 +75,7 @@ public class JRedisGraphErrorTest {
 
         JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> c.query("social", "RETURN toUpper(5)"));
+        System.out.println(exception.getMessage());
         assertTrue(exception.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
     }
 
@@ -96,6 +99,7 @@ public class JRedisGraphErrorTest {
 
         JRedisGraphException exception = assertThrows(JRedisGraphException.class,
                 () -> c.query("social", "MATCH (p:person) RETURN toUpper(p.mixed_prop)"));
+        System.out.println(e.getMessage());
         assertTrue(exception.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
     }
 
@@ -108,6 +112,7 @@ public class JRedisGraphErrorTest {
             c.query("social", "RETURN toUpper(5)");
         } catch (Exception e) {
             Assert.assertEquals(JRedisGraphException.class, e.getClass());
+            System.out.println(e.getMessage());
             Assert.assertTrue(e.getMessage().contains("Type mismatch: expected Stringor Null but was Integer"));
         }
 
