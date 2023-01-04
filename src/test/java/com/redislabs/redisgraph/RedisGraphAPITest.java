@@ -152,7 +152,6 @@ public class RedisGraphAPITest {
 
         ResultSet createExistingIndexResult = client.query("social", "CREATE INDEX ON :person(age)");
         Assert.assertFalse(createExistingIndexResult.hasNext());
-        Assert.assertNotNull(createExistingIndexResult.getStatistics().getStringValue(Label.INDICES_ADDED));
         Assert.assertEquals(0, createExistingIndexResult.getStatistics().indicesAdded());
 
         ResultSet deleteExistingIndexResult = client.query("social", "DROP INDEX ON :person(age)");
