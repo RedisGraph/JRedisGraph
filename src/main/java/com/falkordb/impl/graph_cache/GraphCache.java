@@ -26,24 +26,24 @@ public class GraphCache {
      * @param index - index of label
      * @return requested label
      */
-    public String getLabel(int index, Graph redisGraph) {
-        return labels.getCachedData(index, redisGraph);
+    public String getLabel(int index, Graph graph) {
+        return labels.getCachedData(index, graph);
     }
 
     /**
      * @param index index of the relationship type
      * @return requested relationship type
      */
-    public String getRelationshipType(int index, Graph redisGraph) {
-        return relationshipTypes.getCachedData(index, redisGraph);
+    public String getRelationshipType(int index, Graph graph) {
+        return relationshipTypes.getCachedData(index, graph);
     }
 
     /**
      * @param index index of property name
      * @return requested property
      */
-    public String getPropertyName(int index, Graph redisGraph) {
+    public String getPropertyName(int index, Graph graph) {
 
-        return propertyNames.getCachedData(index, redisGraph);
+        return propertyNames.getCachedData(index, graph);
     }
 }

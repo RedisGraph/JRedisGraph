@@ -7,15 +7,12 @@ import java.util.List;
  */
 public interface Header {
 
-
     enum ResultSetColumnTypes {
         COLUMN_UNKNOWN,
         COLUMN_SCALAR,
         COLUMN_NODE,
         COLUMN_RELATION
-
     }
-
 
     List<String> getSchemaNames();
 

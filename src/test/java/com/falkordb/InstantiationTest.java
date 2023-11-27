@@ -4,8 +4,6 @@ import org.junit.After;
 import org.junit.Assert;
 
 import com.falkordb.impl.api.Graph;
-import com.falkordb.GraphContextGenerator;
-import com.falkordb.ResultSet;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;

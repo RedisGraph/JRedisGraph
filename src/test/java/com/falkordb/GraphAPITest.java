@@ -1,5 +1,7 @@
 package com.falkordb;
 
+import static org.junit.Assert.fail;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -17,10 +19,6 @@ import com.falkordb.graph_entities.Point;
 import com.falkordb.graph_entities.Property;
 import com.falkordb.impl.api.Graph;
 import com.falkordb.test.utils.PathBuilder;
-import com.falkordb.Header;
-import com.falkordb.GraphContext;
-import com.falkordb.GraphContextGenerator;
-import com.falkordb.ResultSet;
 
 public class GraphAPITest {
 
@@ -154,10 +152,13 @@ public class GraphAPITest {
         Assert.assertNotNull(createNonExistingIndexResult.getStatistics().getStringValue(Label.INDICES_ADDED));
         Assert.assertEquals(1, createNonExistingIndexResult.getStatistics().indicesAdded());
 
-        ResultSet createExistingIndexResult = client.query("social", "CREATE INDEX ON :person(age)");
-        Assert.assertFalse(createExistingIndexResult.hasNext());
-        Assert.assertNotNull(createExistingIndexResult.getStatistics().getStringValue(Label.INDICES_ADDED));
-        Assert.assertEquals(0, createExistingIndexResult.getStatistics().indicesAdded());
+
+        try {
+            client.query("social", "CREATE INDEX ON :person(age)");
+            fail();
+        } catch (Exception e) {
+            // TODO: handle exception
+        }
 
         ResultSet deleteExistingIndexResult = client.query("social", "DROP INDEX ON :person(age)");
         Assert.assertFalse(deleteExistingIndexResult.hasNext());

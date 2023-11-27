@@ -13,7 +13,6 @@ import org.junit.Test;
 import com.falkordb.GraphContext;
 import com.falkordb.GraphContextGenerator;
 import com.falkordb.impl.api.Graph;
-import com.falkordb.exceptions.GraphException;
 
 public class GraphErrorTest {
 

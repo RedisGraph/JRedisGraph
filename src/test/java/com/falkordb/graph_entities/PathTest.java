@@ -3,10 +3,6 @@ package com.falkordb.graph_entities;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.Test;
 
-import com.falkordb.graph_entities.Edge;
-import com.falkordb.graph_entities.Node;
-import com.falkordb.graph_entities.Path;
-
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;

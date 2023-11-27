@@ -20,33 +20,33 @@ public class GraphCaches {
      * Returns a String which represents the name of the label mapped to the label id
      * @param graphId graph to perform the query
      * @param index label index
-     * @param redisGraph GraphAPI implementation
+     * @param graph GraphAPI implementation
      * @return label name
      */
-    public String getLabel(String graphId, int index, Graph redisGraph) {
-        return getGraphCache(graphId).getLabel(index, redisGraph);
+    public String getLabel(String graphId, int index, Graph graph) {
+        return getGraphCache(graphId).getLabel(index, graph);
     }
 
     /**
      * Returns a String which represents the name of the relationship mapped to the label id
      * @param graphId graph to perform the query
      * @param index relationship index
-     * @param redisGraph GraphAPI implementation
+     * @param graph GraphAPI implementation
      * @return relationship name
      */
-    public String getRelationshipType(String graphId, int index, Graph redisGraph){
-        return getGraphCache(graphId).getRelationshipType(index, redisGraph);
+    public String getRelationshipType(String graphId, int index, Graph graph){
+        return getGraphCache(graphId).getRelationshipType(index, graph);
     }
 
     /**
      * Returns a String which represents the name of the property mapped to the label id
      * @param graphId graph to perform the query
      * @param index property index
-     * @param redisGraph GraphAPI implementation
+     * @param graph GraphAPI implementation
      * @return property name
      */
-    public String getPropertyName(String graphId, int index, Graph redisGraph){
-        return getGraphCache(graphId).getPropertyName(index, redisGraph);
+    public String getPropertyName(String graphId, int index, Graph graph){
+        return getGraphCache(graphId).getPropertyName(index, graph);
     }
 
     /**

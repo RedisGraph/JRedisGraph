@@ -12,18 +12,10 @@ import com.falkordb.graph_entities.Node;
 import com.falkordb.graph_entities.Property;
 import com.falkordb.impl.api.Graph;
 import com.falkordb.impl.resultset.ResultSetImpl;
-import com.falkordb.Header;
-import com.falkordb.GraphContext;
-import com.falkordb.GraphContextGenerator;
-import com.falkordb.GraphPipeline;
-import com.falkordb.ResultSet;
 
 public class PipelineTest {
 
     private GraphContextGenerator api;
-
-    public PipelineTest() {
-    }
 
     @Before
     public void createApi() {

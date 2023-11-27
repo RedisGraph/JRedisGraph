@@ -34,11 +34,11 @@ class GraphCacheList {
      * @param index index of data item
      * @return The string value of the specific procedure response, at the given index.
      */
-    public String getCachedData(int index, Graph redisGraph) {
+    public String getCachedData(int index, Graph graph) {
         if (index >= data.size()) {
             synchronized (data){
                 if (index >= data.size()) {
-                    getProcedureInfo(redisGraph);
+                    getProcedureInfo(graph);
                 }
             }
         }
@@ -49,8 +49,8 @@ class GraphCacheList {
     /**
      * Auxiliary method to parse a procedure result set and refresh the cache
      */
-    private void getProcedureInfo(Graph redisGraph) {
-        ResultSet resultSet = redisGraph.callProcedure(graphId, procedure);
+    private void getProcedureInfo(Graph graph) {
+        ResultSet resultSet = graph.callProcedure(graphId, procedure);
         List<String> newData = new ArrayList<>();
         int i = 0;
         while (resultSet.hasNext()) {

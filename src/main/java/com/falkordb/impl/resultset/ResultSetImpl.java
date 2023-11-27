@@ -21,18 +21,18 @@ public class ResultSetImpl implements ResultSet {
     private final List<Record> results;
 
     private int position = 0;
-    private final Graph redisGraph;
+    private final Graph graph;
     private final GraphCache cache;
 
     /**
      * @param rawResponse the raw representation of response is at most 3 lists of
      *                    objects. The last list is the statistics list.
-     * @param redisGraph  the graph connection
+     * @param graph  the graph connection
      * @param cache       the graph local cache
      */
     @SuppressWarnings("unchecked")
-    public ResultSetImpl(List<Object> rawResponse, Graph redisGraph, GraphCache cache) {
-        this.redisGraph = redisGraph;
+    public ResultSetImpl(List<Object> rawResponse, Graph graph, GraphCache cache) {
+        this.graph = graph;
         this.cache = cache;
 
         // If a run-time error occurred, the last member of the rawResponse will be a
@@ -148,7 +148,7 @@ public class ResultSetImpl implements ResultSet {
         deserializeGraphEntityId(node, (Long) rawNodeData.get(0));
 
         for (Long labelIndex : labelsIndices) {
-            String label = cache.getLabel(labelIndex.intValue(), redisGraph);
+            String label = cache.getLabel(labelIndex.intValue(), graph);
             node.addLabel(label);
         }
 
@@ -180,7 +180,7 @@ public class ResultSetImpl implements ResultSet {
         Edge edge = new Edge(rawProperties.size());
         deserializeGraphEntityId(edge, (Long) rawEdgeData.get(0));
 
-        String relationshipType = cache.getRelationshipType(((Long) rawEdgeData.get(1)).intValue(), redisGraph);
+        String relationshipType = cache.getRelationshipType(((Long) rawEdgeData.get(1)).intValue(), graph);
         edge.setRelationshipType(relationshipType);
 
         edge.setSource((long) rawEdgeData.get(2));
@@ -203,7 +203,7 @@ public class ResultSetImpl implements ResultSet {
 
         for (List<Object> rawProperty : rawProperties) {
             Property<Object> property = new Property<>();
-            property.setName(cache.getPropertyName(((Long) rawProperty.get(0)).intValue(), redisGraph));
+            property.setName(cache.getPropertyName(((Long) rawProperty.get(0)).intValue(), graph));
 
             // trimmed for getting to value using deserializeScalar
             List<Object> propertyScalar = rawProperty.subList(1, rawProperty.size());
@@ -310,8 +310,9 @@ public class ResultSetImpl implements ResultSet {
     @Override
     @Deprecated
     public Record next() {
-        if (!hasNext())
+        if (!hasNext()) {
             throw new NoSuchElementException();
+        }
         return results.get(position++);
     }
 
@@ -322,10 +323,12 @@ public class ResultSetImpl implements ResultSet {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
+        if (this == o) {
             return true;
-        if (!(o instanceof ResultSetImpl))
+        }
+        if (!(o instanceof ResultSetImpl)) {
             return false;
+        }
         ResultSetImpl resultSet = (ResultSetImpl) o;
         return Objects.equals(getHeader(), resultSet.getHeader())
                 && Objects.equals(getStatistics(), resultSet.getStatistics())

@@ -7,9 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.falkordb.impl.api.Graph;
-import com.falkordb.GraphContextGenerator;
-import com.falkordb.ResultSet;
-
 public class IterableTest {
 
     private GraphContextGenerator api;

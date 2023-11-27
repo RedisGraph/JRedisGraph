@@ -20,14 +20,14 @@ import java.util.Map;
 public class GraphTransaction extends Transaction
         implements com.falkordb.GraphTransaction, GraphCacheHolder {
 
-    private final Graph redisGraph;
+    private final Graph graph;
     private GraphCaches caches;
 
-    public GraphTransaction(Client client, Graph redisGraph) {
+    public GraphTransaction(Client client, Graph graph) {
         // init as in Jedis
         super(client);
 
-        this.redisGraph = redisGraph;
+        this.graph = graph;
     }
 
     /**
@@ -43,7 +43,7 @@ public class GraphTransaction extends Transaction
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -61,7 +61,7 @@ public class GraphTransaction extends Transaction
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -83,7 +83,7 @@ public class GraphTransaction extends Transaction
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -105,7 +105,7 @@ public class GraphTransaction extends Transaction
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -128,7 +128,7 @@ public class GraphTransaction extends Transaction
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -148,7 +148,7 @@ public class GraphTransaction extends Transaction
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -168,7 +168,7 @@ public class GraphTransaction extends Transaction
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -192,7 +192,7 @@ public class GraphTransaction extends Transaction
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -216,7 +216,7 @@ public class GraphTransaction extends Transaction
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }

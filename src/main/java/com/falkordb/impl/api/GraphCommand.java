@@ -4,8 +4,6 @@ import redis.clients.jedis.commands.ProtocolCommand;
 
 /**
  * 
- * 
- *
  */
 public enum GraphCommand implements ProtocolCommand {
     QUERY("graph.QUERY"),

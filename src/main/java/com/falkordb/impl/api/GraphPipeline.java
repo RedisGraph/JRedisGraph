@@ -19,13 +19,13 @@ import java.util.Map;
  */
 public class GraphPipeline extends Pipeline implements com.falkordb.GraphPipeline, GraphCacheHolder {
 
-    private final Graph redisGraph;
+    private final Graph graph;
     private GraphCaches caches;
 
 
-    public GraphPipeline(Client client, Graph redisGraph){
+    public GraphPipeline(Client client, Graph graph){
         super.setClient(client);
-        this.redisGraph = redisGraph;
+        this.graph = graph;
     }
 
     /**
@@ -41,7 +41,7 @@ public class GraphPipeline extends Pipeline implements com.falkordb.GraphPipelin
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -59,7 +59,7 @@ public class GraphPipeline extends Pipeline implements com.falkordb.GraphPipelin
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -81,7 +81,7 @@ public class GraphPipeline extends Pipeline implements com.falkordb.GraphPipelin
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -103,7 +103,7 @@ public class GraphPipeline extends Pipeline implements com.falkordb.GraphPipelin
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -123,7 +123,7 @@ public class GraphPipeline extends Pipeline implements com.falkordb.GraphPipelin
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -143,7 +143,7 @@ public class GraphPipeline extends Pipeline implements com.falkordb.GraphPipelin
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -168,7 +168,7 @@ public class GraphPipeline extends Pipeline implements com.falkordb.GraphPipelin
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
@@ -194,7 +194,7 @@ public class GraphPipeline extends Pipeline implements com.falkordb.GraphPipelin
             @SuppressWarnings("unchecked")
             @Override
             public ResultSet build(Object o) {
-                return new ResultSetImpl((List<Object>) o, redisGraph, caches.getGraphCache(graphId));
+                return new ResultSetImpl((List<Object>) o, graph, caches.getGraphCache(graphId));
             }
         });
     }
